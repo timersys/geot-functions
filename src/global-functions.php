@@ -80,6 +80,26 @@ function geot_country_name() {
 function geot_city_name() {
 	return geot_get( 'city' )->name();
 }
+
+
+/**
+ * Display the user state name
+ * [geot_state_name]
+ * @return string
+ */
+function geot_state_name() {
+	return geot_get( 'state' )->name();
+}
+
+/**
+ * Display the user state code
+ * [geot_state_code]
+ * @return string
+ */
+function geot_state_code() {
+	return geot_get( 'state' )->iso_code();
+}
+
 /**
  * Displays the zip code
  * [geot_zip]

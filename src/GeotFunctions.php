@@ -8,7 +8,7 @@ use GeotWP\Record\GeotRecord;
 
 class GeotFunctions {
 	// Hold the class instance.
-	private static $instance = null;
+	private static $_instance = null;
 
 	/**
 	 * Current user country and cityused everywhere

@@ -193,7 +193,7 @@ class GeotFunctions {
 		$places         = toArray( $args['include'] );
 		$exclude_places = toArray( $args['exclude'] );
 		$saved_regions  = apply_filters( 'geot/get_' . $key . 'regions', array() );
-		$plural_key     = plural( $key );
+		$plural_key     = toPlural( $key );
 
 		//Append any regions
 		if ( ! empty( $args['region'] ) && ! empty( $saved_regions ) ) {

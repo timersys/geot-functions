@@ -33,14 +33,20 @@ class GeotFunctions {
 	 * @since    1.0.0
 	 */
 	private function __construct( ) {
+
+		$this->opts = apply_filters('geot/settings_page/opts', get_option( 'geot_settings' ) );
+
+		$args = apply_filters('geotWP/args', array() );
+		// don't go further without license 
+		if( empty( $this->opts['license'] ) )
+			return;
+
+		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );
+
 		if( !is_admin()
 		    && ! defined('DOING_CRON')
 		    && ! defined('DOING_AJAX') )
 			add_action('init' , array($this,'setUserData' ) );
-
-		$this->opts = apply_filters('geot/settings_page/opts', get_option( 'geot_settings' ) );
-		$args = apply_filters('geotWP/args', array() );
-		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );
 	}
 
 	/**

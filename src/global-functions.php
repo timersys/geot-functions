@@ -256,3 +256,11 @@ function geot_target_city( $city = '', $city_region = '', $exclude = '', $exclud
 function geot_target_state( $state = '', $exclude = '') {
 	geot_target($state, $exclude, '', '', 'state');
 }
+
+/**
+ * Grab geot settings
+ * @return mixed|void
+ */
+function geot_settings(){
+	return apply_filters('geot/settings_page/opts', get_option( 'geot_settings' ) );
+}

@@ -34,7 +34,7 @@ class GeotFunctions {
 	 */
 	private function __construct( ) {
 
-		$this->opts = apply_filters('geot/settings_page/opts', get_option( 'geot_settings' ) );
+		$this->opts = geot_settings();
 
 		$args = apply_filters('geotWP/args', array() );
 		// don't go further without license 
@@ -144,7 +144,7 @@ class GeotFunctions {
 		global $wpdb;
 		$query 	 = "SELECT * FROM {$wpdb->base_prefix}geot_countries WHERE iso_code = %s";
 		$result = $wpdb->get_row( $wpdb->prepare($query, array( $iso_code )), ARRAY_A );
-		$country = new StdClass;
+		$country = new \StdClass();
 
 		$country->name      = $result['country'];
 		$country->iso_code  = $result['iso_code'];

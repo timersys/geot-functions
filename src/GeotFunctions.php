@@ -102,6 +102,7 @@ class GeotFunctions {
 	 * @return array|bool|mixed
 	 */
 	public function getUserData( $ip = "" ){
+
 		try{
 			$data = $this->geotWP->getData($ip);
 		} catch ( OutofCreditsException $e ) {
@@ -111,6 +112,9 @@ class GeotFunctions {
 			GeotEmails::AuthenticationException();
 			return $this->getFallbackCountry();
 		} catch ( \Exception $e ) {
+			echo '<pre>';
+			var_dump($e);
+			echo '</pre>';die();
 			return $this->getFallbackCountry();
 		}
 		return $data;

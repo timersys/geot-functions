@@ -22,7 +22,7 @@ function geot_get( $key ) {
 
 /**
  * Get current user country
- * @return object Current user country Record. Methods are $country->iso_code() $country->name() $country->names()
+ * @return object Current user country Record. Methods are $country->iso_code $country->name $country->names
  */
 function geot_user_country( ){
 	return geot_get( 'country' );
@@ -32,7 +32,7 @@ function geot_user_country( ){
  *
  * @param string $ip
  *
- * @return object Current user country record. Methods are $country->iso_code() $country->name() $country->names()
+ * @return object Current user country record. Methods are $country->iso_code $country->name $country->names
  */
 function geot_country_by_ip( $ip = '') {
 	$g = geot();
@@ -59,7 +59,7 @@ function geot_data( $ip = '') {
  * @return  string country CODE
  **/
 function geot_country_code( ) {
-	return geot_get( 'country' )->iso_code();
+	return geot_get( 'country' )->iso_code;
 }
 
 /**
@@ -68,7 +68,7 @@ function geot_country_code( ) {
  * @return  string country name
  **/
 function geot_country_name() {
-	return geot_get( 'country' )->name();
+	return geot_get( 'country' )->name;
 }
 
 
@@ -78,7 +78,7 @@ function geot_country_name() {
  * @return string
  */
 function geot_city_name() {
-	return geot_get( 'city' )->name();
+	return geot_get( 'city' )->name;
 }
 
 
@@ -88,7 +88,7 @@ function geot_city_name() {
  * @return string
  */
 function geot_state_name() {
-	return geot_get( 'state' )->name();
+	return geot_get( 'state' )->name;
 }
 
 /**
@@ -97,7 +97,7 @@ function geot_state_name() {
  * @return string
  */
 function geot_state_code() {
-	return geot_get( 'state' )->iso_code();
+	return geot_get( 'state' )->iso_code;
 }
 
 /**
@@ -106,7 +106,7 @@ function geot_state_code() {
  * @return  string zip code
  **/
 function geot_zip() {
-	return geot_get( 'city' )->zip();
+	return geot_get( 'city' )->zip;
 }
 
 /**

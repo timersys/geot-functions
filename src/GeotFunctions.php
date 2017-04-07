@@ -1,5 +1,6 @@
 <?php namespace GeotFunctions;
 use GeotFunctions\Email\GeotEmails;
+use GeotFunctions\Notification\GeotNotifications;
 use GeotWP;
 use GeotWP\Exception\InvalidLicenseException;
 use GeotWP\Exception\OutofCreditsException;
@@ -103,14 +104,17 @@ class GeotFunctions {
 	 */
 	public function getUserData( $ip = "" ){
 		try{
-			$data = $this->geotWP->getData($ip);
+			$data = $this->geotWP->getData( apply_filters( 'geot/user_ip', $ip ) );
 		} catch ( OutofCreditsException $e ) {
 			GeotEmails::OutOfQueriesException();
+			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		} catch ( InvalidLicenseException $e ) {
 			GeotEmails::AuthenticationException();
+			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		} catch ( \Exception $e ) {
+			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		}
 		return $data;
@@ -233,7 +237,7 @@ class GeotFunctions {
 
 		if ( count( $places ) > 0 ) {
 			foreach ( $places as $p ) {
-				if ( strtolower( $user_place->name() ) == strtolower( $p ) || strtolower( $user_place->iso_code() ) == strtolower( $p ) ) {
+				if ( strtolower( $user_place->name ) == strtolower( $p ) || strtolower( $user_place->iso_code ) == strtolower( $p ) ) {
 					$target = true;
 				}
 			}
@@ -244,7 +248,7 @@ class GeotFunctions {
 
 		if ( count( $exclude_places ) > 0 ) {
 			foreach ( $exclude_places as $ep ) {
-				if ( strtolower( $user_place->name() ) == strtolower( $ep ) || strtolower( $user_place->iso_code() ) == strtolower( $ep ) ) {
+				if ( strtolower( $user_place->name ) == strtolower( $ep ) || strtolower( $user_place->iso_code ) == strtolower( $ep ) ) {
 					$target = false;
 				}
 			}

@@ -37,7 +37,7 @@ class GeotFunctions {
 
 		$this->opts = geot_settings();
 
-		$args = apply_filters('geotWP/args', array() );
+		$args = apply_filters('geotWP/args', $this->opts );
 		// don't go further without license 
 		if( empty( $this->opts['license'] ) )
 			return;
@@ -231,6 +231,7 @@ class GeotFunctions {
 		//set target to false
 		$target     = false;
 		$user_place = $this->get( $key );
+
 		if ( ! $user_place ) {
 			return apply_filters( 'geot/target_' . $key . '/return_on_user_null', false );
 		}

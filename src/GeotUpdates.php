@@ -31,7 +31,7 @@ class GeotUpdates {
 		$this->slug        = basename( $_plugin_file, '.php' );
 		$this->version     = $_api_data['version'];
 		$this->wp_override = isset( $_api_data['wp_override'] ) ? (bool) $_api_data['wp_override'] : false;
-		$this->cache_key   = md5( serialize( $this->slug  ) );
+		$this->cache_key   = 'geot_'. md5( serialize( $this->slug  ) );
 
 		$geot_plugin_data[ $this->slug ] = $this->api_data;
 
@@ -77,21 +77,20 @@ class GeotUpdates {
 			return $_transient_data;
 		}
 
-		$version_info = $this->get_cached_version_info();
+		$plugin_info = $this->get_cached_version_info();
 
-		if ( false === $version_info ) {
-			$version_info = $this->api_request( 'info', array( 'slug' => $this->slug ) );
-
-			$this->set_version_info_cache( $version_info );
-
+		if ( false === $plugin_info ) {
+			$plugin_info = $this->api_request( 'info' );
 		}
 
-		if ( false !== $version_info && is_object( $version_info ) && isset( $version_info->new_version ) ) {
+		if ( false !== $plugin_info && is_object( $plugin_info ) && isset( $plugin_info->version ) ) {
 
-			if ( version_compare( $this->version, $version_info->new_version, '<' ) ) {
-
-				$_transient_data->response[ $this->name ] = $version_info;
-
+			if ( version_compare( $this->version, $plugin_info->version, '<' ) ) {
+				$_transient_data->response[$this->name] = (object) array(
+					'new_version' => $plugin_info->version,
+					'package' => $plugin_info->download_link,
+					'slug' => $this->slug
+				);
 			}
 
 			$_transient_data->last_checked           = current_time( 'timestamp' );
@@ -114,65 +113,30 @@ class GeotUpdates {
 	 */
 	public function plugins_api_filter( $_data, $_action = '', $_args = null ) {
 
-		if ( $_action != 'plugin_information' ) {
-
+		if ( $_action != 'plugin_information' )
 			return $_data;
 
-		}
 
-		if ( ! isset( $_args->slug ) || ( $_args->slug != $this->slug ) ) {
-
+		if ( ! isset( $_args->slug ) || ( $_args->slug != $this->slug ) )
 			return $_data;
 
-		}
-
-		$to_send = array(
-			'slug'   => $this->slug,
-			'is_ssl' => is_ssl(),
-			'fields' => array(
-				'banners' => array(),
-				'reviews' => false
-			)
-		);
-
-		$cache_key = 'geot_api_request_' . md5( serialize( $this->slug ) );
-
-		// Get the transient where we store the api request for this plugin for 24 hours
-		$geot_api_request_transient = $this->get_cached_version_info( $cache_key );
-
-		//If we have no transient-saved value, run the API, set a fresh transient with the API value, and return that value too right now.
-		if ( empty( $geot_api_request_transient ) ) {
-
-			$api_response = $this->api_request( 'info', $to_send );
-
-			// Expires in 3 hours
-			$this->set_version_info_cache( $api_response, $cache_key );
-
-			if ( false !== $api_response ) {
-				$_data = $api_response;
-			}
-
-		} else {
-			$_data = $geot_api_request_transient;
-		}
+		$_data = $this->api_request( 'info');
 
 		// Convert sections into an associative array, since we're getting an object, but Core expects an array.
 		if ( isset( $_data->sections ) && ! is_array( $_data->sections ) ) {
 			$new_sections = array();
-			foreach ( $_data->sections as $key => $key ) {
-				$new_sections[ $key ] = $key;
+			foreach ( $_data->sections as $key => $data ) {
+				$new_sections[ $key ] = $data;
 			}
-
 			$_data->sections = $new_sections;
 		}
 
 		// Convert banners into an associative array, since we're getting an object, but Core expects an array.
 		if ( isset( $_data->banners ) && ! is_array( $_data->banners ) ) {
 			$new_banners = array();
-			foreach ( $_data->banners as $key => $key ) {
-				$new_banners[ $key ] = $key;
+			foreach ( $_data->banners as $key => $data ) {
+				$new_banners[ $key ] = $data;
 			}
-
 			$_data->banners = $new_banners;
 		}
 
@@ -189,50 +153,30 @@ class GeotUpdates {
 	 * @uses is_wp_error()
 	 *
 	 * @param string  $_action The requested action.
-	 * @param array   $_data   Parameters for the API action.
 	 * @return false|object
 	 */
-	private function api_request( $_action, $_data ) {
+	private function api_request( $_action ) {
 
-		global $wp_version;
+		$geot_api_request_transient = $this->get_cached_version_info( $this->cache_key );
 
-		$data = array_merge( $this->api_data, $_data );
-
-		if ( $data['slug'] != $this->slug ) {
-			return;
-		}
+		if ( !empty( $geot_api_request_transient ) )
+			return $geot_api_request_transient;
 
 		$api_params = array(
-			'slug'       => $data['slug'],
+			'slug'       => $this->slug,
 		);
+		$url = add_query_arg($api_params, $this->api_url . $_action );
 
-		$request = wp_remote_get( $this->api_url . $_action, array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
-		echo '<pre>';
-		var_dump($this->api_url . $_action);
-		var_dump($request);
-		echo '</pre>';
-		die();
-		if ( ! is_wp_error( $request ) ) {
-			$request = json_decode( wp_remote_retrieve_body( $request ) );
+		$request = wp_remote_get( $url, array( 'timeout' => 15 ) );
+
+		if ( is_wp_error( $request ) || isset($request->error) ) {
+			return;
 		}
+		$request = json_decode( wp_remote_retrieve_body( $request ) );
 
-		if ( $request && isset( $request->sections ) ) {
-			$request->sections = maybe_unserialize( $request->sections );
-		} else {
-			$request = false;
-		}
-
-		if ( $request && isset( $request->banners ) ) {
-			$request->banners = maybe_unserialize( $request->banners );
-		}
-
-		if( ! empty( $request ) ) {
-			foreach( $request->sections as $key => $section ) {
-				$request->$key = (array) $section;
-			}
-		}
-
-		return $request;
+		$data    = $this->parseRequest($request);
+		$this->set_version_info_cache( $data );
+		return $data;
 	}
 
 
@@ -252,19 +196,49 @@ class GeotUpdates {
 
 	}
 
-	public function set_version_info_cache( $value = '', $cache_key = '' ) {
-
-		if( empty( $cache_key ) ) {
-			$cache_key = $this->cache_key;
-		}
+	public function set_version_info_cache( $value = '' ) {
 
 		$data = array(
 			'timeout' => strtotime( '+3 hours', current_time( 'timestamp' ) ),
 			'value'   => json_encode( $value )
 		);
 
-		update_option( $cache_key, $data );
+		update_option( $this->cache_key, $data );
 
+	}
+
+	/**
+	 * Convert API response to wordpress plugins API needed object
+	 * @param $request
+	 *
+	 * @return object
+	 */
+	private function parseRequest( $request ) {
+		$info = $request->data;
+		$res = (object) array(
+			'name' => isset( $info->name ) ? $info->name : '',
+			'version' => $info->version,
+			'slug' => $request->slug,
+			'download_link' => $info->download_link,
+
+			'tested' => isset( $info->tested ) ? $info->tested : '',
+			'requires' => isset( $info->requires ) ? $info->requires : '',
+			'last_updated' => isset( $request->updated_at ) ? $request->updated_at : '',
+			'homepage' => isset( $info->plugin_url ) ? $info->plugin_url : '',
+
+			'sections' => array(
+				'description' => $info->description,
+				'changelog' => $info->changelog,
+			),
+
+			'banners' => array(
+				'low' => isset( $info->banner_low ) ? $info->banner_low : '',
+				'high' => isset( $info->banner_high ) ? $info->banner_high : ''
+			),
+
+			'external' => true
+		);
+		return $res;
 	}
 
 }

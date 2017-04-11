@@ -242,7 +242,7 @@ function geot_target( $include = '', $place_region = '', $exclude = '', $exclude
  * @return bool
  */
 function geot_target_city( $city = '', $city_region = '', $exclude = '', $exclude_region  = '') {
-	geot_target($city, $exclude, $city_region, $exclude_region, 'city');
+	geot_target($city,  $city_region, $exclude, $exclude_region, 'city');
 }
 
 /**
@@ -263,4 +263,28 @@ function geot_target_state( $state = '', $exclude = '') {
  */
 function geot_settings(){
 	return apply_filters('geot/settings_page/opts', get_option( 'geot_settings' ) );
+}
+
+/**
+ * Return Country Regions
+ * @return mixed
+ */
+function geot_country_regions() {
+	return apply_filters('geot/get_country_regions', []);
+}
+
+/**
+ * Return City Regions
+ * @return mixed
+ */
+function geot_city_regions() {
+	return apply_filters('geot/get_city_regions', []);
+}
+
+/**
+ * Grab countries from database
+ * @return mixed
+ */
+function geot_countries(){
+	return apply_filters('geot/get_countries', []);
 }

@@ -167,7 +167,7 @@ function geot_get_cities( $country = 'US')	{
 function geot_user_country_region( $default = '' ) {
 
 	$country_code = geot_country_code();
-	$regions = apply_filters('geot/get_regions', array() );
+	$regions = geot_country_regions();
 
 	if( empty( $regions ) || ! is_array( $regions ) || empty( $country_code ) )
 		return $default;
@@ -192,7 +192,7 @@ function geot_user_country_region( $default = '' ) {
 function geot_user_city_region( $default = '' ) {
 
 	$city_name = geot_city_name();
-	$regions = apply_filters('geot/get_city_regions', array() );
+	$regions = geot_city_regions();
 
 	if( empty( $regions ) || ! is_array( $regions ) || empty( $city_name ) )
 		return $default;

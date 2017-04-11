@@ -202,14 +202,14 @@ class GeotFunctions {
 		//Push places list into array
 		$places         = toArray( $args['include'] );
 		$exclude_places = toArray( $args['exclude'] );
-		$saved_regions  = apply_filters( 'geot/get_' . $key . 'regions', array() );
+		$saved_regions  = apply_filters( 'geot/get_' . $key . '_regions', array() );
 		$plural_key     = toPlural( $key );
 
 		//Append any regions
 		if ( ! empty( $args['region'] ) && ! empty( $saved_regions ) ) {
 			$region = toArray( $args['region'] );
 			foreach ( $region as $region_name ) {
-				foreach ( $saved_regions as $key => $saved_region ) {
+				foreach ( $saved_regions as $sr_key => $saved_region ) {
 					if ( strtolower( $region_name ) == strtolower( $saved_region['name'] ) ) {
 						$places = array_merge( (array) $places, (array) $saved_region[ $plural_key ] );
 					}
@@ -220,7 +220,7 @@ class GeotFunctions {
 		if ( ! empty( $args['exclude_region'] ) && ! empty( $saved_regions ) ) {
 			$exclude_region = toArray( $args['exclude_region'] );
 			foreach ( $exclude_region as $region_name ) {
-				foreach ( $saved_regions as $key => $saved_region ) {
+				foreach ( $saved_regions as $sr_key => $saved_region ) {
 					if ( strtolower( $region_name ) == strtolower( $saved_region['name'] ) ) {
 						$exclude_places = array_merge( (array) $exclude_places, (array) $saved_region[ $plural_key ] );
 					}
@@ -231,7 +231,6 @@ class GeotFunctions {
 		//set target to false
 		$target     = false;
 		$user_place = $this->get( $key );
-
 		if ( ! $user_place ) {
 			return apply_filters( 'geot/target_' . $key . '/return_on_user_null', false );
 		}

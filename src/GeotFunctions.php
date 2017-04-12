@@ -149,45 +149,31 @@ class GeotFunctions {
 		$query 	 = "SELECT * FROM {$wpdb->base_prefix}geot_countries WHERE iso_code = %s";
 		$result = $wpdb->get_row( $wpdb->prepare($query, array( $iso_code )), ARRAY_A );
 		$country = new \StdClass();
+		$country->names = new \StdClass();
 
-		$country->name      = $result['country'];
+		$country->names->en = $result['country'];
 		$country->iso_code  = $result['iso_code'];
 
 		return $country;
 	}
 
 	/**
-	 * If we have a maxmind exception, return
+	 * If we have an exception, return
 	 * @return array|bool
 	 */
 	private function getFallbackCountry() {
 
 		if( empty($this->opts['fallback_country']) )
 			$this->opts['fallback_country'] = 'US';
-
-		return array(
-			'country' => $this->getCountryByIsoCode( $this->opts['fallback_country'] ),
-			'city'    => '',
-			'zip'     => '',
-			'state'   => '',
-			'continent'   => '',
-		);
-
-	}
-
-	/**
-	 * Bots can be treated as all from one country
-	 * @return array
-	 */
-	private function getBotsCountry() {
-
-		return apply_filters( 'geot/bots_country', array(
-			'country' => $this->getCountryByIsoCode($this->opts['bots_country']),
-			'city'    => '',
-			'zip'     => '',
-			'state'   => '',
-		));
-
+		$record = (object) [
+			'continent' => new \StdClass(),
+			'country' =>  new \StdClass(),
+			'state'   =>  new \StdClass(),
+			'city'    =>  new \StdClass(),
+		];
+		$record->country  = $this->getCountryByIsoCode( $this->opts['fallback_country'] );
+		$result =  new GeotRecord($record);
+		return $result;
 	}
 
 	/**

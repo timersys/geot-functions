@@ -242,7 +242,7 @@ function geot_target( $include = '', $place_region = '', $exclude = '', $exclude
  * @return bool
  */
 function geot_target_city( $city = '', $city_region = '', $exclude = '', $exclude_region  = '') {
-	geot_target($city,  $city_region, $exclude, $exclude_region, 'city');
+	return geot_target($city,  $city_region, $exclude, $exclude_region, 'city');
 }
 
 /**
@@ -254,7 +254,7 @@ function geot_target_city( $city = '', $city_region = '', $exclude = '', $exclud
  * @return bool
  */
 function geot_target_state( $state = '', $exclude = '') {
-	geot_target($state, $exclude, '', '', 'state');
+	return geot_target($state, $exclude, '', '', 'state');
 }
 
 /**
@@ -287,4 +287,32 @@ function geot_city_regions() {
  */
 function geot_countries(){
 	return apply_filters('geot/get_countries', []);
+}
+
+/**
+ * Prints geo debug data
+ * @return bool|string
+ */
+function geot_debug_data(){
+	$user_data = geot_data();
+	if( empty( $user_data->country ) )
+		return false;
+	ob_start();
+	?>
+		Country: <?php echo $user_data->country->name . PHP_EOL.'<br>';?>
+		Country code: <?php echo $user_data->country->iso_code . PHP_EOL.'<br>';?>
+		State: <?php echo $user_data->state->name . PHP_EOL.'<br>';?>
+		State code: <?php echo $user_data->state->iso_code . PHP_EOL.'<br>';?>
+		City: <?php echo $user_data->city->name . PHP_EOL.'<br>';?>
+		Zip: <?php echo $user_data->city->zip . PHP_EOL.'<br>';?>
+		Continent: <?php echo $user_data->continent->name . PHP_EOL.'<br>';?>
+		Real IP: <?php echo GeotWP\getUserIP(). PHP_EOL.'<br>';?>
+		IP geot/user_ip: <?php echo apply_filters('geot/user_ip', GeotWP\getUserIP()). PHP_EOL.'<br>';?>
+		Geot Version: <?php echo defined('GEOT_VERSION') ?  GEOT_VERSION . PHP_EOL.'<br>' : '';?>
+		PHP Version: <?php echo phpversion() . PHP_EOL;?>
+	<?php
+	$html = ob_get_contents();
+	ob_end_clean();
+
+	return $html;
 }

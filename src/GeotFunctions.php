@@ -117,6 +117,10 @@ class GeotFunctions {
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		}
+		// When status code is other than 200, on next call the class cache will return
+		// a simple StdClass object. So we need to fallback
+		if( ! $data instanceof GeotRecord )
+			return $this->getFallbackCountry();
 		return $data;
 	}
 	/**

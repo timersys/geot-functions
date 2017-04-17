@@ -2,14 +2,14 @@
     "name": "timersys/geot-functions",
     "description": "Base wordpress functions to use with GeotargetingWP plugins",
     "keywords": ["geotargeting", "wordpress", "timersys"],
-    "license": "GPL",
+    "license": "GPL-3.0",
     "authors": [
         {
             "name": "Damian Logghe",
             "email": "info@timersys.com"
         }
     ],
-    "type": "project",
+    "type": "library",
     "require": {
 		"php": ">=5.5",
         "timersys/geotargetingwp": "dev-master"

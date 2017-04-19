@@ -1,6 +1,6 @@
 <?php
 use GeotFunctions\GeotFunctions;
-
+use GeotWP\GeotargetingWP;
 /**
  * Function to get instance of the class
  * @return \GeotFunctions\Geot

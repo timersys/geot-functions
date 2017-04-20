@@ -135,7 +135,6 @@ function geot_state_by_ip( $ip = '') {
 }
 
 /**
- * TODO ADD CITIES TO API
  * Get cities in database
  *
  * @param string $country

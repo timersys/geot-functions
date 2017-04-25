@@ -44,8 +44,9 @@ class GeotFunctions {
 
 		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );
 
-		if( !is_admin()
+		if( ! is_admin()
 		    && ! defined('DOING_CRON')
+		    && empty( $this->opts['cache_mode'] )
 		    && ! defined('DOING_AJAX') )
 			add_action('init' , array($this,'setUserData' ) );
 	}

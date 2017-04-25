@@ -43,11 +43,14 @@ class GeotFunctions {
 			return;
 
 		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );
-
+		// If we have cache mode turned on, we need to calculate user location before
+		// anything gets printed
 		if( ! is_admin()
 		    && ! defined('DOING_CRON')
-		    && empty( $this->opts['cache_mode'] )
-		    && ! defined('DOING_AJAX') )
+		    && ! empty( $this->opts['cache_mode'] )
+		    && ! apply_filters('geot/disable_setUserData', false)
+		    && ! defined('DOING_AJAX')
+		)
 			add_action('init' , array($this,'setUserData' ) );
 	}
 
@@ -124,6 +127,7 @@ class GeotFunctions {
 			return $this->getFallbackCountry();
 		return $data;
 	}
+
 	/**
 	 * Get a specif record
 	 * @param $key
@@ -141,7 +145,6 @@ class GeotFunctions {
 			return $this->userData->$key;
 		return false;
 	}
-
 
 	/**
 	 * Get country from database and return object like api

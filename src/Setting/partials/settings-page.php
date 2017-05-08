@@ -30,65 +30,45 @@ $countries 	= geot_countries();
 			<?php do_action( 'geot/settings_page/before' ); ?>
 
 			<tr valign="top" class="">
-				<th><h3><?php _e( 'Main settings:', $this->GeoTarget ); ?></h3></th>
+				<th><h3><?php _e( 'Main settings:', 'geot'); ?></h3></th>
 			</tr>
 			<tr valign="top" class="">
-				<th><label for="license"><?php _e( 'Enter your API key', $this->GeoTarget ); ?></label></th>
+				<th><label for="license"><?php _e( 'Enter your API key', 'geot'); ?></label></th>
 				<td colspan="3">
 					<label><input type="text" id="license" name="geot_settings[license]" value="<?php  echo $opts['license'];?>" class="api-keys <?php echo 'geot_license_' ; echo !empty($opts['license']) && get_option( 'geot_license_active' ) ? get_option( 'geot_license_active' ) :'';?>" /><button class="button-primary check-license">Check license</button>
-					<p class="help"><?php _e( 'Enter your api key in order to connect with the API and also get automatic updates', $this->GeoTarget ); ?></p>
+					<p class="help"><?php _e( 'Enter your api key in order to connect with the API and also get automatic updates', 'geot'); ?></p>
                     <?php if( isset($_GET['geot_message']) )
                         echo '<p style="color:red;">'.esc_attr($_GET['geot_message']).'</p>';?>
 				</td>
 			</tr>
 			<tr valign="top" class="">
-				<th><label for="api_secret"><?php _e( 'Enter your API secret', $this->GeoTarget ); ?></label></th>
+				<th><label for="api_secret"><?php _e( 'Enter your API secret', 'geot'); ?></label></th>
 				<td colspan="3">
 					<label><input type="password" id="api_secret" name="geot_settings[api_secret]" value="<?php  echo $opts['api_secret'];?>" class="api-keys" />
-					<p class="help"><?php _e( 'Enter your api secret', $this->GeoTarget ); ?></p>
+					<p class="help"><?php _e( 'Enter your api secret', 'geot'); ?></p>
 				</td>
 			</tr>
 			<tr valign="top" class="">
-				<th><label for=""><?php _e( 'Cache Mode', $this->GeoTarget ); ?></label></th>
+				<th><label for=""><?php _e( 'Cache Mode', 'geot'); ?></label></th>
 				<td colspan="3">
 					<label><input type="checkbox" id="" name="geot_settings[cache_mode]" value="1" <?php checked($opts['cache_mode'],'1');?>/>
-						<p class="help"><?php _e( 'Check this if you want to save the user location into PHP Sessions', $this->GeoTarget ); ?></p>
+						<p class="help"><?php _e( 'Check this if you want to save the user location into PHP Sessions', 'geot'); ?></p>
 				</td>
 			</tr>
 			<tr valign="top" class="">
-				<th><label for=""><?php _e( 'Debug Mode', $this->GeoTarget ); ?></label></th>
+				<th><label for=""><?php _e( 'Debug Mode', 'geot'); ?></label></th>
 				<td colspan="3">
 					<label><input type="checkbox" id="" name="geot_settings[debug_mode]" value="1" <?php checked($opts['debug_mode'],'1');?>/>
-						<p class="help"><?php _e( 'Check this if you want to print in the html code some debug info.', $this->GeoTarget ); ?></p>
+						<p class="help"><?php _e( 'Check this if you want to print in the html code some debug info.', 'geot'); ?></p>
 				</td>
 			</tr>
+
 			<tr valign="top" class="">
-				<th><label for="ajax_mode"><?php _e( 'Ajax Mode', $this->GeoTarget ); ?></label></th>
-				<td colspan="3">
-					<label><input type="checkbox" id="ajax_mode" name="geot_settings[ajax_mode]" value="1" <?php checked($opts['ajax_mode'],'1');?>/>
-						<p class="help"><?php _e( 'In Ajax mode, after page load an extra request is made to get all data and everything is updated with javascript. That makes the plugin compatible with any cache plugin. More info on: ', $this->GeoTarget ); ?><a href="https://timersys.com/geotargeting/docs/ajax-mode/">Ajax mode info</a></p>
-				</td>
-			</tr>
-			<tr valign="top" class="">
-				<th><label for="menu_integration"><?php _e( 'Disable Menu integration', $this->GeoTarget ); ?></label></th>
-				<td colspan="3">
-					<label><input type="checkbox" id="menu_integration" name="geot_settings[disable_menu_integration]" value="1" <?php checked($opts['disable_menu_integration'],'1');?>/>
-						<p class="help"><?php _e( 'Check this to remove geotargeting options from menus', $this->GeoTarget ); ?></p>
-				</td>
-			</tr>
-			<tr valign="top" class="">
-				<th><label for="widget_integration"><?php _e( 'Disable Widget Integration', $this->GeoTarget ); ?></label></th>
-				<td colspan="3">
-					<label><input type="checkbox" id="widget_integration" name="geot_settings[disable_widget_integration]" value="1" <?php checked($opts['disable_widget_integration'],'1');?>/>
-						<p class="help"><?php _e( 'Check this to remove geotargeting options from widgets', $this->GeoTarget ); ?></p>
-				</td>
-			</tr>
-			<tr valign="top" class="">
-				<th><label for="region"><?php _e( 'Fallback Country', $this->GeoTarget ); ?></label></th>
+				<th><label for="region"><?php _e( 'Fallback Country', 'geot'); ?></label></th>
 				<td colspan="3">
 
-					<select name="geot_settings[fallback_country]"  class="geot-chosen-select" data-placeholder="<?php _e('Type country name...', $this->GeoTarget );?>" >
-						<option value=""><?php _e( 'Choose One', $this->GeoTarget );?></option>
+					<select name="geot_settings[fallback_country]"  class="geot-chosen-select" data-placeholder="<?php _e('Type country name...', 'geot');?>" >
+						<option value=""><?php _e( 'Choose One', 'geot');?></option>
 						<?php
 						foreach ($countries as $c) {
 							?>
@@ -98,15 +78,15 @@ $countries 	= geot_countries();
 						?>
 					</select>
 
-					<p class="help"><?php _e( 'If the user IP is not detected plugin will fallback to this country', $this->GeoTarget ); ?></p>
+					<p class="help"><?php _e( 'If the user IP is not detected plugin will fallback to this country', 'geot' ); ?></p>
 				</td>
 
 			</tr>
 			<tr valign="top" class="">
-				<th><label for="bots"><?php _e( 'Bots Country', $this->GeoTarget ); ?></label></th>
+				<th><label for="bots"><?php _e( 'Bots Country', 'geot' ); ?></label></th>
 				<td colspan="3">
-					<select name="geot_settings[bots_country]"  class="geot-chosen-select" data-placeholder="<?php _e('Type country name...', $this->GeoTarget );?>" >
-						<option value=""><?php _e( 'Choose One', $this->GeoTarget );?></option>
+					<select name="geot_settings[bots_country]"  class="geot-chosen-select" data-placeholder="<?php _e('Type country name...', 'geot' );?>" >
+						<option value=""><?php _e( 'Choose One', 'geot' );?></option>
 						<?php
 						foreach ($countries as $c) {
 							?>
@@ -116,17 +96,17 @@ $countries 	= geot_countries();
 						?>
 					</select>
 
-					<p class="help"><?php _e( 'All bots / crawlers will be treated as the are from this country. More info in ', $this->GeoTarget ); ?><a href="https://timersys.com/geotargeting/docs/bots-seo/">Bots in Geotargeting</a></p>
+					<p class="help"><?php _e( 'All bots / crawlers will be treated as the are from this country. More info in ', 'geot' ); ?><a href="https://timersys.com/geotargeting/docs/bots-seo/">Bots in Geotargeting</a></p>
 				</td>
 			</tr>
 
 			<tr valign="top" class="">
-				<th><h3><?php _e( 'Countries:', $this->GeoTarget ); ?></h3></th>
+				<th><h3><?php _e( 'Countries:', 'geot' ); ?></h3></th>
 				<td colspan="3">
 				</td>
 			</tr>
 			<tr valign="top" class="">
-				<th><label for="region"><?php _e( 'Create new region', $this->GeoTarget ); ?></label></th>
+				<th><label for="region"><?php _e( 'Create new region', 'geot' ); ?></label></th>
 				<td colspan="3">
 				<?php
 
@@ -137,8 +117,8 @@ $countries 	= geot_countries();
 						<div class="region-group"  data-id="<?php echo $i;?>" >
 
 							<input type="text" placeholder="Enter region name" name="geot_settings[region][<?php echo $i;?>][name]" value="<?php echo !empty( $region['name'] )? esc_attr($region['name']): '' ; ?>"/>
-							<a href="#" class="remove-region"title="<?php _e( 'Remove Region', $this->GeoTarget );?>">-</a>
-							<select name="geot_settings[region][<?php echo $i;?>][countries][]" multiple class="geot-chosen-select" data-placeholder="<?php _e('Type country name...', $this->GeoTarget );?>" >
+							<a href="#" class="remove-region"title="<?php _e( 'Remove Region', 'geot' );?>">-</a>
+							<select name="geot_settings[region][<?php echo $i;?>][countries][]" multiple class="geot-chosen-select" data-placeholder="<?php _e('Type country name...', 'geot' );?>" >
 								<?php
 									foreach ($countries as $c) {
 										?>
@@ -152,17 +132,17 @@ $countries 	= geot_countries();
 					<?php }
 				}?>
 					<a href="#" class="add-region button">Add Region</a>
-					<p class="help"><?php _e( 'Add as many countries you need for each region', $this->GeoTarget ); ?></p>
+					<p class="help"><?php _e( 'Add as many countries you need for each region', 'geot' ); ?></p>
 				</td>
 
 			</tr>
 			<tr valign="top" class="">
-				<th><h3><?php _e( 'Cities:', $this->GeoTarget ); ?></h3></th>
+				<th><h3><?php _e( 'Cities:', 'geot' ); ?></h3></th>
 				<td colspan="3">
 				</td>
 			</tr>
 			<tr valign="top" class="">
-				<th><label for="region"><?php _e( 'Create new region', $this->GeoTarget ); ?></label></th>
+				<th><label for="region"><?php _e( 'Create new region', 'geot' ); ?></label></th>
 				<td colspan="3">
 				<?php
 
@@ -172,8 +152,8 @@ $countries 	= geot_countries();
 
 						<div class="city-region-group"  data-id="<?php echo $j;?>" >
 							<input type="text" placeholder="Enter region name" name="geot_settings[city_region][<?php echo $j;?>][name]" value="<?php echo !empty( $city_region['name'] )? esc_attr($city_region['name']): '' ; ?>"/>
-							<select name="geot_settings[city_region][<?php echo $j;?>][countries][]"  class="geot-chosen-select country_ajax" data-counter="<?php echo $j;?>" data-placeholder="<?php _e('Type country name...', $this->GeoTarget );?>" >
-								<option value=""><?php _e('Choose a Country', $this->GeoTarget );?></option>
+							<select name="geot_settings[city_region][<?php echo $j;?>][countries][]"  class="geot-chosen-select country_ajax" data-counter="<?php echo $j;?>" data-placeholder="<?php _e('Type country name...', 'geot' );?>" >
+								<option value=""><?php _e('Choose a Country', 'geot' );?></option>
 								<?php
 								foreach ($countries as $c) {
 									?>
@@ -182,8 +162,8 @@ $countries 	= geot_countries();
 								}
 								?>
 							</select>
-							<a href="#" class="remove-city-region"title="<?php _e( 'Remove Region', $this->GeoTarget );?>">-</a>
-							<select name="geot_settings[city_region][<?php echo $j;?>][cities][]" multiple class="geot-chosen-select cities_container" id="<?php echo 'cities'.$j;?>" data-placeholder="<?php _e('First choose a country', $this->GeoTarget );?>" >
+							<a href="#" class="remove-city-region"title="<?php _e( 'Remove Region', 'geot' );?>">-</a>
+							<select name="geot_settings[city_region][<?php echo $j;?>][cities][]" multiple class="geot-chosen-select cities_container" id="<?php echo 'cities'.$j;?>" data-placeholder="<?php _e('First choose a country', 'geot' );?>" >
 								<?php
 								if( !empty($city_region['countries'])) {
 									$cities = json_decode( geot_get_cities( $city_region['countries'][0] ) );
@@ -202,32 +182,33 @@ $countries 	= geot_countries();
 					<?php }
 				}?>
 					<a href="#" class="add-city-region button">Add City Region</a>
-					<p class="help"><?php _e( 'Add as many cities you need for each region', $this->GeoTarget ); ?></p>
+					<p class="help"><?php _e( 'Add as many cities you need for each region', 'geot' ); ?></p>
 				</td>
 
 			</tr>
 			<tr valign="top" class="">
-				<th><h3><?php _e( 'Uninstall:', $this->GeoTarget ); ?></h3></th>
+				<th><h3><?php _e( 'Uninstall:', 'geot' ); ?></h3></th>
 				<td colspan="3">
-					<p><?php _e( 'Check this if you want to <strong>delete all plugin data</strong> on uninstall' , $this->GeoTarget ); ?></p>
+					<p><?php _e( 'Check this if you want to <strong>delete all plugin data</strong> on uninstall' , 'geot' ); ?></p>
 				</td>
 			</tr>
+			<?php do_action( 'geot/settings_page/after' ); ?>
 			<tr valign="top" class="">
-				<th><label for=""><?php _e( 'Uninstall', $this->GeoTarget ); ?></label></th>
+				<th><label for=""><?php _e( 'Uninstall', 'geot' ); ?></label></th>
 				<td colspan="3">
 				        <input type="checkbox" id="" name="geot_settings[geot_uninstall]" value="1" <?php checked($opts['geot_uninstall'],'1');?>/>
-						<p class="help"><?php _e( 'Will delete all database records and plugin settings when you delete the plugin', $this->GeoTarget ); ?></p>
+						<p class="help"><?php _e( 'Will delete all database records and plugin settings when you delete the plugin', 'geot' ); ?></p>
 				</td>
 			</tr>
 
             <tr valign="top" class="">
-				<th><h3><?php _e( 'Export/import:', $this->GeoTarget ); ?></h3></th>
+				<th><h3><?php _e( 'Export/import:', 'geot' ); ?></h3></th>
 				<td colspan="3">
-					<p><?php _e( 'Export your setting or import them with a few clicks' , $this->GeoTarget ); ?></p>
+					<p><?php _e( 'Export your setting or import them with a few clicks' , 'geot' ); ?></p>
 				</td>
 			</tr>
 			<tr valign="top" class="">
-				<th><label for=""><?php _e( 'Export settings', $this->GeoTarget ); ?></label></th>
+				<th><label for=""><?php _e( 'Export settings', 'geot' ); ?></label></th>
 				<td colspan="3">
                     <div id="export_href">
 
@@ -240,15 +221,15 @@ $countries 	= geot_countries();
 				</td>
 			</tr>
 			<tr valign="top" class="">
-				<th><label for=""><?php _e( 'Import settings', $this->GeoTarget ); ?></label></th>
+				<th><label for=""><?php _e( 'Import settings', 'geot' ); ?></label></th>
 				<td colspan="3">
                         Select image to upload:
                         <input type="file" name="geot_settings_json" id="fileToUpload"><br />
                         <input type="submit" value="Import" name="submit">
 				</td>
 			</tr>
-			<?php do_action( 'geot/settings_page/after' ); ?>
-			<tr><td><input type="submit" class="button-primary" value="<?php _e( 'Save settings', $this->GeoTarget );?>"/></td>
+
+			<tr><td><input type="submit" class="button-primary" value="<?php _e( 'Save settings', 'geot' );?>"/></td>
 			<?php wp_nonce_field('geot_save_settings','geot_nonce'); ?>
 		</table>
 	</form>

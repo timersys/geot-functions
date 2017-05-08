@@ -4,9 +4,38 @@ namespace GeotFunctions\Setting;
 
 class GeotSettings {
 
-	public static function init() {
-		add_action( 'admin_menu' , [ self::class, 'add_settings_menu' ]);
-		add_action( 'admin_init' , [ self::class, 'save_settings' ]);
+	public function __construct() {
+		add_action( 'admin_menu' , [ $this, 'add_settings_menu' ],8);
+		add_action( 'admin_init' , [ $this, 'save_settings' ]);
+		add_action( 'admin_init' , [ $this, 'check_license' ],15);
+	}
+
+	/**
+	 * Init the class
+	 * @return GeotSettings
+	 */
+	public static function init(){
+		return new self();
+	}
+
+	/**
+	 * Check for license or show notice
+	 */
+	public function check_license(){
+		$opts = geot_settings();
+		if( empty($opts['license']) || empty($opts['api_secret']))
+			add_action( 'admin_notices' , [ $this, 'license_missing_notice'], 10 );
+	}
+
+	/**
+	 * License missing message
+	 */
+	public function license_missing_notice(){
+		?><div class="notice notice-error">
+		<h3>GeotargetingPro</h3>
+		<p><?php __( printf( 'In order to to use the plugin you need to enter the api keys in the <a href="%1$s">settings page</a>.', admin_url('admin.php?page=geot-settings'), 'geot' ) );?></p>
+		</div>
+		<?php
 	}
 	/**
 	 * Add menu for Settings page of the plugin
@@ -49,9 +78,6 @@ class GeotSettings {
 	 * Debug Data page
 	 */
 	public function debug_data_page() {
-		include dirname( __FILE__ )  . '/partials/ip-test.php';
+		include dirname( __FILE__ )  . '/partials/debug-data.php';
 	}
 }
-
-GeotSettings::init();
-error_log('called')

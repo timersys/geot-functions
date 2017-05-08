@@ -20,6 +20,19 @@ function toArray( $value = "" ) {
 }
 
 /**
+ * Convert a one item per line textarea into arrays
+ *
+ * @param  [type] $string [description]
+ *
+ * @return array [type]         [description]
+ */
+function textarea_to_array( $string ) {
+	if( ! strlen( trim( $string ) ) )
+		return array();
+	return toArray ( explode( PHP_EOL, $string ) );
+}
+
+/**
  * For backward compatibility we need to use plurals on the keys
  * as they were saved like that on postmeta
  *

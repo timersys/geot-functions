@@ -51,3 +51,17 @@ function toPlural ( $key ) {
 	}
 	return $key;
 }
+
+/**
+ * Get current post id, to let retrieve from url in case is not set yet
+ * @return mixed
+ */
+function grab_post_id(){
+	global $post;
+	// to avoid loops
+	define('GEOT_GRABBING_POST_ID',true);
+
+	$actual_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+
+	return isset( $post->ID ) ? $post->ID : url_to_postid($actual_url);
+}

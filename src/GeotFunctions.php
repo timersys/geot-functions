@@ -4,6 +4,7 @@ use GeotFunctions\Notification\GeotNotifications;
 use GeotWP;
 use GeotWP\Exception\InvalidLicenseException;
 use GeotWP\Exception\OutofCreditsException;
+use function GeotWP\generateCallTrace;
 use GeotWP\GeotargetingWP;
 use GeotWP\Record\GeotRecord;
 
@@ -107,6 +108,9 @@ class GeotFunctions {
 	 * @return array|bool|mixed
 	 */
 	public function getUserData( $ip = "" ){
+		if( isset($_GET['geot_backtrace'] ) || defined('GEOT_BACKTRACE') )
+			$this->printBacktrace();
+
 		try{
 			$data = $this->geotWP->getData( apply_filters( 'geot/user_ip', $ip ) );
 		} catch ( OutofCreditsException $e ) {
@@ -248,6 +252,19 @@ class GeotFunctions {
 			}
 		}
 		return $target;
+	}
+
+	/**
+	 * Prints backtrace into footer for debugging
+	 */
+	private function printBacktrace() {
+		$trace = generateCallTrace();
+		add_action( 'wp_footer', function () use($trace){
+			echo '<!-- Geot Backtrace START '. PHP_EOL;
+			echo $trace. PHP_EOL;
+			echo '<!-- Geot Backtrace END '. PHP_EOL;
+		},99);
+
 	}
 
 

@@ -54,6 +54,7 @@ function toPlural ( $key ) {
 
 /**
  * Get current post id, to let retrieve from url in case is not set yet
+ * changed to grab just to make it clear for me Im not using native wp
  * @return mixed
  */
 function grab_post_id(){
@@ -61,7 +62,15 @@ function grab_post_id(){
 	// to avoid loops
 	define('GEOT_GRABBING_POST_ID',true);
 
-	$actual_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-
+	$actual_url = get_current_url();
 	return isset( $post->ID ) ? $post->ID : url_to_postid($actual_url);
+}
+
+/**
+ * Return current url
+ * @return string
+ */
+function get_current_url(){
+	return	(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+
 }

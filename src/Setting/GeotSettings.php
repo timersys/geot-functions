@@ -4,18 +4,62 @@ namespace GeotFunctions\Setting;
 
 class GeotSettings {
 
+	/**
+	 * Plugin Instance
+	 * @since 1.0.0
+	 * @var The Fbl plugin instance
+	 */
+	protected static $_instance = null;
+
+	/**
+	 * Main plugin_name Instance
+	 *
+	 * Ensures only one instance of WSI is loaded or can be loaded.
+	 *
+	 * @since 1.0.0
+	 * @static
+	 * @see Geotr()
+	 * @return plugin_name - Main instance
+	 */
+	public static function init() {
+		if ( is_null( self::$_instance ) ) {
+			self::$_instance = new self();
+		}
+		return self::$_instance;
+	}
+
+	/**
+	 * Cloning is forbidden.
+	 * @since 1.0.0
+	 */
+	public function __clone() {
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
+	}
+
+	/**
+	 * Unserializing instances of this class is forbidden.
+	 * @since 1.0.0
+	 */
+	public function __wakeup() {
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
+	}
+
+	/**
+	 * Auto-load in-accessible properties on demand.
+	 * @param mixed $key
+	 * @since 1.0.0
+	 * @return mixed
+	 */
+	public function __get( $key ) {
+		if ( in_array( $key, array( 'payment_gateways', 'shipping', 'mailer', 'checkout' ) ) ) {
+			return $this->$key();
+		}
+	}
+
 	public function __construct() {
 		add_action( 'admin_menu' , [ $this, 'add_settings_menu' ],8);
 		add_action( 'admin_init' , [ $this, 'save_settings' ]);
 		add_action( 'admin_init' , [ $this, 'check_license' ],15);
-	}
-
-	/**
-	 * Init the class
-	 * @return GeotSettings
-	 */
-	public static function init(){
-		return new self();
 	}
 
 	/**

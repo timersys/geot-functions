@@ -4,9 +4,16 @@ use GeotFunctions\Notification\GeotNotifications;
 use GeotWP;
 use GeotWP\Exception\InvalidLicenseException;
 use GeotWP\Exception\OutofCreditsException;
+use function GeotWP\generateCallTrace;
 use GeotWP\GeotargetingWP;
 use GeotWP\Record\GeotRecord;
 
+/**
+ * Class GeotFunctions
+ * Bring all wordpress needed functions to make GeotargetingWP work
+ * @version 1.0.2
+ * @package GeotFunctions
+ */
 class GeotFunctions {
 	// Hold the class instance.
 	private static $_instance = null;
@@ -98,6 +105,9 @@ class GeotFunctions {
 
 		$this->userData = $this->getUserData();
 
+		if( $this->userData instanceof GeotRecord)
+			$this->createRocketCookies($this->userData);
+
 		return  apply_filters('geot/user_data', $this->userData);
 	}
 
@@ -107,6 +117,9 @@ class GeotFunctions {
 	 * @return array|bool|mixed
 	 */
 	public function getUserData( $ip = "" ){
+		if( isset($_GET['geot_backtrace'] ) || defined('GEOT_BACKTRACE') )
+			$this->printBacktrace();
+
 		try{
 			$data = $this->geotWP->getData( apply_filters( 'geot/user_ip', $ip ) );
 		} catch ( OutofCreditsException $e ) {
@@ -250,5 +263,30 @@ class GeotFunctions {
 		return $target;
 	}
 
+	/**
+	 * Prints backtrace into footer for debugging
+	 */
+	private function printBacktrace() {
+		$trace = generateCallTrace();
+		add_action( 'wp_footer', function () use($trace){
+			echo '<!-- Geot Backtrace START '. PHP_EOL;
+			echo $trace. PHP_EOL;
+			echo '<!-- Geot Backtrace END '. PHP_EOL;
+		},99);
+
+	}
+
+	/**
+	 * Create cookies so WPRocket plugin
+	 * can generate different page caches
+	 * @param GeotRecord $record
+	 */
+	private function createRocketCookies( GeotRecord $record) {
+		if( apply_filters( 'geot/disable_cookies', false) )
+			return;
+		setcookie( 'geot_rocket_country', $record->country->iso_code, 0, '/' );
+		setcookie( 'geot_rocket_state', $record->state->iso_code, 0, '/' );
+		setcookie( 'geot_rocket_city', $record->city->name, 0, '/' );
+	}
 
 }

@@ -8,6 +8,12 @@ use function GeotWP\generateCallTrace;
 use GeotWP\GeotargetingWP;
 use GeotWP\Record\GeotRecord;
 
+/**
+ * Class GeotFunctions
+ * Bring all wordpress needed functions to make GeotargetingWP work
+ * @version 1.0.2
+ * @package GeotFunctions
+ */
 class GeotFunctions {
 	// Hold the class instance.
 	private static $_instance = null;

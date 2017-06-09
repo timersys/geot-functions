@@ -57,8 +57,10 @@ class GeotFunctions {
 		    && ! empty( $this->opts['cache_mode'] )
 		    && ! apply_filters('geot/disable_setUserData', false)
 		    && ! defined('DOING_AJAX')
-		)
+		) {
 			add_action('init' , array($this,'setUserData' ) );
+			add_action('init' , array($this,'createRocketCookies' , 15) );
+		}
 	}
 
 	/**
@@ -104,9 +106,6 @@ class GeotFunctions {
 			return apply_filters('geot/user_data', $this->userData );
 
 		$this->userData = $this->getUserData();
-
-		if( $this->userData instanceof GeotRecord)
-			$this->createRocketCookies($this->userData);
 
 		return  apply_filters('geot/user_data', $this->userData);
 	}
@@ -279,14 +278,18 @@ class GeotFunctions {
 	/**
 	 * Create cookies so WPRocket plugin
 	 * can generate different page caches
-	 * @param GeotRecord $record
 	 */
-	private function createRocketCookies( GeotRecord $record) {
+	public function createRocketCookies() {
+
 		if( apply_filters( 'geot/disable_cookies', false) )
 			return;
-		setcookie( 'geot_rocket_country', $record->country->iso_code, 0, '/' );
-		setcookie( 'geot_rocket_state', $record->state->iso_code, 0, '/' );
-		setcookie( 'geot_rocket_city', $record->city->name, 0, '/' );
+
+		if( ! $this->userData instanceof GeotRecord)
+			return;
+
+		setcookie( 'geot_rocket_country', $this->userData->country->iso_code, 0, '/' );
+		setcookie( 'geot_rocket_state', $this->userData->state->iso_code, 0, '/' );
+		setcookie( 'geot_rocket_city', $this->userData->city->name, 0, '/' );
 	}
 
 }

@@ -76,7 +76,7 @@ class GeotSettings {
 	 */
 	public function license_missing_notice(){
 		?><div class="notice notice-error">
-		<h3>GeotargetingPro</h3>
+		<h3>GeotargetingWP</h3>
 		<p><?php __( printf( 'In order to to use the plugin you need to enter the api keys in the <a href="%1$s">settings page</a>.', admin_url('admin.php?page=geot-settings'), 'geot' ) );?></p>
 		</div>
 		<?php

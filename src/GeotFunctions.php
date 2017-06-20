@@ -45,9 +45,6 @@ class GeotFunctions {
 		$this->opts = geot_settings();
 
 		$args = apply_filters('geotWP/args', $this->opts );
-		// don't go further without license 
-		if( empty( $this->opts['license'] ) )
-			return;
 
 		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );
 		// If we have cache mode turned on, we need to calculate user location before

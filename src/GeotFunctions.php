@@ -2,6 +2,7 @@
 use GeotFunctions\Email\GeotEmails;
 use GeotFunctions\Notification\GeotNotifications;
 use GeotWP;
+use GeotWP\Exception\GeotException;
 use GeotWP\Exception\InvalidLicenseException;
 use GeotWP\Exception\OutofCreditsException;
 use function GeotWP\generateCallTrace;
@@ -127,6 +128,9 @@ class GeotFunctions {
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		} catch ( \Exception $e ) {
+			GeotNotifications::notify($e->getMessage());
+			return $this->getFallbackCountry();
+		} catch ( GeotException $e ) {
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		}

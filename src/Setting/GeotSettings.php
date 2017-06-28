@@ -60,6 +60,38 @@ class GeotSettings {
 		add_action( 'admin_menu' , [ $this, 'add_settings_menu' ],8);
 		add_action( 'admin_init' , [ $this, 'save_settings' ]);
 		add_action( 'admin_init' , [ $this, 'check_license' ],15);
+		add_action( 'admin_enqueue_scripts' , [ $this, 'enqueue_styles' ]);
+		add_action( 'admin_enqueue_scripts' , [ $this, 'enqueue_scripts' ]);
+		$this->plugin_url = plugin_dir_url(GEOTROOT_PLUGIN_FILE) .'vendor/timersys/geot-functions/src/Setting/';
+	}
+	/**
+	 * Register the stylesheets for the Dashboard.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_styles() {
+		global $pagenow;
+
+		if( 'post.php' == $pagenow ) {
+			wp_enqueue_style('wp-jquery-ui-dialog');
+		}
+		wp_enqueue_style( 'geot-chosen', $this->plugin_url . 'css/chosen.min.css', array(), null, 'all' );
+		wp_enqueue_style( 'geot', $this->plugin_url . 'css/geotarget.css', array(), null, 'all' );
+
+	}
+
+	/**
+	 * Register the JavaScript for the dashboard.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_scripts() {
+
+		wp_enqueue_script( 'geot-chosen', $this->plugin_url . 'js/chosen.jquery.min.js', array( 'jquery' ), null, false );
+		wp_enqueue_script( 'geot', $this->plugin_url . 'js/geotargeting-admin.js', array( 'jquery','geot-chosen','jquery-ui-dialog'), null, false );
+		wp_localize_script(  'geot', 'geot', array(
+			'ajax_url'  => admin_url('admin-ajax.php')
+		));
 	}
 
 	/**

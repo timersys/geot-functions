@@ -74,3 +74,11 @@ function get_current_url(){
 	return	(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
 }
+
+/**
+ * Return maxmind db path
+ * @return mixed
+ */
+function maxmind_db(){
+	return apply_filters( 'geot/mmdb_path', WP_CONTENT_DIR . '/uploads/geot_plugin/mmdb/GeoLite2-City.mmdb' );
+}

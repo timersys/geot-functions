@@ -44,7 +44,7 @@ class GeotFunctions {
 	private function __construct( ) {
 
 		$this->opts = geot_settings();
-
+		$this->opts['maxmind_db'] = maxmind_db();
 		$args = apply_filters('geotWP/args', $this->opts );
 
 		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );

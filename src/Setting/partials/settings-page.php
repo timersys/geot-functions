@@ -5,7 +5,9 @@
  */
 
 
-$opts = geot_settings();
+use function GeotFunctions\maxmind_db;
+
+$opts     = geot_settings();
 $defaults = [
 	'license'                   => '',
 	'api_secret'                => '',
@@ -16,9 +18,11 @@ $defaults = [
 	'debug_mode'                => '0',
 	'disable_menu_integration'  => '0',
 	'disable_widget_integration'=> '0',
+	'maxmind'                   => '0',
+	'ip2location'               => '0',
 	'geot_uninstall'            => '',
 ];
-$opts = wp_parse_args( $opts, apply_filters ('geot/default_settings', $defaults ) );
+$opts     = wp_parse_args( $opts, apply_filters ('geot/default_settings', $defaults ) );
 
 $countries 	= geot_countries();
 
@@ -48,6 +52,15 @@ $countries 	= geot_countries();
 					<p class="help"><?php _e( 'Enter your api secret', 'geot'); ?></p>
 				</td>
 			</tr>
+			<?php if( file_exists(maxmind_db())):?>
+				<tr valign="top" class="">
+					<th><label for=""><?php _e( 'Enable Maxmind Database', 'geot'); ?></label></th>
+					<td colspan="3">
+						<label><input type="checkbox" id="" name="geot_settings[maxmind]" value="1" <?php checked($opts['maxmind'],'1');?>/>
+							<p class="help"><?php _e( 'Check this if you want to use the database located on:', 'geot'); echo ' ' . maxmind_db();?></p>
+					</td>
+				</tr>
+			<?php endif;?>
 			<tr valign="top" class="">
 				<th><label for=""><?php _e( 'Cache Mode', 'geot'); ?></label></th>
 				<td colspan="3">

@@ -171,7 +171,7 @@ function geot_user_country_region( $default = '' ) {
 
 	$user_regions = array();
 	foreach( $regions as $region )  {
-		if( in_array( $country_code, $region['countries'] ) )
+		if( isset($region['countries']) && in_array( $country_code, $region['countries'] ) )
 			$user_regions[] = $region['name'];
 	}
 

@@ -46,7 +46,7 @@ class GeotFunctions {
 		$this->opts = geot_settings();
 		$this->opts['maxmind_db'] = maxmind_db();
 		$args = apply_filters('geotWP/args', $this->opts );
-
+		require_once dirname(dirname(__FILE__)).'/vendor/autoload.php';
 		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );
 		// If we have cache mode turned on, we need to calculate user location before
 		// anything gets printed

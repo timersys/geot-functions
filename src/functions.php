@@ -82,3 +82,11 @@ function get_current_url(){
 function maxmind_db(){
 	return apply_filters( 'geot/mmdb_path', WP_CONTENT_DIR . '/uploads/geot_plugin/GeoLite2-City.mmdb' );
 }
+
+/**
+ * Return IP2LOCATION db path
+ * @return mixed
+ */
+function ip2location_db(){
+	return apply_filters( 'geot/ip2location_path', WP_CONTENT_DIR . '/uploads/geot_plugin/IP2LOCATION.BIN' );
+}

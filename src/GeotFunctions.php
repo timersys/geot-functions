@@ -15,7 +15,7 @@ use GeotWP\Record\GeotRecord;
  * @version 1.0.2
  * @package GeotFunctions
  */
-class GeotFunctions {
+class GeotFunctions extends GeotBase {
 	// Hold the class instance.
 	private static $_instance = null;
 
@@ -41,12 +41,16 @@ class GeotFunctions {
 	 *
 	 * @since    1.0.0
 	 */
-	private function __construct( ) {
+	public function __construct( ) {
+
+		parent::__construct();
 
 		$this->opts = geot_settings();
 		$this->opts['maxmind_db'] = maxmind_db();
+		$this->opts['ip2location_db'] = ip2location_db();
+		$this->opts['ip2location_method'] = apply_filters('geot/ip2location_method', '100001');//100001 FILES IO MEMORY_CACHE = 100002 SHARED_MEMORY = 100003;
 		$args = apply_filters('geotWP/args', $this->opts );
-		require_once dirname(dirname(__FILE__)).'/vendor/autoload.php';
+
 		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );
 		// If we have cache mode turned on, we need to calculate user location before
 		// anything gets printed

@@ -5,6 +5,7 @@
  */
 
 
+use function GeotFunctions\ip2location_db;
 use function GeotFunctions\maxmind_db;
 
 $opts     = geot_settings();
@@ -58,6 +59,16 @@ $countries 	= geot_countries();
 					<td colspan="3">
 						<label><input type="checkbox" id="" name="geot_settings[maxmind]" value="1" <?php checked($opts['maxmind'],'1');?>/>
 							<p class="help"><?php _e( 'Check this if you want to use the database located on:', 'geot'); echo ' ' . maxmind_db();?></p>
+					</td>
+				</tr>
+			<?php endif;?>
+
+			<?php if( file_exists(ip2location_db())):?>
+				<tr valign="top" class="">
+					<th><label for=""><?php _e( 'Enable IP2Location Database', 'geot'); ?></label></th>
+					<td colspan="3">
+						<label><input type="checkbox" id="" name="geot_settings[ip2location]" value="1" <?php checked($opts['ip2location'],'1');?>/>
+							<p class="help"><?php _e( 'Check this if you want to use the database located on:', 'geot'); echo ' ' . ip2location_db();?></p>
 					</td>
 				</tr>
 			<?php endif;?>

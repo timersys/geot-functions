@@ -80,5 +80,5 @@ function get_current_url(){
  * @return mixed
  */
 function maxmind_db(){
-	return apply_filters( 'geot/mmdb_path', WP_CONTENT_DIR . '/uploads/geot_plugin/mmdb/GeoLite2-City.mmdb' );
+	return apply_filters( 'geot/mmdb_path', WP_CONTENT_DIR . '/uploads/geot_plugin/GeoLite2-City.mmdb' );
 }

@@ -3,6 +3,7 @@ namespace GeotFunctions\Setting;
 
 
 use GeotFunctions\GeotBase;
+use GeotWP\GeotargetingWP;
 
 class GeotSettings extends GeotBase {
 
@@ -63,8 +64,10 @@ class GeotSettings extends GeotBase {
 		add_action( 'admin_menu' , [ $this, 'add_settings_menu' ],8);
 		add_action( 'admin_init' , [ $this, 'save_settings' ]);
 		add_action( 'admin_init' , [ $this, 'check_license' ],15);
+		add_action( 'wp_ajax_geot_check_license' , [ $this, 'ajax_check_license'] );
 		add_action( 'admin_enqueue_scripts' , [ $this, 'enqueue_styles' ]);
 		add_action( 'admin_enqueue_scripts' , [ $this, 'enqueue_scripts' ]);
+		add_action( 'wp_ajax_geot_cities_by_country' , [ $this, 'geot_cities_by_country' ]);
 		$this->plugin_url = plugin_dir_url(GEOTROOT_PLUGIN_FILE) .'vendor/timersys/geot-functions/src/Setting/';
 	}
 	/**
@@ -104,6 +107,44 @@ class GeotSettings extends GeotBase {
 		$opts = geot_settings();
 		if( empty($opts['license']) || empty($opts['api_secret']))
 			add_action( 'admin_notices' , [ $this, 'license_missing_notice'], 10 );
+	}
+
+	/**
+	 * Ajax callback for check license button
+	 */
+	public function ajax_check_license(){
+		if( empty($_POST['license']) ){
+			echo json_encode( ['error' => 'Please enter the license'] );
+			die();
+		}
+		$license = esc_attr($_POST['license']);
+		$response = $this->is_valid_license($license);
+
+		$opts = geot_settings();
+		$opts['license'] = $license;
+
+		update_option( 'geot_settings', $opts );
+		echo $response; // send result to javascript
+		die();
+	}
+
+	/**
+	 * Call the API and update if valid license
+	 * Return original response for later use
+	 * @param $license
+	 *
+	 * @return mixed
+	 */
+	function is_valid_license($license){
+		$response = GeotargetingWP::checkLicense($license);
+		$result = json_decode( $response );
+		// update license
+		if( isset( $result->success ) ) {
+			update_option('geot_license_active', 'valid');
+		} else {
+			delete_option('geot_license_active');
+		}
+		return $response;
 	}
 
 	/**
@@ -149,8 +190,35 @@ class GeotSettings extends GeotBase {
 				$settings = json_decode($file,true);
 
 			}
+
+			// update license field
+			if( !empty($settings['license'])){
+				$license = esc_attr($settings['license']);
+				$this->is_valid_license($license);
+			}
 			update_option( 'geot_settings' ,  $settings);
 		}
+	}
+
+	/*
+	 * Get a country code and return cities
+	 */
+	public function geot_cities_by_country(){
+		global $wpdb;
+
+		if( empty($_POST['country']))
+			die();
+
+		$cities =  GeotargetingWP::getCities($_POST['country']);
+
+		if( !empty( $cities ) ){
+			$cities = json_decode( $cities );
+			foreach( $cities as $c ) {
+				echo '<option value="'.strtolower($c->city).'">'.$c->city.'</option>';
+			}
+		}
+
+		die();
 	}
 
 	/**

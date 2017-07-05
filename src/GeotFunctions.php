@@ -4,6 +4,7 @@ use GeotFunctions\Notification\GeotNotifications;
 use GeotWP;
 use GeotWP\Exception\GeotException;
 use GeotWP\Exception\InvalidLicenseException;
+use GeotWP\Exception\InvalidSubscriptionException;
 use GeotWP\Exception\OutofCreditsException;
 use function GeotWP\generateCallTrace;
 use GeotWP\GeotargetingWP;
@@ -46,9 +47,7 @@ class GeotFunctions extends GeotBase {
 		parent::__construct();
 
 		$this->opts = geot_settings();
-		$this->opts['maxmind_db'] = maxmind_db();
-		$this->opts['ip2location_db'] = ip2location_db();
-		$this->opts['ip2location_method'] = apply_filters('geot/ip2location_method', '100001');//100001 FILES IO MEMORY_CACHE = 100002 SHARED_MEMORY = 100003;
+		$this->extra_opts();
 		$args = apply_filters('geotWP/args', $this->opts );
 
 		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );
@@ -61,7 +60,7 @@ class GeotFunctions extends GeotBase {
 		    && ! defined('DOING_AJAX')
 		) {
 			add_action('init' , array($this,'setUserData' ) );
-			add_action('init' , array($this,'createRocketCookies' , 15) );
+			add_action('init' , array($this,'createRocketCookies') , 15 );
 		}
 	}
 
@@ -122,19 +121,23 @@ class GeotFunctions extends GeotBase {
 			$this->printBacktrace();
 
 		try{
+			$this->check_active_user();
 			$data = $this->geotWP->getData( apply_filters( 'geot/user_ip', $ip ) );
 		} catch ( OutofCreditsException $e ) {
 			GeotEmails::OutOfQueriesException();
+			GeotNotifications::notify($e->getMessage());
+			return $this->getFallbackCountry();
+		} catch ( InvalidSubscriptionException $e ) {
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		} catch ( InvalidLicenseException $e ) {
 			GeotEmails::AuthenticationException();
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
-		} catch ( \Exception $e ) {
+		} catch ( GeotException $e ) {
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
-		} catch ( GeotException $e ) {
+		} catch ( \Exception $e ) {
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		}
@@ -295,6 +298,43 @@ class GeotFunctions extends GeotBase {
 		setcookie( 'geot_rocket_country', $this->userData->country->iso_code, 0, '/' );
 		setcookie( 'geot_rocket_state', $this->userData->state->iso_code, 0, '/' );
 		setcookie( 'geot_rocket_city', $this->userData->city->name, 0, '/' );
+	}
+
+	/**
+	 * Simple set some extra opts to pass to Geotargeting WP
+	 */
+	private function extra_opts() {
+		$this->opts['maxmind_db'] = maxmind_db();
+		$this->opts['ip2location_db'] = ip2location_db();
+		$this->opts['ip2location_method'] = apply_filters('geot/ip2location_method', '100001');//100001 FILES IO MEMORY_CACHE = 100002 SHARED_MEMORY = 100003;
+	}
+
+	/**
+	 * Check if user has active subscription
+	 * @return bool
+	 * @throws InvalidLicenseException
+	 * @throws InvalidSubscriptionException
+	 */
+	private function check_active_user() {
+
+		if( (!isset( $this->opts['maxmind'] ) || $this->opts['maxmind'] == '0' ) && ( !isset( $this->opts['ip2location'] ) || $this->opts['ip2location'] == '0') )
+			return true;
+
+		if( empty($this->opts['license']) )
+			throw new InvalidLicenseException(json_encode(['error'=>'Missing or invalid license']));
+
+		if ( false === ( $active_user = get_transient( 'geot_active_user' ) ) ) {
+			// It wasn't there, so regenerate the data and save the transient
+			$active_user = GeotargetingWP::checkSubscription($this->opts['license']);
+			$result = json_decode( $active_user );
+			if( ! isset( $result->success ) )
+				throw new InvalidSubscriptionException( json_encode( [ 'error' => 'Subscription not active' ] ) );
+
+			set_transient( 'geot_active_user', true, DAY_IN_SECONDS );
+			return true;
+		}
+
+		return $active_user;
 	}
 
 }

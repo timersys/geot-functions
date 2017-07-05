@@ -24,7 +24,7 @@ class GeotUpdates {
 	public function __construct( $_plugin_file, $_api_data = null ) {
 
 		global $geot_plugin_data;
-		parent::__construct();
+	
 		$this->api_url     = GeotargetingWP::api_url() .'plugins/';
 		$this->api_data    = $_api_data;
 		$this->name        = plugin_basename( $_plugin_file );

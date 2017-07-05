@@ -43,9 +43,7 @@ class GeotFunctions {
 	 * @since    1.0.0
 	 */
 	public function __construct( ) {
-
-		parent::__construct();
-
+		
 		$this->opts = geot_settings();
 		$this->extra_opts();
 		$args = apply_filters('geotWP/args', $this->opts );

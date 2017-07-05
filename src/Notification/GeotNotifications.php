@@ -17,7 +17,7 @@ class GeotNotifications {
 						GeotargetingWP Error: '.esc_html($error->error).'<br/>
 						<small>This message it\'s only visible to admins</small></div>';
 				self::add_style();
-			});
+			},99);
 	}
 	public static function add_style(){
 		?>

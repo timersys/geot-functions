@@ -2,7 +2,7 @@
 namespace GeotFunctions;
 use GeotWP\GeotargetingWP;
 
-class GeotUpdates extends GeotBase {
+class GeotUpdates {
 
 	private $api_url     = '';
 	private $api_data    = array();

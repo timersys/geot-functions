@@ -16,7 +16,7 @@ use GeotWP\Record\GeotRecord;
  * @version 1.0.2
  * @package GeotFunctions
  */
-class GeotFunctions extends GeotBase {
+class GeotFunctions {
 	// Hold the class instance.
 	private static $_instance = null;
 

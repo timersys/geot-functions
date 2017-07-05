@@ -1,11 +1,9 @@
 <?php
 namespace GeotFunctions\Setting;
 
-
-use GeotFunctions\GeotBase;
 use GeotWP\GeotargetingWP;
 
-class GeotSettings extends GeotBase {
+class GeotSettings {
 
 	/**
 	 * Plugin Instance

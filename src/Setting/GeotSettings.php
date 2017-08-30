@@ -161,9 +161,9 @@ class GeotSettings {
 	 */
 	public function add_settings_menu() {
 
-		add_menu_page('GeoTargetingWP', 'GeoTargetingWP', 'manage_options', 'geot-settings', array($this, 'settings_page'), 'dashicons-admin-site' );
-		add_submenu_page( 'geot-settings', 'Settings', 'Settings', 'manage_options', 'geot-settings',array($this, 'settings_page') );
-		add_submenu_page( 'geot-settings', 'Debug data', 'Debug data', 'manage_options', 'geot-debug-data',array($this, 'debug_data_page') );
+		add_menu_page('GeoTargetingWP', 'GeoTargetingWP', apply_filters( 'geot/settings_page_role', 'manage_options'), 'geot-settings', array($this, 'settings_page'), 'dashicons-admin-site' );
+		add_submenu_page( 'geot-settings', 'Settings', 'Settings', apply_filters( 'geot/settings_page_role', 'manage_options'), 'geot-settings',array($this, 'settings_page') );
+		add_submenu_page( 'geot-settings', 'Debug data', 'Debug data', apply_filters( 'geot/settings_page_role', 'manage_options'), 'geot-debug-data',array($this, 'debug_data_page') );
 	}
 
 	/**

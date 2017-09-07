@@ -255,6 +255,18 @@ function geot_target_state( $state = '', $exclude = '') {
 }
 
 /**
+ * Main function that return is current user target the given state or not
+ *
+ * @param string $zip single state or comma separated list of states
+ * @param string $exclude
+ *
+ * @return bool
+ */
+function geot_target_zip( $zip = '', $exclude = '') {
+	return geot_target($zip, $exclude, '', '', 'zip');
+}
+
+/**
  * Grab geot settings
  * @return mixed|void
  */

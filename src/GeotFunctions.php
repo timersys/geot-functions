@@ -242,6 +242,10 @@ class GeotFunctions {
 
 		//set target to false
 		$target     = false;
+		// zip it's really a city property so it's custom
+		if( $key == 'zip' )
+			return $this->targetZip($places, $exclude_places);
+
 		$user_place = $this->get( $key );
 		if ( ! $user_place ) {
 			return apply_filters( 'geot/target_' . $key . '/return_on_user_null', false );
@@ -335,4 +339,38 @@ class GeotFunctions {
 		return $active_user;
 	}
 
+	/**
+	 * Target by ZIP
+	 * @param $places
+	 * @param $exclude_places
+	 *
+	 * @return bool
+	 */
+	private function targetZip($places, $exclude_places){
+		$target = false;
+		$user_place = $this->get( 'city' );
+		if ( ! $user_place ) {
+			return apply_filters( 'geot/target_zip/return_on_user_null', false );
+		}
+
+		if ( count( $places ) > 0 ) {
+			foreach ( $places as $zip ) {
+				if ( strtolower( $user_place->zip ) == strtolower( $zip ) ) {
+					$target = true;
+				}
+			}
+		} else {
+			// If we don't have places to target return true
+			$target = true;
+		}
+
+		if ( count( $exclude_places ) > 0 ) {
+			foreach ( $exclude_places as $ezip ) {
+				if ( strtolower( $user_place->zip ) == strtolower( $ezip ) ) {
+					$target = false;
+				}
+			}
+		}
+		return $target;
+	}
 }

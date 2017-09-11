@@ -119,11 +119,11 @@ function geot_location() {
 }
 
 /**
- * [geot_timezone]
- * @return string timezone
+ * [geot_time_zone]
+ * @return string time_zone
  */
-function geot_timezone( ) {
-	return geot_get( 'geolocation' )->timezone;
+function geot_time_zone( ) {
+	return geot_get( 'geolocation' )->time_zone;
 }
 /**
  * Accuracy radius, where higher means less accurate

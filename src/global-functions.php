@@ -119,6 +119,35 @@ function geot_location() {
 }
 
 /**
+ * [geot_timezone]
+ * @return string timezone
+ */
+function geot_timezone( ) {
+	return geot_get( 'geolocation' )->timezone;
+}
+/**
+ * Accuracy radius, where higher means less accurate
+ * [geot_radius]
+ * @return string radius
+ */
+function geot_radius( ) {
+	return geot_get( 'geolocation' )->accuracy_radius;
+}
+/**
+ * [geot_lat]
+ * @return string latitude
+ */
+function geot_lat( ) {
+	return geot_get( 'geolocation' )->latitude;
+}
+/**
+ * [geot_lng]
+ * @return string longitude
+ */
+function geot_lng( ) {
+	return geot_get( 'geolocation' )->longitude;
+}
+/**
  * Gets User state by ip. Is not ip given current user country will show
  *
  * @param string $ip
@@ -312,6 +341,12 @@ function geot_debug_data(){
 		City: <?php echo $user_data->city->name . PHP_EOL.'<br>';?>
 		Zip: <?php echo $user_data->city->zip . PHP_EOL.'<br>';?>
 		Continent: <?php echo $user_data->continent->name . PHP_EOL.'<br>';?>
+		Geolocation: { <br>
+				Time zone: <?php echo $user_data->geolocation->time_zone . PHP_EOL.'<br>';?>
+				Accuracy radius: <?php echo $user_data->geolocation->accuracy_radius . PHP_EOL.'<br>';?>
+				Lat: <?php echo $user_data->geolocation->latitude . PHP_EOL.'<br>';?>
+				Lng: <?php echo $user_data->geolocation->longitude . PHP_EOL.'<br>';?>
+		}<br>
 		Real IP: <?php echo GeotWP\getUserIP(). PHP_EOL.'<br>';?>
 		IP geot/user_ip: <?php echo apply_filters('geot/user_ip', GeotWP\getUserIP()). PHP_EOL.'<br>';?>
 		Geot Version: <?php echo defined('GEOT_VERSION') ?  GEOT_VERSION . PHP_EOL.'<br>' : '';?>

@@ -114,13 +114,13 @@ class GeotFunctions {
 	 *
 	 * @return array|bool|mixed
 	 */
-	public function getUserData( $ip = "" ){
+	public function getUserData( $ip = "", $force = false ){
 		if( isset($_GET['geot_backtrace'] ) || defined('GEOT_BACKTRACE') )
 			$this->printBacktrace();
 
 		try{
 			$this->check_active_user();
-			$data = $this->geotWP->getData( apply_filters( 'geot/user_ip', $ip ) );
+			$data = $this->geotWP->getData( apply_filters( 'geot/user_ip', $ip ),$force );
 		} catch ( OutofCreditsException $e ) {
 			GeotEmails::OutOfQueriesException();
 			GeotNotifications::notify($e->getMessage());

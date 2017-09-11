@@ -11,7 +11,7 @@ function geot(){
 
 /**
  * Grab user data
- * @param $key [continent, country, state, city]
+ * @param $key [continent, country, state, city, geolocation]
  *
  * @return mixed
  */
@@ -34,10 +34,10 @@ function geot_user_country( ){
  *
  * @return object Current user country record. Methods are $country->iso_code $country->name $country->names
  */
-function geot_country_by_ip( $ip = '') {
+function geot_country_by_ip( $ip = '', $force = false) {
 	$g = geot();
 
-	return $g->getUserData( $ip )->country;
+	return $g->getUserData( $ip, $force )->country;
 }
 
 /**

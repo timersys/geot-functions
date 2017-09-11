@@ -110,15 +110,12 @@ function geot_zip() {
 }
 
 /**
- * Gets user lat / long
- *
- * @param string $ip
+ * Gets user geolocation data
  *
  * @return object ->longitude() , ->latitude(), ->time_zone()
  */
-function geot_location( $ip = '') {
-	return geot_get( 'location' );
-	// TODO ADD location toAPI
+function geot_location() {
+	return geot_get( 'geolocation' );
 }
 
 /**

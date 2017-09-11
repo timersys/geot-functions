@@ -196,6 +196,7 @@ class GeotFunctions {
 			'country' =>  new \StdClass(),
 			'state'   =>  new \StdClass(),
 			'city'    =>  new \StdClass(),
+			'geolocation'    =>  new \StdClass(),
 		];
 		$record->country  = $this->getCountryByIsoCode( $this->opts['fallback_country'] );
 		$result =  new GeotRecord($record);

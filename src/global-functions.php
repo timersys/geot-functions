@@ -277,7 +277,7 @@ function geot_target_city( $city = '', $city_region = '', $exclude = '', $exclud
  * @return bool
  */
 function geot_target_state( $state = '', $exclude = '') {
-	return geot_target($state, $exclude, '', '', 'state');
+	return geot_target($state, '',  $exclude,'', 'state');
 }
 
 /**
@@ -289,7 +289,7 @@ function geot_target_state( $state = '', $exclude = '') {
  * @return bool
  */
 function geot_target_zip( $zip = '', $exclude = '') {
-	return geot_target($zip, $exclude, '', '', 'zip');
+	return geot_target($zip, '', $exclude,'', 'zip');
 }
 
 /**

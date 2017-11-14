@@ -1,14 +1,21 @@
 <?php namespace GeotFunctions;
 use GeotFunctions\Email\GeotEmails;
 use GeotFunctions\Notification\GeotNotifications;
+use GeotFunctions\Record\RecordConverter;
 use GeotWP;
+use GeotWP\Exception\AddressNotFoundException;
 use GeotWP\Exception\GeotException;
 use GeotWP\Exception\InvalidLicenseException;
 use GeotWP\Exception\InvalidSubscriptionException;
 use GeotWP\Exception\OutofCreditsException;
 use function GeotWP\generateCallTrace;
 use GeotWP\GeotargetingWP;
+use function GeotWP\getUserIP;
 use GeotWP\Record\GeotRecord;
+use GeotFunctions\Session\GeotSession;
+use IP2Location\Database;
+use Jaybizzle\CrawlerDetect\CrawlerDetect;
+use MaxMind\Db\Reader;
 
 /**
  * Class GeotFunctions
@@ -34,8 +41,28 @@ class GeotFunctions {
 	 * @var array
 	 */
 	protected $opts;
+	/**
+	 * Api class
+	 * @var GeotargetingWP
+	 */
 	public $geotWP;
 
+	/**
+	 * Current user IP
+	 * @var string
+	 */
+	private $ip;
+	/**
+	 * Cache key used internally for class cache
+	 * @var string
+	 */
+	private $cache_key;
+
+	/**
+	 * User calculated data
+	 * @var Mixed
+	 */
+	private $user_data;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -43,12 +70,15 @@ class GeotFunctions {
 	 * @since    1.0.0
 	 */
 	public function __construct( ) {
-		
-		$this->opts = geot_settings();
-		$this->extra_opts();
-		$args = apply_filters('geotWP/args', $this->opts );
 
-		$this->geotWP = new GeotargetingWP( $this->opts['license'], $args );
+		$this->set_defaults();
+
+		$this->ip = getUserIP();
+
+		$this->geotWP = new GeotargetingWP( $this->opts['license'], $this->opts['api_secret'] );
+
+		$this->session = $this->opts['cache_mode'] ? new GeotSession() : null;
+
 		// If we have cache mode turned on, we need to calculate user location before
 		// anything gets printed
 		if( ! is_admin()
@@ -57,15 +87,16 @@ class GeotFunctions {
 		    && ! apply_filters('geot/disable_setUserData', false)
 		    && ! defined('DOING_AJAX')
 		) {
-			add_action('init' , array($this,'setUserData' ) );
+			add_action('init' , array($this,'getUserData' ) );
 			add_action('init' , array($this,'createRocketCookies') , 15 );
 		}
+
 	}
 
 	/**
 	 * Main Geot Instance
 	 *
-	 * Ensures only one instance of WSI is loaded or can be loaded.
+	 * Ensures only one instance is loaded or can be loaded.
 	 *
 	 * @since 1.0.0
 	 * @static
@@ -95,20 +126,6 @@ class GeotFunctions {
 		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
 	}
 
-
-	/**
-	 * Run after init
-	 * @since  1.0.1
-	 */
-	public function setUserData() {
-		if( $this->userData )
-			return apply_filters('geot/user_data', $this->userData );
-
-		$this->userData = $this->getUserData();
-
-		return  apply_filters('geot/user_data', $this->userData);
-	}
-
 	/**
 	 * @param string $ip
 	 *
@@ -117,10 +134,60 @@ class GeotFunctions {
 	public function getUserData( $ip = "", $force = false ){
 		if( isset($_GET['geot_backtrace'] ) || defined('GEOT_BACKTRACE') )
 			$this->printBacktrace();
-
 		try{
 			$this->check_active_user();
-			$data = $this->geotWP->getData( apply_filters( 'geot/user_ip', $ip ),$force );
+
+			if( ! empty( $ip ) ){
+				$this->ip = $ip;
+			}
+
+			$this->ip = apply_filters( 'geot/user_ip', $this->ip );
+
+			if( empty( $this->opts['license'] ) )
+			throw new InvalidLicenseException( json_encode(['error'=>'License is missing'] ) );
+
+			$this->cache_key = md5( $this->ip  );
+
+			if( ! empty ( $this->user_data[$this->cache_key] ) )
+				return $this->user_data[$this->cache_key];
+
+			$this->initUserData();
+
+
+
+			// Easy debug
+			if( isset( $_GET['geot_debug'] ) )
+				return $this->debugData();
+
+			// If user set cookie and not in debug mode. If we pass ip we are forcing to use ip instead of cookies. Eg in dropdown widget
+			if(  ! $this->opts['debug_mode']  &&  ! empty( $_COOKIE[$this->opts['cookie_name']] ) && ! $force )
+				return $this->setData('country' , 'iso_code', $_COOKIE[$this->opts['cookie_name']] );
+
+			// If we already calculated on session return (if we are not calling by IP & if cache mode (sessions) is turned on)
+			if( $this->opts['cache_mode'] && !empty ( $this->session->get('geot_data') ) )
+				return $this->user_data[$this->cache_key] = new GeotRecord($this->session->get('geot_data'));
+
+			// check for crawlers
+			$CD = new CrawlerDetect();
+			if( $CD->isCrawler() )
+				return $this->setData('country' , 'iso_code', !empty($this->opts['bots_country'])? $this->opts['bots_country'] :'US');
+
+			// WP Engine ?
+			if( getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) !== false ){
+				return $this->wpengine();
+			}
+
+			// maxmind ?
+			if( isset($this->opts['maxmind'] ) && $this->opts['maxmind'] ){
+				return $this->maxmind();
+			}
+			// ip2location ?
+			if( isset($this->opts['ip2location'] ) && $this->opts['ip2location'] ){
+				return $this->ip2location();
+			}
+			// API
+			return $this->cleanResponse( $this->geotWP->getData( $this->ip ) );
+
 		} catch ( OutofCreditsException $e ) {
 			GeotEmails::OutOfQueriesException();
 			GeotNotifications::notify($e->getMessage());
@@ -141,9 +208,76 @@ class GeotFunctions {
 		}
 		// When status code is other than 200, on next call the class cache will return
 		// a simple StdClass object. So we need to fallback
-		if( ! $data instanceof GeotRecord )
-			return $this->getFallbackCountry();
-		return $data;
+	#	if( ! $data instanceof GeotRecord )
+	#		return $this->getFallbackCountry();
+
+	}
+
+	/**
+	 * Init empty Object of user data
+	 */
+	private function initUserData() {
+		$this->user_data[$this->cache_key] =  (object) [
+			'continent' => new \StdClass(),
+			'country' =>  new \StdClass(),
+			'state'   =>  new \StdClass(),
+			'city'    =>  new \StdClass(),
+			'geolocation'    =>  new \StdClass(),
+		];
+	}
+
+	/**
+	 * Return debug data set in query vars
+	 */
+	private function debugData() {
+
+		$state = new stdClass;
+		$state->names = isset( $_GET['geot_state'] ) ? [filter_var($_GET['geot_state'],FILTER_SANITIZE_FULL_SPECIAL_CHARS)] : '';
+		$state->iso_code = isset( $_GET['geot_state_code'] ) ? filter_var($_GET['geot_state_code'],FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '';
+
+		$country = new stdClass;
+
+		$country->names  =  [ filter_var($_GET['geot_debug'],FILTER_SANITIZE_FULL_SPECIAL_CHARS)];
+		$continent = new stdClass;
+
+		$continent->names  =  isset($_GET['geot_continent']) ? [ filter_var($_GET['geot_continent'],FILTER_SANITIZE_FULL_SPECIAL_CHARS)] : '';
+		$country->iso_code  = isset($_GET['geot_debug_iso']) ? filter_var($_GET['geot_debug_iso'],FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '';
+		$city = new stdClass;
+
+		$city->names  = isset($_GET['geot_city']) ? [filter_var($_GET['geot_city'],FILTER_SANITIZE_FULL_SPECIAL_CHARS)] : '';
+		$city->zip  = isset($_GET['geot_zip']) ? filter_var($_GET['geot_zip'],FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '';
+
+		$geolocation = new stdClass();
+		$geolocation->accuracy_radius = '';
+		$geolocation->longitude = '';
+		$geolocation->latitude = '';
+		$geolocation->time_zone = '';
+
+		$this->user_data[$this->cache_key] = new GeotRecord((object)[
+			'country' => $country,
+			'city'    => $city,
+			'state'   => $state,
+			'continent'   => $continent,
+			'geolocation'   => $geolocation,
+		]);
+
+		return $this->user_data[$this->cache_key];
+	}
+
+
+	/**
+	 * Add new values or update in user data
+	 *
+	 * @param $key
+	 * @param $property
+	 * @param $value
+	 *
+	 * @return mixed
+	 */
+	private function setData( $key, $property, $value ) {
+		$this->user_data[$this->cache_key]->$key->$property = $value;
+		$this->user_data[$this->cache_key] = new GeotRecord($this->user_data[$this->cache_key]);
+		return $this->user_data[$this->cache_key];
 	}
 
 	/**
@@ -156,11 +290,11 @@ class GeotFunctions {
 		if( !in_array( $key, GeotRecord::getValidRecords() ) )
 			return 'Invalid GeotRecord classname provided. Valids ones are: '. implode(',', GeotRecord::getValidRecords());
 
-		if( $this->userData === null )
-			$this->setUserData();
+		if( $this->user_data[$this->cache_key] === null )
+			$this->getUserData();
 
-		if( isset( $this->userData->$key ) )
-			return $this->userData->$key;
+		if( isset( $this->user_data[$this->cache_key]->$key ) )
+			return $this->user_data[$this->cache_key]->$key;
 		return false;
 	}
 
@@ -304,12 +438,25 @@ class GeotFunctions {
 	}
 
 	/**
-	 * Simple set some extra opts to pass to Geotargeting WP
+	 * Set some default options for the class
 	 */
-	private function extra_opts() {
-		$this->opts['maxmind_db'] = maxmind_db();
-		$this->opts['ip2location_db'] = ip2location_db();
-		$this->opts['ip2location_method'] = apply_filters('geot/ip2location_method', '100001');//100001 FILES IO MEMORY_CACHE = 100002 SHARED_MEMORY = 100003;
+	private function set_defaults() {
+
+		$args = geot_settings();
+
+		$this->opts = wp_parse_args( $args, [
+			'debug_mode'        => false, // similar to disable sessions but also invalidates cookies
+			'cache_mode'        => false, // php sessions
+			'bots_country'      => '', // a default country to return if a bot is detected
+			'api_secret'        => '', // a default country to return if a bot is detected
+			'cookie_name'       => 'geot_country', // cookie_name to store country iso code
+			'maxmind'           => 0, // check if maxmind is enabled
+			'maxmind_db'        => maxmind_db(), // path to db
+			'ip2location'       => 0, // check if ip2location is enabled
+			'ip2location_db'    => ip2location_db(), // path to db
+			'ip2location_method'=> apply_filters('geot/ip2location_method', '100001'), // wheter we use io disk or memory for lookup
+
+		]);
 	}
 
 	/**
@@ -373,5 +520,73 @@ class GeotFunctions {
 			}
 		}
 		return $target;
+	}
+
+	/**
+	 * Save user data, save to session and create record
+	 * and create GeotRecord class
+	 * @param $response
+	 *
+	 * @return GeotRecord
+	 */
+	private function cleanResponse( $response ) {
+
+		if ( $this->opts['cache_mode'] )
+			$this->session->set('geot_data',  $response );
+
+		$this->user_data[$this->cache_key]  = new GeotRecord( $response );
+
+		return $this->user_data[$this->cache_key];
+	}
+
+	/**
+	 * Use WpEngine variables (enterprise plans only)
+	 * @return GeotRecord
+	 * @throws GeotException
+	 */
+	private function wpengine() {
+		try{
+			return $this->cleanResponse(RecordConverter::wpEngine());
+		} catch( \Exception $e) {
+			throw new GeotException($e->getMessage());
+		}
+	}
+
+	/**
+	 * Use maxmind local db
+	 * @return GeotRecord
+	 * @throws AddressNotFoundException
+	 * @throws GeotException
+	 */
+	private function maxmind() {
+
+		$reader = new Reader($this->opts['maxmind_db']);
+		try{
+			$record = $reader->get($this->ip);
+			if( empty($record) )
+				throw new AddressNotFoundException('Ip Address not found');
+			$reader->close();
+			return $this->cleanResponse(RecordConverter::maxmindRecord($record));
+		} catch( AddressNotFoundException $e) {
+			throw new AddressNotFoundException((string)$e->getMessage());
+		} catch( \Exception $e) {
+			throw new GeotException($e->getMessage());
+		}
+
+	}
+
+	/**
+	 * Use ip2location database
+	 * @return GeotRecord
+	 * @throws GeotException
+	 */
+	private function ip2location() {
+		$db = new Database($this->opts['ip2location_db'], $this->opts['ip2location_method']);
+		try{
+			$record = $db->lookup($this->ip, Database::ALL);
+			return $this->cleanResponse(RecordConverter::ip2locationRecord($record));
+		} catch( \Exception $e) {
+			throw new GeotException($e->getMessage());
+		}
 	}
 }

@@ -14,7 +14,10 @@
     "prefer-stable": true,
     "require": {
 		"php": ">=5.5",
-        "timersys/geotargetingwp": "dev-master"
+        "timersys/geotargetingwp": "dev-master",
+        "ip2location/ip2location-php": "8.*",
+        "maxmind-db/reader": "^1.1",
+        "jaybizzle/crawler-detect" :"1.*"
     },
 	"require-dev": {
 		"phpunit/phpunit": "5.2.*"

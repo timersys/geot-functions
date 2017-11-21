@@ -40,7 +40,7 @@ class RecordConverter{
 		self::$geot_record['geolocation']['accuracy_radius']= isset($record['location']) && isset($record['location']['accuracy_radius']) ? $record['location']['accuracy_radius'] : '';
 		self::$geot_record['geolocation']['time_zone']      = isset($record['location']) && isset($record['location']['time_zone']) ? $record['location']['time_zone'] : '';
 
-		return  self::$geot_record;
+		return  json_decode(json_encode(self::$geot_record));
 	}
 
 	/**
@@ -69,7 +69,7 @@ class RecordConverter{
 		self::$geot_record['geolocation']['accuracy_radius']= $record['accuracyRadius'] ?: '';
 		self::$geot_record['geolocation']['time_zone']      = $record['timeZone'] ?: '';
 
-		return self::$geot_record;
+		return json_decode(json_encode(self::$geot_record));
 	}
 
 	public static function wpEngine(){
@@ -87,6 +87,6 @@ class RecordConverter{
 		self::$geot_record['geolocation']['accuracy_radius']= '';
 		self::$geot_record['geolocation']['time_zone']      = '';
 
-		return self::$geot_record;
+		return json_decode(json_encode(self::$geot_record));
 	}
 }

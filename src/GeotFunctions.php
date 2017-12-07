@@ -231,23 +231,23 @@ class GeotFunctions {
 	 */
 	private function debugData() {
 
-		$state = new stdClass;
+		$state = new \stdClass;
 		$state->names = isset( $_GET['geot_state'] ) ? [filter_var($_GET['geot_state'],FILTER_SANITIZE_FULL_SPECIAL_CHARS)] : '';
 		$state->iso_code = isset( $_GET['geot_state_code'] ) ? filter_var($_GET['geot_state_code'],FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '';
 
-		$country = new stdClass;
+		$country = new \stdClass;
 
 		$country->names  =  [ filter_var($_GET['geot_debug'],FILTER_SANITIZE_FULL_SPECIAL_CHARS)];
-		$continent = new stdClass;
+		$continent = new \stdClass;
 
 		$continent->names  =  isset($_GET['geot_continent']) ? [ filter_var($_GET['geot_continent'],FILTER_SANITIZE_FULL_SPECIAL_CHARS)] : '';
 		$country->iso_code  = isset($_GET['geot_debug_iso']) ? filter_var($_GET['geot_debug_iso'],FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '';
-		$city = new stdClass;
+		$city = new \stdClass;
 
 		$city->names  = isset($_GET['geot_city']) ? [filter_var($_GET['geot_city'],FILTER_SANITIZE_FULL_SPECIAL_CHARS)] : '';
 		$city->zip  = isset($_GET['geot_zip']) ? filter_var($_GET['geot_zip'],FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '';
 
-		$geolocation = new stdClass();
+		$geolocation = new \stdClass();
 		$geolocation->accuracy_radius = '';
 		$geolocation->longitude = '';
 		$geolocation->latitude = '';

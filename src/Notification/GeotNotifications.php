@@ -2,22 +2,27 @@
 namespace GeotFunctions\Notification;
 
 class GeotNotifications {
+	private static $msg;
 
 	/**
 	 * Display front end notice to admin
 	 * @param $msg
 	 */
 	public static function notify( $msg ){
-
-			add_action('wp_footer', function() use ($msg) {
-				$error = json_decode($msg);
-				if( ! current_user_can('administrator') || ! isset( $error->error ) )
-					return;
-				echo '<div class="geot-alert">
+			self::$msg = $msg;
+			add_action('wp_footer', [self::class ,'print_message'],999);
+			if( isset($_GET['page']) && 'geot-debug-data' == $_GET['page'] ) {
+				self::print_message();
+			}
+	}
+	public static function print_message(){
+		$error = json_decode(self::$msg);
+		if( ! current_user_can('administrator') || ! isset( $error->error ) )
+			return;
+		echo '<div class="geot-alert">
 						GeotargetingWP Error: '.esc_html($error->error).'<br/>
 						<small>This message it\'s only visible to admins</small></div>';
-				self::add_style();
-			},99);
+		self::add_style();
 	}
 	public static function add_style(){
 		?>

@@ -415,7 +415,7 @@ class GeotFunctions {
 		add_action( 'wp_footer', function () use($trace){
 			echo '<!-- Geot Backtrace START '. PHP_EOL;
 			echo $trace. PHP_EOL;
-			echo '<!-- Geot Backtrace END '. PHP_EOL;
+			echo '<!-- Geot Backtrace END -->'. PHP_EOL;
 		},99);
 
 	}

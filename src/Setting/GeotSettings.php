@@ -133,13 +133,17 @@ class GeotSettings {
 	 * @return mixed
 	 */
 	function is_valid_license($license){
-		$response = GeotargetingWP::checkLicense($license);
-		$result = json_decode( $response );
-		// update license
-		if( isset( $result->success ) ) {
-			update_option('geot_license_active', 'valid');
-		} else {
-			delete_option('geot_license_active');
+		try {
+			$response = GeotargetingWP::checkLicense( $license );
+			$result   = json_decode( $response );
+			// update license
+			if ( isset( $result->success ) ) {
+				update_option( 'geot_license_active', 'valid' );
+			} else {
+				delete_option( 'geot_license_active' );
+			}
+		} catch (\Exception $e) {
+			return \GuzzleHttp\json_encode(['error' => $e->getMessage() ]);
 		}
 		return $response;
 	}

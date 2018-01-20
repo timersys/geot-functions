@@ -131,6 +131,11 @@
 						$('#license').addClass('geot_license_valid');
                     }
                     button.prop('disabled',false).removeClass('btn-spinner');
+                },
+                'error': function (response) {
+                    $('<p style="color:red">'+response.error+'</p>').insertAfter(button).hide().fadeIn();
+                    $('#license').removeClass('geot_license_valid')
+                    button.prop('disabled',false).removeClass('btn-spinner');
                 }
 			});
         });

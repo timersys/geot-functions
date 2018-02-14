@@ -140,7 +140,7 @@ $countries 	= geot_countries();
 
 						<div class="region-group"  data-id="<?php echo $i;?>" >
 
-							<input type="text" placeholder="Enter region name" name="geot_settings[region][<?php echo $i;?>][name]" value="<?php echo !empty( $region['name'] )? esc_attr($region['name']): '' ; ?>"/>
+							<input type="text" class="region-name" placeholder="Enter region name" name="geot_settings[region][<?php echo $i;?>][name]" value="<?php echo !empty( $region['name'] )? esc_attr($region['name']): '' ; ?>"/>
 							<a href="#" class="remove-region"title="<?php _e( 'Remove Region', 'geot' );?>">-</a>
 							<select name="geot_settings[region][<?php echo $i;?>][countries][]" multiple class="geot-chosen-select" data-placeholder="<?php _e('Type country name...', 'geot' );?>" >
 								<?php
@@ -175,7 +175,7 @@ $countries 	= geot_countries();
 					foreach ( $opts['city_region'] as $city_region ) { $j++;?>
 
 						<div class="city-region-group"  data-id="<?php echo $j;?>" >
-							<input type="text" placeholder="Enter region name" name="geot_settings[city_region][<?php echo $j;?>][name]" value="<?php echo !empty( $city_region['name'] )? esc_attr($city_region['name']): '' ; ?>"/>
+							<input type="text" class="region-name" placeholder="Enter region name" name="geot_settings[city_region][<?php echo $j;?>][name]" value="<?php echo !empty( $city_region['name'] )? esc_attr($city_region['name']): '' ; ?>"/>
 							<select name="geot_settings[city_region][<?php echo $j;?>][countries][]"  class="geot-chosen-select country_ajax" data-counter="<?php echo $j;?>" data-placeholder="<?php _e('Type country name...', 'geot' );?>" >
 								<option value=""><?php _e('Choose a Country', 'geot' );?></option>
 								<?php

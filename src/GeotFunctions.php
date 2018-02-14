@@ -1,4 +1,4 @@
-<?php namespace GeotFunctions;
+<?php namespace GeotFunctions; //TODO: Migrate REGIONS TO post TYPES or js fix
 use GeotFunctions\Email\GeotEmails;
 use GeotFunctions\Notification\GeotNotifications;
 use GeotFunctions\Record\RecordConverter;
@@ -31,7 +31,6 @@ class GeotFunctions {
 	 * Current user country and cityused everywhere
 	 * @var string
 	 */
-	protected $userData = null;
 	protected $userCountry;
 	protected $userCity;
 	protected $userState;
@@ -429,12 +428,12 @@ class GeotFunctions {
 		if( apply_filters( 'geot/disable_cookies', false) )
 			return;
 
-		if( ! $this->userData instanceof GeotRecord)
+		if( ! $this->user_data[$this->cache_key] instanceof GeotRecord)
 			return;
 
-		setcookie( 'geot_rocket_country', $this->userData->country->iso_code, 0, '/' );
-		setcookie( 'geot_rocket_state', $this->userData->state->iso_code, 0, '/' );
-		setcookie( 'geot_rocket_city', $this->userData->city->name, 0, '/' );
+		setcookie( 'geot_rocket_country', $this->user_data[$this->cache_key]->country->iso_code, 0, '/' );
+		setcookie( 'geot_rocket_state', $this->user_data[$this->cache_key]->state->iso_code, 0, '/' );
+		setcookie( 'geot_rocket_city', $this->user_data[$this->cache_key]->city->name, 0, '/' );
 	}
 
 	/**

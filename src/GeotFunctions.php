@@ -152,8 +152,6 @@ class GeotFunctions {
 
 			$this->initUserData();
 
-
-
 			// Easy debug
 			if( isset( $_GET['geot_debug'] ) )
 				return $this->debugData();
@@ -183,6 +181,10 @@ class GeotFunctions {
 			// ip2location ?
 			if( isset($this->opts['ip2location'] ) && $this->opts['ip2location'] ){
 				return $this->ip2location();
+			}
+			//last chance filter to cancel query and pass custom data
+			if( ( $custom_data = apply_filters('geot/cancel_query', false) ) ){
+				return $this->cleanResponse($custom_data);
 			}
 			// API
 			return $this->cleanResponse( $this->geotWP->getData( $this->ip ) );

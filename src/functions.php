@@ -59,11 +59,12 @@ function toPlural ( $key ) {
  */
 function grab_post_id(){
 	global $post;
-	// to avoid loops
-	define('GEOT_GRABBING_POST_ID',true);
 
+	add_filter( 'geot/cancel_posts_where', '__return_true');
 	$actual_url = get_current_url();
-	return isset( $post->ID ) ? $post->ID : url_to_postid($actual_url);
+	$id = isset( $post->ID ) ? $post->ID : url_to_postid($actual_url);
+	remove_filter( 'geot/cancel_posts_where', '__return_true');
+	return $id;
 }
 
 /**

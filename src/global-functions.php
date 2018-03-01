@@ -100,6 +100,16 @@ function geot_state_code() {
 	return geot_get( 'state' )->iso_code;
 }
 
+
+/**
+ * Display the user continent
+ * [geot_continent]
+ * @return string
+ */
+function geot_continent() {
+	return geot_get( 'continent' )->name;
+}
+
 /**
  * Displays the zip code
  * [geot_zip]

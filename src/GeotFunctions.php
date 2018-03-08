@@ -338,9 +338,13 @@ class GeotFunctions {
 			'city'    =>  new \StdClass(),
 			'geolocation'    =>  new \StdClass(),
 		];
+		// debug page return empty
+		if( isset($_GET['page']) && 'geot-debug-data' == $_GET['page'] )
+            return new GeotRecord($record);
+
 		$record->country  = $this->getCountryByIsoCode( $this->opts['fallback_country'] );
-		$result =  new GeotRecord($record);
-		return $result;
+        return new GeotRecord($record);
+
 	}
 
 	/**

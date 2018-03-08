@@ -91,3 +91,12 @@ input.api-keys{
 .ui-dialog.ui-front{
 	z-index: 100102;
 }
+#geot-debug-info {
+	background: 0 0;
+	font-family: Menlo, Monaco, monospace;
+	display: block;
+	overflow: auto;
+	white-space: pre;
+	width: 800px;
+	height: 400px;
+}

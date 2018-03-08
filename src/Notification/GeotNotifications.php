@@ -12,7 +12,7 @@ class GeotNotifications {
 			self::$msg = $msg;
 			add_action('wp_footer', [self::class ,'print_message'],999);
 			if( isset($_GET['page']) && 'geot-debug-data' == $_GET['page'] ) {
-				self::print_message();
+                add_action('admin_footer', [self::class ,'print_message'],999);
 			}
 	}
 	public static function print_message(){

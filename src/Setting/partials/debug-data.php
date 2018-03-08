@@ -1,48 +1,51 @@
-<h2>Ip Test page</h2>
-<p>
-	Check what Ip's yor server return
-</p>
-<p>
-	<?php echo '$_SERVER[REMOTE_ADDR] = "'; echo isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 'not resolved';?>
-</p>
-<p>
-	<?php
-	echo 'cloudflare<br />';
-	echo '$_SERVER[HTTP_CF_CONNECTING_IP] = '; echo isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : 'not resolved';
-	?>
-</p>
-<p>
-	<?php
-	echo 'Reblaze<br />';
-	echo '$_SERVER[X-Real-IP] = '; echo isset( $_SERVER['X-Real-IP'] ) ? $_SERVER['X-Real-IP'] : 'not resolved';
-	?>
-</p>
-<p>
-	<?php
+<h2>Geolocation data</h2>
+<p>Please copy and paste the whole page if requested by support</p>
+<textarea readonly="readonly" onclick="this.focus(); this.select()" id="geot-debug-info">
+##Geolocation data##
 
-	echo 'Sucuri<br />';
-	echo '$_SERVER[HTTP_X_SUCURI_CLIENTIP] = '; echo isset( $_SERVER['HTTP_X_SUCURI_CLIENTIP'] ) ? $_SERVER['HTTP_X_SUCURI_CLIENTIP'] : 'not resolved';
-	?>
-</p>
-<p>
-	<?php
-	echo 'Ezoic<br />';
-	echo '$_SERVER[X-FORWARDED-FOR] = '; echo isset( $_SERVER['X-FORWARDED-FOR'] ) ? $_SERVER['X-FORWARDED-FOR'] : 'not resolved';
-	?>
-</p>
-<p>
-	<?php
-	echo 'Akamai<br />';
-	echo '$_SERVER[True-Client-IP] = '; echo isset( $_SERVER['True-Client-IP'] ) ? $_SERVER['True-Client-IP'] : 'not resolved';
-	?>
-</p>
-<p>
-	<?php
-	echo 'Clouways<br />';
-	echo '$_SERVER[HTTP_X_FORWARDED_FOR] = '; echo isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : 'not resolved';
+<?php echo strip_tags(preg_replace('/\t+/', '',geot_debug_data()));?>
 
-	?>
-</p>
-<p>
-	<?php echo geot_debug_data();?>
-</p>
+
+##Ip Resolved##
+
+<?php
+echo 'server:';
+echo '$_SERVER[REMOTE_ADDR] = "'; echo isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 'not resolved';?>
+
+
+<?php
+echo 'cloudflare:';
+echo '$_SERVER[HTTP_CF_CONNECTING_IP] = '; echo isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : 'not resolved';
+?>
+
+
+<?php
+echo 'Reblaze:';
+echo '$_SERVER[X-Real-IP] = '; echo isset( $_SERVER['X-Real-IP'] ) ? $_SERVER['X-Real-IP'] : 'not resolved';
+?>
+
+
+<?php
+
+echo 'Sucuri:';
+echo '$_SERVER[HTTP_X_SUCURI_CLIENTIP] = '; echo isset( $_SERVER['HTTP_X_SUCURI_CLIENTIP'] ) ? $_SERVER['HTTP_X_SUCURI_CLIENTIP'] : 'not resolved';
+?>
+
+
+<?php
+echo 'Ezoic:';
+echo '$_SERVER[X-FORWARDED-FOR] = '; echo isset( $_SERVER['X-FORWARDED-FOR'] ) ? $_SERVER['X-FORWARDED-FOR'] : 'not resolved';
+?>
+
+
+<?php
+echo 'Akamai:';
+echo '$_SERVER[True-Client-IP] = '; echo isset( $_SERVER['True-Client-IP'] ) ? $_SERVER['True-Client-IP'] : 'not resolved';
+?>
+
+
+<?php
+echo 'Clouways:';
+echo '$_SERVER[HTTP_X_FORWARDED_FOR] = '; echo isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : 'not resolved';
+?>
+</textarea>

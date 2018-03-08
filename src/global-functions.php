@@ -22,10 +22,16 @@ function geot_get( $key ) {
 
 /**
  * Get current user country
+ *
+ * @param string $locale
+ *
  * @return object Current user country Record. Methods are $country->iso_code $country->name $country->names
  */
-function geot_user_country( ){
-	return geot_get( 'country' );
+function geot_user_country( $locale = 'en' ){
+	$c = geot_get( 'country' );
+	if( $locale != 'en' )
+	    $c->setLocale($locale);
+	return $c;
 }
 /**
  * Gets User country by ip. Is not ip given current user country will show
@@ -65,30 +71,48 @@ function geot_country_code( ) {
 /**
  * Displays the country name for the current user
  * [geot_country_name]
- * @return  string country name
- **/
-function geot_country_name() {
-	return geot_get( 'country' )->name;
+ *
+ * @param string $locale
+ *
+ * @return string country name
+ */
+function geot_country_name($locale = 'en') {
+    $c = geot_get( 'country' );
+    if( $locale != 'en' )
+        $c->setLocale($locale);
+	return $c->name;
 }
 
 
 /**
  * Display the user city name
  * [geot_city_name]
+ *
+ * @param string $locale
+ *
  * @return string
  */
-function geot_city_name() {
-	return geot_get( 'city' )->name;
+function geot_city_name($locale = 'en') {
+    $c = geot_get( 'city' );
+    if( $locale != 'en' )
+        $c->setLocale($locale);
+    return $c->name;
 }
 
 
 /**
  * Display the user state name
  * [geot_state_name]
+ *
+ * @param string $locale
+ *
  * @return string
  */
-function geot_state_name() {
-	return geot_get( 'state' )->name;
+function geot_state_name($locale = 'en') {
+    $s = geot_get( 'state' );
+    if( $locale != 'en' )
+        $s->setLocale($locale);
+    return $s->name;
 }
 
 /**
@@ -104,10 +128,16 @@ function geot_state_code() {
 /**
  * Display the user continent
  * [geot_continent]
+ *
+ * @param string $locale
+ *
  * @return string
  */
-function geot_continent() {
-	return geot_get( 'continent' )->name;
+function geot_continent($locale = 'en') {
+    $c = geot_get( 'continent' );
+    if( $locale != 'en' )
+        $c->setLocale($locale);
+    return $c->name;
 }
 
 /**

@@ -125,11 +125,13 @@ class GeotFunctions {
 		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
 	}
 
-	/**
-	 * @param string $ip
-	 *
-	 * @return array|bool|mixed
-	 */
+    /**
+     * @param string $ip
+     *
+     * @param bool   $force
+     *
+     * @return array|bool|mixed
+     */
 	public function getUserData( $ip = "", $force = false ){
 		if( isset($_GET['geot_backtrace'] ) || defined('GEOT_BACKTRACE') )
 			$this->printBacktrace();
@@ -161,8 +163,11 @@ class GeotFunctions {
 				return $this->setData('country' , 'iso_code', $_COOKIE[$this->opts['cookie_name']] );
 
 			// If we already calculated on session return (if we are not calling by IP & if cache mode (sessions) is turned on)
-			if( $this->opts['cache_mode'] && !empty ( $this->session->get('geot_data') ) )
-				return $this->user_data[$this->cache_key] = new GeotRecord($this->session->get('geot_data'));
+			if( $this->opts['cache_mode'] && !empty ( $this->session->get('geot_data') ) ) {
+                $this->user_data[$this->cache_key] = new GeotRecord($this->session->get('geot_data'));
+                $this->checkLocale();
+                return $this->user_data[$this->cache_key];
+            }
 
 			// check for crawlers
 			$CD = new CrawlerDetect();
@@ -176,7 +181,9 @@ class GeotFunctions {
 
 			// maxmind ?
 			if( isset($this->opts['maxmind'] ) && $this->opts['maxmind'] ){
-				return $this->maxmind();
+				$record = $this->maxmind();
+                $this->checkLocale();
+                return $record;
 			}
 			// ip2location ?
 			if( isset($this->opts['ip2location'] ) && $this->opts['ip2location'] ){
@@ -187,7 +194,9 @@ class GeotFunctions {
 				return $this->cleanResponse($custom_data);
 			}
 			// API
-			return $this->cleanResponse( $this->geotWP->getData( $this->ip ) );
+            $record = $this->cleanResponse( $this->geotWP->getData( $this->ip ) );
+            $this->checkLocale();
+            return $record;
 
 		} catch ( OutofCreditsException $e ) {
 			GeotEmails::OutOfQueriesException();
@@ -207,11 +216,7 @@ class GeotFunctions {
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		}
-		// When status code is other than 200, on next call the class cache will return
-		// a simple StdClass object. So we need to fallback
-	#	if( ! $data instanceof GeotRecord )
-	#		return $this->getFallbackCountry();
-
+        
 	}
 
 	/**
@@ -275,7 +280,7 @@ class GeotFunctions {
 	 *
 	 * @return mixed
 	 */
-	private function setData( $key, $property, $value ) {
+	public function setData( $key, $property, $value ) {
 		$this->user_data[$this->cache_key]->$key->$property = $value;
 		$this->user_data[$this->cache_key] = new GeotRecord($this->user_data[$this->cache_key]);
 		return $this->user_data[$this->cache_key];
@@ -590,4 +595,30 @@ class GeotFunctions {
 			throw new GeotException($e->getMessage());
 		}
 	}
+
+    /**
+     * For API results we can let users change locale
+     * but also we can check against wordpress locale
+     */
+    private function checkLocale() {
+	    if(! $this->user_data[$this->cache_key] instanceof GeotRecord || apply_filters('geot/cancel_locale_check', false ) )
+	        return;
+
+	    $locale = get_locale();
+	    // get language part of locale
+	    $wp_locale = strstr( $locale, '_') === false ? $locale : strstr( get_locale(),'_',true);
+        // normalize some of them to match our locales
+	    switch ($wp_locale) {
+            case 'pt':
+                $wp_locale = 'pt-BR';
+                break;
+            case 'zh':
+                $wp_locale = 'zh-CN';
+                break;
+        }
+	    // set locale on all records
+        foreach (get_object_vars($this->user_data[$this->cache_key]) as $o) {
+            $o->setDefaultLocale($wp_locale);
+        }
+    }
 }

@@ -30,7 +30,7 @@ function geot_get( $key ) {
 function geot_user_country( $locale = 'en' ){
 	$c = geot_get( 'country' );
 	if( $locale != 'en' )
-	    $c->setLocale($locale);
+	    $c->setDefaultLocale($locale);
 	return $c;
 }
 /**
@@ -79,7 +79,7 @@ function geot_country_code( ) {
 function geot_country_name($locale = 'en') {
     $c = geot_get( 'country' );
     if( $locale != 'en' )
-        $c->setLocale($locale);
+        $c->setDefaultLocale($locale);
 	return $c->name;
 }
 
@@ -95,7 +95,7 @@ function geot_country_name($locale = 'en') {
 function geot_city_name($locale = 'en') {
     $c = geot_get( 'city' );
     if( $locale != 'en' )
-        $c->setLocale($locale);
+        $c->setDefaultLocale($locale);
     return $c->name;
 }
 
@@ -111,7 +111,7 @@ function geot_city_name($locale = 'en') {
 function geot_state_name($locale = 'en') {
     $s = geot_get( 'state' );
     if( $locale != 'en' )
-        $s->setLocale($locale);
+        $s->setDefaultLocale($locale);
     return $s->name;
 }
 
@@ -136,7 +136,7 @@ function geot_state_code() {
 function geot_continent($locale = 'en') {
     $c = geot_get( 'continent' );
     if( $locale != 'en' )
-        $c->setLocale($locale);
+        $c->setDefaultLocale($locale);
     return $c->name;
 }
 

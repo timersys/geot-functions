@@ -76,7 +76,7 @@ class GeotFunctions {
 
 		$this->geotWP = new GeotargetingWP( $this->opts['license'], $this->opts['api_secret'] );
 
-		$this->session = $this->opts['cache_mode'] ? new GeotSession() : null;
+		$this->session =  new GeotSession();
 
 		// If we have cache mode turned on, we need to calculate user location before
 		// anything gets printed
@@ -624,5 +624,9 @@ class GeotFunctions {
         foreach (get_object_vars($this->user_data[$this->cache_key]) as $o) {
             $o->setDefaultLocale($wp_locale);
         }
+    }
+
+    public function getSession(){
+        return $this->session;
     }
 }

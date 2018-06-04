@@ -74,7 +74,7 @@ class GeotFunctions {
 
 		$this->ip = getUserIP();
 
-		$this->geotWP = new GeotargetingWP( $this->opts['license'], $this->opts['api_secret'] );
+		$this->geotWP = new GeotargetingWP( trim($this->opts['license']), trim($this->opts['api_secret']) );
 
 		$this->session =  new GeotSession();
 

@@ -76,7 +76,7 @@ $countries 	= geot_countries();
 				<th><label for=""><?php _e( 'Cache Mode', 'geot'); ?></label></th>
 				<td colspan="3">
 					<label><input type="checkbox" id="" name="geot_settings[cache_mode]" value="1" <?php checked($opts['cache_mode'],'1');?>/>
-						<p class="help"><?php _e( 'Check this if you want to save the user location into PHP Sessions', 'geot'); ?></p>
+						<p class="help"><?php echo sprintf(__( 'Check this if you want to save the user location into PHP Sessions. More info <a href="%s">here</a>', 'geot'), 'https://geotargetingwp.com/docs/geotargeting-pro/configuration#cache'); ?></p>
 				</td>
 			</tr>
 			<tr valign="top" class="">

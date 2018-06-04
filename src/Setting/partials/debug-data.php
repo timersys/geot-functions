@@ -48,4 +48,19 @@ echo '$_SERVER[True-Client-IP] = '; echo isset( $_SERVER['True-Client-IP'] ) ? $
 echo 'Clouways:';
 echo '$_SERVER[HTTP_X_FORWARDED_FOR] = '; echo isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : 'not resolved';
 ?>
+
+<?php
+echo 'Wp Engine:';
+echo getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) ? 'Yes' : 'No';
+if( getenv('HTTP_GEOIP_COUNTRY_CODE')){
+    echo "getenv( 'HTTP_GEOIP_CITY' ) :"; echo getenv( 'HTTP_GEOIP_CITY' ) ;
+    echo "getenv( 'HTTP_GEOIP_POSTAL_CODE' ) :"; echo getenv( 'HTTP_GEOIP_POSTAL_CODE' ) ;
+    echo "getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) :"; echo getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) ;
+    echo "getenv( 'HTTP_GEOIP_COUNTRY_NAME' ) :"; echo getenv( 'HTTP_GEOIP_COUNTRY_NAME' ) ;
+    echo "getenv( 'HTTP_GEOIP_AREA_CODE' ) :"; echo getenv( 'HTTP_GEOIP_AREA_CODE' ) ;
+    echo "getenv( 'HTTP_GEOIP_REGION' ) :"; echo getenv( 'HTTP_GEOIP_REGION' ) ;
+    echo "getenv( 'HTTP_GEOIP_LATITUDE' ) :"; echo getenv( 'HTTP_GEOIP_LATITUDE' ) ;
+    echo "getenv( 'HTTP_GEOIP_LONGITUDE' ) :"; echo getenv( 'HTTP_GEOIP_LONGITUDE' ) ;
+}
+?>
 </textarea>

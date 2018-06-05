@@ -1,5 +1,6 @@
-<?php namespace GeotFunctions; //TODO: Migrate REGIONS TO post TYPES or js fix
+<?php namespace GeotFunctions;
 use GeotFunctions\Email\GeotEmails;
+use GeotFunctions\Notice\GeotNotices;
 use GeotFunctions\Notification\GeotNotifications;
 use GeotFunctions\Record\RecordConverter;
 use GeotWP;
@@ -90,6 +91,9 @@ class GeotFunctions {
 			add_action('init' , array($this,'createRocketCookies') , 15 );
 		}
 
+		if( is_admin() ){
+		    new GeotNotices();
+        }
 	}
 
 	/**

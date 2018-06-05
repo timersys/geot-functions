@@ -175,7 +175,7 @@ class GeotFunctions {
 				return $this->setData('country' , 'iso_code', !empty($this->opts['bots_country'])? $this->opts['bots_country'] :'US');
 
 			// WP Engine ?
-			if( getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) !== false ){
+            if( isset($this->opts['wpengine'] ) && $this->opts['wpengine'] ){
 				return $this->wpengine();
 			}
 
@@ -465,7 +465,7 @@ class GeotFunctions {
 			'ip2location'       => 0, // check if ip2location is enabled
 			'ip2location_db'    => ip2location_db(), // path to db
 			'ip2location_method'=> apply_filters('geot/ip2location_method', '100001'), // wheter we use io disk or memory for lookup
-
+            'wpengine'          => 0
 		]);
 	}
 
@@ -477,7 +477,7 @@ class GeotFunctions {
 	 */
 	private function check_active_user() {
 
-		if( (!isset( $this->opts['maxmind'] ) || $this->opts['maxmind'] == '0' ) && ( !isset( $this->opts['ip2location'] ) || $this->opts['ip2location'] == '0') )
+		if( (!isset( $this->opts['wpengine'] ) || $this->opts['wpengine'] == '0' ) && (!isset( $this->opts['maxmind'] ) || $this->opts['maxmind'] == '0' ) && ( !isset( $this->opts['ip2location'] ) || $this->opts['ip2location'] == '0') )
 			return true;
 
 		if( empty($this->opts['license']) )

@@ -72,6 +72,17 @@ $countries 	= geot_countries();
 					</td>
 				</tr>
 			<?php endif;?>
+
+            <?php if( getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) !== false ):?>
+				<tr valign="top" class="">
+					<th><label for=""><?php _e( 'Enable WPEngine Geolocation', 'geot'); ?></label></th>
+					<td colspan="3">
+						<label><input type="checkbox" id="" name="geot_settings[wpengine]" value="1" <?php checked($opts['wpengine'],'1');?>/>
+							<p class="help"><?php _e( 'Check this if you want to use the WPEngine database', 'geot');?></p>
+					</td>
+				</tr>
+            <?php endif;?>
+
 			<tr valign="top" class="">
 				<th><label for=""><?php _e( 'Cache Mode', 'geot'); ?></label></th>
 				<td colspan="3">

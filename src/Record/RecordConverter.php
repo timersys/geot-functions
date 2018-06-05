@@ -73,6 +73,9 @@ class RecordConverter{
 	}
 
 	public static function wpEngine(){
+        if( getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) === false )
+            throw new \Exception('WPEngine failed to return record' );
+
 		self::$geot_record = [];
 		self::$geot_record['city']['names']                 = getenv( 'HTTP_GEOIP_CITY' ) ? ['en' => getenv( 'HTTP_GEOIP_CITY' ) ] : '';
 		self::$geot_record['city']['zip']                   = getenv( 'HTTP_GEOIP_POSTAL_CODE' ) ?: '';

@@ -26,8 +26,10 @@ $defaults = [
 $opts     = wp_parse_args( $opts, apply_filters ('geot/default_settings', $defaults ) );
 
 $countries 	= geot_countries();
-
 ?>
+<script>
+	var geot_countries = <?php echo json_encode(array_map(function($a){ return ['text' => $a->country,'value' => $a->iso_code];},(array)$countries));?>;
+</script>
 <div class="wrap geot-settings">
 	<h2>GeoTargetingWP</h2>
 	<form name="geot-settings" method="post" enctype="multipart/form-data">
@@ -40,7 +42,7 @@ $countries 	= geot_countries();
 			<tr valign="top" class="">
 				<th><label for="license"><?php _e( 'Enter your API key', 'geot'); ?></label></th>
 				<td colspan="3">
-					<label><input type="text" id="license" name="geot_settings[license]" value="<?php  echo $opts['license'];?>" class="api-keys <?php echo 'geot_license_' ; echo !empty($opts['license']) && get_option( 'geot_license_active' ) ? get_option( 'geot_license_active' ) :'';?>" /><button class="button-primary check-license">Check license</button>
+					<label><input type="text" id="license" name="geot_settings[license]" value="<?php  echo $opts['license'];?>" class="api-keys <?php echo 'geot_license_' ; echo !empty($opts['license']) && get_option( 'geot_license_active' ) ? get_option( 'geot_license_active' ) :'';?>" /><button class="button-primary check-license">Check Credits/Subscription</button>
 					<p class="help"><?php _e( 'Enter your api key in order to connect with the API and also get automatic updates', 'geot'); ?></p>
                     <?php if( isset($_GET['geot_message']) )
                         echo '<p style="color:red;">'.esc_attr($_GET['geot_message']).'</p>';?>
@@ -147,7 +149,7 @@ $countries 	= geot_countries();
 
 				if( !empty( $opts['region'] ) ) {
 					$i = 0;
-					foreach ( $opts['region'] as $region ) { $i++;?>
+					foreach ( $opts['region'] as $region ) { $i++; error_log(print_r($region,1));?>
 
 						<div class="region-group"  data-id="<?php echo $i;?>" >
 
@@ -187,33 +189,56 @@ $countries 	= geot_countries();
 
 						<div class="city-region-group"  data-id="<?php echo $j;?>" >
 							<input type="text" class="region-name" placeholder="Enter region name" name="geot_settings[city_region][<?php echo $j;?>][name]" value="<?php echo !empty( $city_region['name'] )? esc_attr($city_region['name']): '' ; ?>"/>
-							<select name="geot_settings[city_region][<?php echo $j;?>][countries][]"  class="geot-chosen-select country_ajax" data-counter="<?php echo $j;?>" data-placeholder="<?php _e('Type country name...', 'geot' );?>" >
+
+							<a href="#" class="remove-city-region"title="<?php _e( 'Remove Region', 'geot' );?>">-</a>
+							<select name="geot_settings[city_region][<?php echo $j;?>][countries][]"  class="country_ajax" data-counter="<?php echo $j;?>" data-placeholder="<?php _e('Type country name...', 'geot' );?>" >
 								<option value=""><?php _e('Choose a Country', 'geot' );?></option>
 								<?php
 								foreach ($countries as $c) {
 									?>
 									<option value="<?php echo $c->iso_code?>" <?php isset( $city_region['countries'] ) && is_array( $city_region['countries'] ) ? selected(true, in_array( $c->iso_code, $city_region['countries']) ):''; ?>> <?php echo $c->country; ?></option>
-								<?php
+									<?php
 								}
 								?>
 							</select>
-							<a href="#" class="remove-city-region"title="<?php _e( 'Remove Region', 'geot' );?>">-</a>
-							<select name="geot_settings[city_region][<?php echo $j;?>][cities][]" multiple class="geot-chosen-select cities_container" id="<?php echo 'cities'.$j;?>" data-placeholder="<?php _e('First choose a country', 'geot' );?>" >
-								<?php
-								if( !empty($city_region['countries'])) {
-									$cities = json_decode( geot_get_cities( $city_region['countries'][0] ) );
-									if( $cities ) {
-										foreach ( $cities as $c ) {
-											?>
-											<option
-													value="<?php echo strtolower( $c->city ) ?>" <?php isset( $city_region['cities'] ) && is_array( $city_region['cities'] ) ? selected( true, in_array( strtolower( $c->city ), $city_region['cities'] ) ) : ''; ?>> <?php echo $c->city; ?></option>
-											<?php
-										}
-									}
-								}
-								?>
+
+							<select name="geot_settings[city_region][<?php echo $j;?>][cities][]" multiple class="cities_container" id="<?php echo 'cities'.$j;?>" data-placeholder="<?php _e('First choose a country', 'geot' );?>" >
 							</select>
+							<script>
+                                jQuery('#<?php echo 'cities'.$j;?>').selectize({
+                                    plugins: ['remove_button'],
+                                    valueField: 'name',
+                                    labelField: 'name',
+                                    searchField: 'name',
+	                                options: <?php echo isset($city_region['cities']) && is_array($city_region['cities']) ? json_encode(array_map(function($a){ return ['name' => $a]; },$city_region['cities'])) : '""'; ?>,
+	                                items: ['<?php echo isset($city_region['cities']) && is_array($city_region['cities']) ? implode("','",$city_region['cities']) :'';?>'],
+                                    render: function (item,escape) {
+                                        return '<div>' + escape(item.name) + '</div>';
+                                    },
+                                    preload: 'focus',
+                                    openOnFocus: true,
+                                    load: function (query, callback) {
+                                        if (!query.length) return callback();
+                                        jQuery.ajax({
+                                            url: geot.ajax_url,
+                                            type: 'POST',
+                                            dataType: 'json',
+                                            data: {
+                                                action: 'geot_cities_by_country',
+                                                country: '<?= reset($city_region['countries']);?>'
+                                            },
+                                            error: function () {
+                                                callback();
+                                            },
+                                            success: function (res) {
+                                                callback(res);
+                                            }
+                                        });
+                                    }
+                                });
+							</script>
 						</div>
+						<hr>
 					<?php }
 				}?>
 					<a href="#" class="add-city-region button">Add City Region</a>

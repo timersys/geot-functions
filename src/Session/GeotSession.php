@@ -42,7 +42,7 @@ class GeotSession {
 	 * Defines our WP_Session constants, includes the necessary libraries and
 	 * retrieves the WP Session instance
 	 *
-	 * @since 1.5
+	 * @since 1.5 TODO: UPDATE wp Sessions
 	 */
 	public function __construct() {
 
@@ -212,6 +212,7 @@ class GeotSession {
 		) $collate;";
 
             require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            require_once( dirname(__FILE__) .'wp-session/class-wp-session-utils.php' );
             dbDelta( $table );
 
             add_option( 'sm_session_db_version', '0.1', '', 'no' );

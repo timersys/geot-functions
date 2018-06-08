@@ -2,7 +2,40 @@
 	'use strict';
 
 	$('document').ready( function() {
-		$(".geot-chosen-select").chosen({width:"90%",no_results_text: "Oops, nothing found!"});
+
+		$(".geot-chosen-select").selectize({
+		});
+		$(".country_ajax").each(function(){
+			var $select_city = $(this).next('.cities_container'),
+				select_city  = $select_city[0].selectize;
+
+			$(this).selectize({
+                onChange: function(value) {
+                    if (!value.length) return;
+                    select_city.disable();
+                    select_city.clearOptions();
+                    select_city.load( function(callback) {
+                        jQuery.ajax({
+                            url: geot.ajax_url,
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                action: 'geot_cities_by_country',
+                                country: value
+                            },
+                            error: function () {
+                                callback();
+                            },
+                            success: function (res) {
+                                select_city.enable();
+                                callback(res);
+                            }
+                        });
+                    });
+                }
+            });
+        });
+
 		MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
 		var observer = new MutationObserver(function(mutations) {
@@ -37,10 +70,15 @@
 			var new_id		= parseInt( region.data('id') ) + 1;
 
 			new_region.find('input[type="text"]').attr('name', 'geot_settings[region]['+new_id+'][name]').val('');
-			new_region.find('select').attr('name', 'geot_settings[region]['+new_id+'][countries][]').find("option:selected").removeAttr("selected");
-			new_region.find('.chosen-container').remove();
+			var $old_select = region.find('select');
+            new_region.find('select').attr('name', 'geot_settings[region]['+new_id+'][countries][]').find("option:selected").removeAttr("selected");
+            var $selectize = $old_select[0].selectize;
+			new_region.find('.selectize-control').remove();
 			new_region.insertAfter(region);
-			$(".geot-chosen-select").chosen({width:"90%",no_results_text: "Oops, nothing found!"});
+			console.log($selectize);
+            new_region.find(".geot-chosen-select").selectize({
+				options : geot_countries
+            });
 		});
 
 		$(".geot-settings").on('click','.remove-region', function(e){
@@ -60,14 +98,46 @@
 			new_region.find('input[type="text"]').attr('name', 'geot_settings[city_region]['+new_id+'][name]').val('');
 			chosen.attr('name', 'geot_settings[city_region]['+new_id+'][countries][]').find("option:selected").removeAttr("selected");
 			cities.attr('name', 'geot_settings[city_region]['+new_id+'][cities][]').find("option:selected").removeAttr("selected");
-			new_region.find('.chosen-container').remove();
+			new_region.find('.selectize-control').remove();
 			new_region.insertAfter(region);
 			chosen.attr('data-counter', new_id);
 			cities.attr('id', 'cities'+new_id);
-			cities.chosen({width:"90%",no_results_text: "Oops, nothing found!"});
-			chosen.chosen({width:"90%",no_results_text: "Oops, nothing found!"}).on('change', function(){
-				load_cities(chosen);
-			});
+			var $select_cities = cities.selectize({
+                plugins: ['remove_button'],
+                valueField: 'name',
+                labelField: 'name',
+                searchField: 'name',
+				render: function (item,escape) {
+					return '<div>' + escape(item.name) + '</div>';
+				},
+            });
+			var select_city = $select_cities[0].selectize;
+			chosen.selectize({
+                options : geot_countries,
+                onChange: function(value) {
+                    if (!value.length) return;
+                    select_city.disable();
+                    select_city.clearOptions();
+                    select_city.load( function(callback) {
+                        jQuery.ajax({
+                            url: geot.ajax_url,
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                action: 'geot_cities_by_country',
+                                country: value
+                            },
+                            error: function () {
+                                callback();
+                            },
+                            success: function (res) {
+                                select_city.enable();
+                                callback(res);
+                            }
+                        });
+                    });
+                }
+            });
 		});
 
 		$(".geot-settings").on('click','.remove-city-region', function(e){
@@ -76,10 +146,6 @@
 			region.remove();
 		});
 
-
-		$(".country_ajax").on('change', function(){
-			load_cities($(this));
-		});
 		$(document).on('change','.region-name', function(){
 
             $(this).val(slugify($(this).val()));

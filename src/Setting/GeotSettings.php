@@ -90,8 +90,9 @@ class GeotSettings {
 	 */
 	public function enqueue_scripts() {
 
+		wp_enqueue_script( 'geot-selectize', $this->plugin_url . 'js/selectize.min.js', array( 'jquery' ), null, false);
 		wp_enqueue_script( 'geot-chosen', $this->plugin_url . 'js/chosen.jquery.min.js', array( 'jquery' ), null, false );
-		wp_enqueue_script( 'geot', $this->plugin_url . 'js/geotargeting-admin.js', array( 'jquery','geot-chosen','jquery-ui-dialog'), null, false );
+		wp_enqueue_script( 'geot', $this->plugin_url . 'js/geotargeting-admin.js', array( 'jquery','geot-chosen','geot-selectize','jquery-ui-dialog'), null, false );
 		wp_localize_script(  'geot', 'geot', array(
 			'ajax_url'  => admin_url('admin-ajax.php')
 		));
@@ -184,6 +185,7 @@ class GeotSettings {
 	 * @return void
 	 */
 	public function save_settings(){
+
 		if (  isset( $_POST['geot_nonce'] ) && wp_verify_nonce( $_POST['geot_nonce'], 'geot_save_settings' ) ) {
 			$settings = esc_sql( $_POST['geot_settings'] );
 			if( isset($_FILES['geot_settings_json']) && 'application/json' == $_FILES['geot_settings_json']['type'] ) {
@@ -197,6 +199,7 @@ class GeotSettings {
 				$license = esc_attr($settings['license']);
 				$this->is_valid_license($license);
 			}
+
 			update_option( 'geot_settings' ,  $settings);
 		}
 	}
@@ -210,15 +213,16 @@ class GeotSettings {
 		if( empty($_POST['country']))
 			die();
 
-		$cities =  GeotargetingWP::getCities($_POST['country']);
-
+		$cities =  geot_get_cities($_POST['country']);
+        $json = [];
 		if( !empty( $cities ) ){
 			$cities = json_decode( $cities );
+
 			foreach( $cities as $c ) {
-				echo '<option value="'.strtolower($c->city).'">'.$c->city.'</option>';
+                $json[] = ['name' =>$c->city];
 			}
 		}
-
+		echo json_encode($json);
 		die();
 	}
 

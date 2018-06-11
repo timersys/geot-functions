@@ -3,8 +3,9 @@
 
 	$('document').ready( function() {
 
-		$(".geot-chosen-select").selectize({
-		});
+		$(".geot-chosen-select").selectize({});
+		$(".geot-chosen-select-multiple").not('#widgets-left .geot-chosen-select-multiple').selectize({ plugins: ['remove_button'],});
+
 		$(".country_ajax").each(function(){
 			var $select_city = $(this).next('.cities_container'),
 				select_city  = $select_city[0].selectize;
@@ -46,9 +47,9 @@
 				if( $(mutations[i].target).is(".geot-chosen-select") ) {
 
 					var parent = $(mutations[i].target).parent('.geot-select2');
-					parent.find('.chosen-container').remove()
-					//$(mutations[i].target).chosen('destroy');
-					$(mutations[i].target).chosen({width:"90%",no_results_text: "Oops, nothing found!"});
+					parent.find('.selectize-control').remove()
+
+					$(mutations[i].selectize({ plugins: ['remove_button'],});
 				}
 			}
 		});
@@ -75,9 +76,9 @@
             var $selectize = $old_select[0].selectize;
 			new_region.find('.selectize-control').remove();
 			new_region.insertAfter(region);
-			console.log($selectize);
-            new_region.find(".geot-chosen-select").selectize({
-				options : geot_countries
+            new_region.find(".geot-chosen-select-multiple").selectize({
+				options : geot_countries,
+                plugins: ['remove_button'],
             });
 		});
 
@@ -89,7 +90,7 @@
 
 		$(".add-city-region").click( function(e){
 			e.preventDefault();
-			var region 		= $(this).prev('.city-region-group');
+			var region 		= $(this).parent().find('.city-region-group').last();
 			var new_region 	= region.clone();
 			var cities = new_region.find(".cities_container");
 			var chosen = new_region.find(".country_ajax");
@@ -102,6 +103,7 @@
 			new_region.insertAfter(region);
 			chosen.attr('data-counter', new_id);
 			cities.attr('id', 'cities'+new_id);
+
 			var $select_cities = cities.selectize({
                 plugins: ['remove_button'],
                 valueField: 'name',
@@ -112,7 +114,9 @@
 				},
             });
 			var select_city = $select_cities[0].selectize;
-			chosen.selectize({
+            select_city.disable();
+			select_city.clearOptions();
+			var $select_countries = chosen.selectize({
                 options : geot_countries,
                 onChange: function(value) {
                     if (!value.length) return;
@@ -138,6 +142,8 @@
                     });
                 }
             });
+            var select_countries = $select_countries[0].selectize;
+            select_countries.clear(true);
 		});
 
 		$(".geot-settings").on('click','.remove-city-region', function(e){
@@ -187,14 +193,12 @@
 
 		$(document).on('widget-updated', function(){
 
-			$(".geot-chosen-select").chosen({width:"90%",no_results_text: "Oops, nothing found!"});
+			$(".geot-chosen-select-multiple").selectize({ plugins: ['remove_button'],});
 
 		});
 
 		$(document).on('widget-added', function(ev, target){
-
-			$(target).find('.chosen-container').remove();
-			$(target).find(".geot-chosen-select").show().chosen({width:"90%",no_results_text: "Oops, nothing found!"});
+            $(target).find(".geot-chosen-select-multiple").selectize({ plugins: ['remove_button'],});
 
 		});
 

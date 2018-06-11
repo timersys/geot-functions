@@ -155,7 +155,7 @@ $countries 	= geot_countries();
 
 							<input type="text" class="region-name" placeholder="Enter region name" name="geot_settings[region][<?php echo $i;?>][name]" value="<?php echo !empty( $region['name'] )? esc_attr($region['name']): '' ; ?>"/>
 							<a href="#" class="remove-region"title="<?php _e( 'Remove Region', 'geot' );?>">-</a>
-							<select name="geot_settings[region][<?php echo $i;?>][countries][]" multiple class="geot-chosen-select" data-placeholder="<?php _e('Type country name...', 'geot' );?>" >
+							<select name="geot_settings[region][<?php echo $i;?>][countries][]" multiple class="geot-chosen-select-multiple" data-placeholder="<?php _e('Type country name...', 'geot' );?>" >
 								<?php
 									foreach ($countries as $c) {
 										?>

@@ -37,32 +37,27 @@
             });
         });
 
-		MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+		if( typeof acf !== 'undefinded') {
+            acf.add_action('append', function ($el) {
+				// $el will be equivalent to the new element being appended $('tr.row')
+                var $select = $el.next('.acf-row').find('select');
+                if( typeof $select[0].selectize !== 'undefined') {
 
-		var observer = new MutationObserver(function(mutations) {
-		    // fired when a mutation occurs
+                    var selectize = $select[0].selectize;
+                    var options = [];
 
-			for( var i = 0; i < mutations.length ; i++) {
+                    for (var key in selectize.options) {
+                        options.push(selectize.options[key]);
+                    }
+                    $el.find('.selectize-control').remove()
+                    
+                    var $field = $el.find('.geot-chosen-select-multiple');
+                    $field.selectize({plugins: ['remove_button'], options: options});
+                }
 
-				if( $(mutations[i].target).is(".geot-chosen-select") ) {
+            });
+        }
 
-					var parent = $(mutations[i].target).parent('.geot-select2');
-					parent.find('.selectize-control').remove()
-
-					$(mutations[i].selectize({ plugins: ['remove_button'],});
-				}
-			}
-		});
-		// define what element should be observed by the observer
-		// and what types of mutations trigger the callback
-		$('.acf-table').each(function(){
-
-			observer.observe($(this)[0], {
-				subtree: true,
-				attributes: true
-				//...
-			});
-		});
 
 		$(".add-region").click( function(e){
 			e.preventDefault();

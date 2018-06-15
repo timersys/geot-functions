@@ -50,7 +50,7 @@
                         options.push(selectize.options[key]);
                     }
                     $el.find('.selectize-control').remove()
-                    
+
                     var $field = $el.find('.geot-chosen-select-multiple');
                     $field.selectize({plugins: ['remove_button'], options: options});
                 }

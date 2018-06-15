@@ -239,6 +239,7 @@ input.api-keys{
 }
 .selectize-control {
 	position: relative;
+	margin-top: 0;
 }
 .selectize-dropdown,
 .selectize-input,

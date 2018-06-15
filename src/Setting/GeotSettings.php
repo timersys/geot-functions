@@ -78,7 +78,7 @@ class GeotSettings {
 		if( 'post.php' == $pagenow ) {
 			wp_enqueue_style('wp-jquery-ui-dialog');
 		}
-		wp_enqueue_style( 'geot-chosen', $this->plugin_url . 'css/chosen.min.css', array(), null, 'all' );
+
 		wp_enqueue_style( 'geot', $this->plugin_url . 'css/geotarget.css', array(), null, 'all' );
 
 	}

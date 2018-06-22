@@ -5,9 +5,6 @@
  */
 
 
-use function GeotFunctions\ip2location_db;
-use function GeotFunctions\maxmind_db;
-
 $opts     = geot_settings();
 $defaults = [
 	'license'                   => '',
@@ -55,7 +52,7 @@ $countries 	= geot_countries();
 					<p class="help"><?php _e( 'Enter your api secret', 'geot'); ?></p>
 				</td>
 			</tr>
-			<?php if( file_exists(maxmind_db())):?>
+			<?php if( file_exists(GeotFunctions\maxmind_db())):?>
 				<tr valign="top" class="">
 					<th><label for=""><?php _e( 'Enable Maxmind Database', 'geot'); ?></label></th>
 					<td colspan="3">
@@ -65,7 +62,7 @@ $countries 	= geot_countries();
 				</tr>
 			<?php endif;?>
 
-			<?php if( file_exists(ip2location_db())):?>
+			<?php if( file_exists(GeotFunctions\ip2location_db())):?>
 				<tr valign="top" class="">
 					<th><label for=""><?php _e( 'Enable IP2Location Database', 'geot'); ?></label></th>
 					<td colspan="3">
@@ -203,9 +200,25 @@ $countries 	= geot_countries();
 							</select>
 
 							<select name="geot_settings[city_region][<?php echo $j;?>][cities][]" multiple class="cities_container" id="<?php echo 'cities'.$j;?>" data-placeholder="<?php _e('First choose a country', 'geot' );?>" >
+								<?php
+								/*
+
+								$country_cities = false;
+								if( isset( $city_region['countries'] ) && is_array( $city_region['countries'] ) ) {
+									$country_cities = reset($city_region['countries']);
+								}
+								$cities = json_decode(geot_get_cities($country_cities));
+								if( $cities ) {
+									foreach ($cities as $option_city) {
+										echo '<option value="'.$option_city->city.'" ';
+										echo isset($city_region['cities']) && is_array($city_region['cities']) ? selected(true, in_array($option_city->city, $city_region['cities'])) : '';
+										echo '>'.$option_city->city.'</option>';
+									}
+								}*/
+								?>
 							</select>
 							<script>
-                                jQuery('#<?php echo 'cities'.$j;?>').selectize({
+                               var select_<?= $j;?> = jQuery('#<?php echo 'cities'.$j;?>').selectize({
                                     plugins: ['remove_button'],
                                     valueField: 'name',
                                     labelField: 'name',
@@ -215,10 +228,13 @@ $countries 	= geot_countries();
                                     render: function (item,escape) {
                                         return '<div>' + escape(item.name) + '</div>';
                                     },
-                                    preload: 'focus',
+                                    preload: true,
                                     openOnFocus: true,
-                                    load: function (query, callback) {
-                                        if (!query.length) return callback();
+                                    onFocus: function () {
+                                        var inst = select_<?= $j;?>[0].selectize;
+                                        if( inst.loaded )
+                                            return;
+                                        inst.disable();
                                         jQuery.ajax({
                                             url: geot.ajax_url,
                                             type: 'POST',
@@ -228,10 +244,13 @@ $countries 	= geot_countries();
                                                 country: '<?= reset($city_region['countries']);?>'
                                             },
                                             error: function () {
-                                                callback();
+
                                             },
                                             success: function (res) {
-                                                callback(res);
+                                                inst.loaded = true;
+                                                inst.enable();
+                                                inst.addOption(res);
+                                                inst.refreshOptions(true);
                                             }
                                         });
                                     }

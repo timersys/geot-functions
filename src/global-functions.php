@@ -209,15 +209,28 @@ function geot_state_by_ip( $ip = '') {
  */
 function geot_get_cities( $country = 'US')	{
 
-	$cities = wp_cache_get( 'geot_cities'.$country);
+	$cities = get_option( 'geot_cities'.$country);
 
 	if( false === $cities ) {
 		$cities = GeotargetingWP::getCities($country);
-		wp_cache_set( 'geot_cities'.$country, $cities);
+		update_option( 'geot_cities'.$country, $cities);
 	}
 
 	return $cities;
 
+}
+
+/**
+ * Return json data for choices js select
+ *
+ * @param $country
+ *
+ * @return string
+ */
+function geot_get_cities_choices( $country ) {
+	$cities = geot_get_cities($country);
+	$choices = json_encode(array_map(function($a){ return ['name' => $a->city, 'id' => $a->city]; },json_decode($cities)));
+	return $choices;
 }
 
 /**

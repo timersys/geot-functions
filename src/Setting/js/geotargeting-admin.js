@@ -37,7 +37,7 @@
             });
         });
 
-		if( typeof acf !== 'undefinded') {
+		if( typeof acf !== 'undefined') {
             acf.add_action('append', function ($el) {
 				// $el will be equivalent to the new element being appended $('tr.row')
                 var $select = $el.next('.acf-row').find('select');

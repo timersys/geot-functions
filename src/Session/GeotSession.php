@@ -1,6 +1,7 @@
 <?php
 namespace GeotFunctions\Session;
 use WP_Session;
+use WP_Session_Utils;
 
 /**
  * GeotSession wrapper Class
@@ -212,7 +213,7 @@ class GeotSession {
 		) $collate;";
 
             require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-            require_once( dirname(__FILE__) .'wp-session/class-wp-session-utils.php' );
+            require_once( dirname(__FILE__) .'/wp-session/class-wp-session-utils.php' );
             dbDelta( $table );
 
             add_option( 'sm_session_db_version', '0.1', '', 'no' );

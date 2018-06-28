@@ -146,7 +146,7 @@ $countries 	= geot_countries();
 
 				if( !empty( $opts['region'] ) ) {
 					$i = 0;
-					foreach ( $opts['region'] as $region ) { $i++; error_log(print_r($region,1));?>
+					foreach ( $opts['region'] as $region ) { $i++; ?>
 
 						<div class="region-group"  data-id="<?php echo $i;?>" >
 

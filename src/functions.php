@@ -91,3 +91,11 @@ function maxmind_db(){
 function ip2location_db(){
 	return apply_filters( 'geot/ip2location_path', WP_CONTENT_DIR . '/uploads/geot_plugin/IP2LOCATION.BIN' );
 }
+
+/**
+ * Simple filter so plugins can add their own version and bust cache
+ * @return mixed
+ */
+function get_version() {
+	return apply_filters( 'geot/plugin_version', '0');
+}

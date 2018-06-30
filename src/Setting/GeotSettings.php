@@ -78,8 +78,8 @@ class GeotSettings {
 		if( 'post.php' == $pagenow ) {
 			wp_enqueue_style('wp-jquery-ui-dialog');
 		}
-
-		wp_enqueue_style( 'geot', $this->plugin_url . 'css/geotarget.css', array(), null, 'all' );
+		$version = \GeotFunctions\get_version();
+		wp_enqueue_style( 'geot', $this->plugin_url . 'css/geotarget.css', array(), $version, 'all' );
 
 	}
 
@@ -89,10 +89,10 @@ class GeotSettings {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		wp_enqueue_script( 'geot-selectize', $this->plugin_url . 'js/selectize.min.js', array( 'jquery' ), null, false);
-		wp_enqueue_script( 'geot-chosen', $this->plugin_url . 'js/chosen.jquery.min.js', array( 'jquery' ), null, false );
-		wp_enqueue_script( 'geot', $this->plugin_url . 'js/geotargeting-admin.js', array( 'jquery','geot-chosen','geot-selectize','jquery-ui-dialog'), null, false );
+		$version = \GeotFunctions\get_version();
+		wp_enqueue_script( 'geot-selectize', $this->plugin_url . 'js/selectize.min.js', array( 'jquery' ), $version, false);
+		wp_enqueue_script( 'geot-chosen', $this->plugin_url . 'js/chosen.jquery.min.js', array( 'jquery' ), $version, false );
+		wp_enqueue_script( 'geot', $this->plugin_url . 'js/geotargeting-admin.js', array( 'jquery','geot-chosen','geot-selectize','jquery-ui-dialog'), $version, false );
 		wp_localize_script(  'geot', 'geot', array(
 			'ajax_url'  => admin_url('admin-ajax.php')
 		));

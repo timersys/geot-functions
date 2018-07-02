@@ -77,7 +77,7 @@ class GeotFunctions {
 
 		$this->geotWP = new GeotargetingWP( trim($this->opts['license']), trim($this->opts['api_secret']) );
 
-		$this->session =  new GeotSession();
+		$this->session =  GeotSession::instance();
 
 		// If we have cache mode turned on, we need to calculate user location before
 		// anything gets printed
@@ -413,7 +413,7 @@ class GeotFunctions {
 
 		if ( count( $exclude_places ) > 0 ) {
 			foreach ( $exclude_places as $ep ) {
-				if ( (isset($user_place->data ) &&  strtolower( $user_place->name ) == strtolower( $ep ) ) || ( isset($user_place->data) && strtolower( $user_place->iso_code ) == strtolower( $ep ) ) ){
+				if (  strtolower( $user_place->name ) == strtolower( $ep ) ||  strtolower( $user_place->iso_code ) == strtolower( $ep ) ){
 					$target = false;
 				}
 			}

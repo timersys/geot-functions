@@ -10,6 +10,9 @@ use WP_Session_Utils;
  */
 class GeotSession {
 
+	// Hold the class instance.
+	private static $_instance = null;
+
 	/**
 	 * Holds our session data
 	 *
@@ -18,15 +21,6 @@ class GeotSession {
 	 * @since 1.5
 	 */
 	private $session;
-
-	/**
-	 * Whether to use PHP $_SESSION or WP_Session
-	 *
-	 * @var bool
-	 * @access private
-	 * @since 1.5,1
-	 */
-	private $use_php_sessions = false;
 
 	/**
 	 * Session index prefix
@@ -69,6 +63,39 @@ class GeotSession {
 
         if ( empty( $this->session ) )
 			add_action( 'plugins_loaded', [ $this, 'init' ], -1 );
+	}
+
+	/**
+	 * Main GeotSession Instance
+	 *
+	 * Ensures only one instance is loaded or can be loaded.
+	 *
+	 * @since 1.0.0
+	 * @static
+	 *
+	 * @return GeotSession - Main instance
+	 */
+	public static function instance() {
+		if ( is_null( self::$_instance ) ) {
+			self::$_instance = new self();
+		}
+		return self::$_instance;
+	}
+
+	/**
+	 * Cloning is forbidden.
+	 * @since 1.0.0
+	 */
+	public function __clone() {
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
+	}
+
+	/**
+	 * Unserializing instances of this class is forbidden.
+	 * @since 1.0.0
+	 */
+	public function __wakeup() {
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
 	}
 
 	/**

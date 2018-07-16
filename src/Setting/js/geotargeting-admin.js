@@ -53,6 +53,9 @@
 
                     var $field = $el.find('.geot-chosen-select-multiple');
                     $field.selectize({plugins: ['remove_button'], options: options});
+                    var new_select = $field[0].selectize
+                        new_select.clear(true);
+                        new_select.enable();
                 }
 
             });

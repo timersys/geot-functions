@@ -58,6 +58,7 @@ class GeotSettings {
 	}
 
 	public function __construct() {
+
 		add_action( 'admin_menu' , [ $this, 'add_settings_menu' ],8);
 		add_action( 'admin_init' , [ $this, 'save_settings' ]);
 		add_action( 'admin_init' , [ $this, 'check_license' ],15);

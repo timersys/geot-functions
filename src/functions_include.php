@@ -1,5 +1,6 @@
 <?php
 // Don't redefine the functions if included multiple times.
+use GeotFunctions\Upgrade\GeoUpgrades;
 use GeotFunctions\Session\GeotSession;
 
 if ( !function_exists('GeotFunctions\toArray') ) {
@@ -12,3 +13,6 @@ if ( !function_exists('GeotFunctions\toArray') ) {
 
 // Init the session class on file load
 GeotSession::instance();
+
+// Upgrades
+GeoUpgrades::init();

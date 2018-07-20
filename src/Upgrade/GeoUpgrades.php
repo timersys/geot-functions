@@ -11,7 +11,7 @@ class GeoUpgrades {
 	public static function init()
 	{
 		self::$plugin_version = '1.0.0';
-		// TODO: ADD upgrade routines DELETE FROM $wpdb->options WHERE option_name LIKE '_wp_session_expires_%'
+		
 		add_action('geotWP/activated', [GeoUpgrades::class, 'run']);
 	}
 

@@ -41,7 +41,7 @@
             acf.add_action('append', function ($el) {
 				// $el will be equivalent to the new element being appended $('tr.row')
                 var $select = $el.next('.acf-row').find('select');
-                if( typeof $select !== 'undefined' && typeof $select[0].selectize !== 'undefined') {
+                if( $select.length && typeof $select[0] !== 'undefined' && typeof $select[0].selectize !== 'undefined') {
 
                     var selectize = $select[0].selectize;
                     var options = [];

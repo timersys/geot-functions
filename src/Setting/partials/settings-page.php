@@ -77,7 +77,17 @@ $countries 	= geot_countries();
 					<th><label for=""><?php _e( 'Enable WPEngine Geolocation', 'geot'); ?></label></th>
 					<td colspan="3">
 						<label><input type="checkbox" id="" name="geot_settings[wpengine]" value="1" <?php checked($opts['wpengine'],'1');?>/>
-							<p class="help"><?php _e( 'Check this if you want to use the WPEngine database', 'geot');?></p>
+							<p class="help"><?php _e( 'Check this if you want to use WPEngine database', 'geot');?></p>
+					</td>
+				</tr>
+            <?php endif;?>
+
+            <?php if( !empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) ):?>
+				<tr valign="top" class="">
+					<th><label for=""><?php _e( 'Enable Kinsta Geolocation', 'geot'); ?></label></th>
+					<td colspan="3">
+						<label><input type="checkbox" id="" name="geot_settings[kinsta]" value="1" <?php checked($opts['kinsta'],'1');?>/>
+							<p class="help"><?php _e( 'Check this if you want to use Kinsta database', 'geot');?></p>
 					</td>
 				</tr>
             <?php endif;?>

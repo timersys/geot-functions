@@ -17,6 +17,9 @@ class GeotNotices {
 
 		if(  getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) !== false && ! get_option('geot_wpengine_dismiss') )
             add_action( 'admin_notices', array( self::class, 'wpengine') );
+
+		if(  !empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) && ! get_option('geot_kinsta_dismiss') )
+            add_action( 'admin_notices', array( self::class, 'kinsta') );
 	}
 
 	public static function wpengine(){
@@ -25,6 +28,14 @@ class GeotNotices {
 		<p>We detected that your have WPEngine Geolocation enabled on your hosting.</p>
 		<p>Please go to the <a href="<?php echo admin_url('admin.php?page=geot-settings');?>">settings page</a> and enable it for using it with the GeotargetingWP plugins.</p>
 		<p><a href="<?= admin_url('?geot_notice=wpengine_dismiss');?>" class="button-primary"><?php _e('Dismiss','geot');?></a></p>
+		</div><?php
+	}
+	public static function kinsta(){
+		?><div class="notice-info error">
+		<h3><i class=" dashicons-before dashicons-admin-site"></i> GeotargetingWP Kinsta</h3>
+		<p>We detected that your have Kinsta Geolocation enabled on your hosting.</p>
+		<p>Please go to the <a href="<?php echo admin_url('admin.php?page=geot-settings');?>">settings page</a> and enable it for using it with the GeotargetingWP plugins.</p>
+		<p><a href="<?= admin_url('?geot_notice=kinsta_dismiss');?>" class="button-primary"><?php _e('Dismiss','geot');?></a></p>
 		</div><?php
 	}
 }

@@ -98,16 +98,16 @@ class RecordConverter{
 			throw new \Exception('Kinsta failed to return record' );
 
 		self::$geot_record = [];
-		self::$geot_record['city']['names']                 = isset( $_SERVER['GEOIP_CITY' ]) ? ['en' => $_SERVER['GEOIP_CITY' ] ] : '';
-		self::$geot_record['city']['zip']                   = isset( $_SERVER['GEOIP_POSTAL_CODE' ]) ? $_SERVER['GEOIP_POSTAL_CODE' ]: '';
+		self::$geot_record['city']['names']                 = isset( $_SERVER['HTTP_GEOIP_CITY' ]) ? ['en' => $_SERVER['HTTP_GEOIP_CITY' ] ] : '';
+		self::$geot_record['city']['zip']                   = isset( $_SERVER['HTTP_GEOIP_POSTAL_CODE' ]) ? $_SERVER['HTTP_GEOIP_POSTAL_CODE' ]: '';
 		self::$geot_record['continent']['names']            = '';
-		self::$geot_record['continent']['iso_code']         = isset($_SERVER['GEOIP_CITY_CONTINENT_CODE']) ? $_SERVER['GEOIP_CITY_CONTINENT_CODE'] : '';
-		self::$geot_record['country']['iso_code']           = isset( $_SERVER['GEOIP_CITY_COUNTRY_CODE']) ? $_SERVER['GEOIP_CITY_COUNTRY_CODE']: '';
-		self::$geot_record['country']['names']              = isset( $_SERVER['GEOIP_CITY_COUNTRY_NAME']) ? ['en' => $_SERVER['GEOIP_CITY_COUNTRY_NAME'] ] : '';
-		self::$geot_record['state']['iso_code']             = isset( $_SERVER['GEOIP_REGION' ]) ? $_SERVER['GEOIP_REGION' ]: '';
+		self::$geot_record['continent']['iso_code']         = isset($_SERVER['HTTP_GEOIP_CITY_CONTINENT_CODE']) ? $_SERVER['HTTP_GEOIP_CITY_CONTINENT_CODE'] : '';
+		self::$geot_record['country']['iso_code']           = isset( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_CODE']) ? $_SERVER['HTTP_GEOIP_CITY_COUNTRY_CODE']: '';
+		self::$geot_record['country']['names']              = isset( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME']) ? ['en' => $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ] : '';
+		self::$geot_record['state']['iso_code']             = isset( $_SERVER['HTTP_GEOIP_REGION' ]) ? $_SERVER['HTTP_GEOIP_REGION' ]: '';
 		self::$geot_record['state']['names']                = '';
-		self::$geot_record['geolocation']['latitude']       = isset( $_SERVER['GEOIP_LATITUDE']) ? $_SERVER['GEOIP_LATITUDE']: '';
-		self::$geot_record['geolocation']['longitude']      = isset( $_SERVER['GEOIP_LONGITUDE']) ? $_SERVER['GEOIP_LONGITUDE']: '';
+		self::$geot_record['geolocation']['latitude']       = isset( $_SERVER['HTTP_GEOIP_LATITUDE']) ? $_SERVER['HTTP_GEOIP_LATITUDE']: '';
+		self::$geot_record['geolocation']['longitude']      = isset( $_SERVER['HTTP_GEOIP_LONGITUDE']) ? $_SERVER['HTTP_GEOIP_LONGITUDE']: '';
 		self::$geot_record['geolocation']['accuracy_radius']= '';
 		self::$geot_record['geolocation']['time_zone']      = '';
 

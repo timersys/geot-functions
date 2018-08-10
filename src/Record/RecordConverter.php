@@ -94,7 +94,7 @@ class RecordConverter{
 	}
 
 	public static function kinsta(){
-		if( !empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) )
+		if( empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) )
 			throw new \Exception('Kinsta failed to return record' );
 
 		self::$geot_record = [];

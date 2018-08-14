@@ -194,7 +194,10 @@ class GeotSettings {
 				$settings = json_decode($file,true);
 
 			}
-
+			// trim fields
+			if( is_array($settings) ) {
+				$settings = array_filter( $settings, 'trim' );
+			}
 			// update license field
 			if( !empty($settings['license'])){
 				$license = esc_attr($settings['license']);

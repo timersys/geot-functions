@@ -196,7 +196,11 @@ class GeotSettings {
 			}
 			// trim fields
 			if( is_array($settings) ) {
-				$settings = array_filter( $settings, 'trim' );
+				$settings = array_filter( $settings, function ($a) {
+					if( is_string($a) )
+						return trim($a);
+					return $a;
+				} );
 			}
 			// update license field
 			if( !empty($settings['license'])){

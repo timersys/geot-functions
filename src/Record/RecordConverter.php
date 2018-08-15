@@ -105,7 +105,7 @@ class RecordConverter{
 		self::$geot_record['country']['iso_code']           = isset( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_CODE']) ? $_SERVER['HTTP_GEOIP_CITY_COUNTRY_CODE']: '';
 		self::$geot_record['country']['names']              = isset( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME']) ? ['en' => $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ] : '';
 		self::$geot_record['state']['iso_code']             = isset( $_SERVER['HTTP_GEOIP_REGION' ]) ? $_SERVER['HTTP_GEOIP_REGION' ]: '';
-		self::$geot_record['state']['names']                = '';
+		self::$geot_record['state']['names']                = isset( $_SERVER['HTTP_GEOIP_REGION_NAME' ]) ? ['en' => $_SERVER['HTTP_GEOIP_REGION_NAME' ] ]: '';
 		self::$geot_record['geolocation']['latitude']       = isset( $_SERVER['HTTP_GEOIP_LATITUDE']) ? $_SERVER['HTTP_GEOIP_LATITUDE']: '';
 		self::$geot_record['geolocation']['longitude']      = isset( $_SERVER['HTTP_GEOIP_LONGITUDE']) ? $_SERVER['HTTP_GEOIP_LONGITUDE']: '';
 		self::$geot_record['geolocation']['accuracy_radius']= '';

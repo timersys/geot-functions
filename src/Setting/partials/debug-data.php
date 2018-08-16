@@ -1,19 +1,16 @@
-<?php global $wp_version, $wpdb; ?>
-<?php
-	$theme_data		= wp_get_theme();
-	$theme 			= $theme_data->Name . ' ' . $theme_data->Version;
-	$uploads_dir 	= wp_upload_dir();
-	$muplugins 		= get_mu_plugins();
-	$plugins        = get_plugins();
-	$active_plugins = get_option( 'active_plugins', array() );
-	$updates 		= get_plugin_updates();
-	$opts 			= geot_settings();
-	//$g = geot();
-	//print_r($g->maxmind());
+<?php global $wp_version, $wpdb;
+
+$theme_data     = wp_get_theme();
+$theme          = $theme_data->Name . ' ' . $theme_data->Version;
+$uploads_dir    = wp_upload_dir();
+$muplugins      = get_mu_plugins();
+$plugins        = get_plugins();
+$active_plugins = get_option( 'active_plugins', array() );
+$updates        = get_plugin_updates();
+$opts           = geot_settings();
 ?>
 
 <h2>Geolocation data</h2>
-<p>Please copy and paste the whole page if requested by support</p>
 
 <form method="POST" action="<?php echo plugins_url( '/download-debug-data.php', __FILE__ ); ?>">
 <textarea readonly="readonly" onclick="this.focus(); this.select()" id="geot-debug-info" name="geot-debug-content">
@@ -207,5 +204,5 @@ Use Only Cookies:         <?php echo ( ini_get( 'session.use_only_cookies' ) ? '
 </textarea>
 
 <?php wp_nonce_field( 'field-debug-nonce', 'geot-debug-nonce' ); ?>
-<input type="submit" class="button-primary" name="geot-debug-button" value="Download in TXT" />
+<input type="submit" class="button-primary" name="geot-debug-button" value="Download debug data" />
 </form>

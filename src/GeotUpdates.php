@@ -66,7 +66,7 @@ class GeotUpdates {
 		global $pagenow;
 
 		if ( ! is_object( $_transient_data ) ) {
-			$_transient_data = new stdClass;
+			$_transient_data = new \stdClass();
 		}
 
 		if ( 'plugins.php' == $pagenow && is_multisite() ) {

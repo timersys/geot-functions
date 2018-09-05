@@ -1,7 +1,5 @@
 <?php
 namespace GeotFunctions\Session;
-//use WP_Session;
-//use WP_Session_Utils;
 
 /**
  * GeotSession wrapper Class

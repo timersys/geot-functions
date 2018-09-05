@@ -1,5 +1,5 @@
 {
-    "name": "timersys/geot-functions",
+    "name": "gonzalesc/geot-functions",
     "description": "Base wordpress functions to use with GeotargetingWP plugins",
     "keywords": ["geotargeting", "wordpress", "timersys"],
     "license": "GPL-3.0-or-later",

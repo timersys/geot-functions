@@ -25,14 +25,14 @@
     },
 	"autoload": {
         "classmap": [
-            "includes/SessionHandler.php",
-            "includes/DatabaseHandler.php",
-            "includes/Option.php",
-            "includes/OptionsHandler.php"
+            "src/Session/wp-session/SessionHandler.php",
+            "src/Session/wp-session/DatabaseHandler.php",
+            "src/Session/wp-session/Option.php",
+            "src/Session/wp-session/OptionsHandler.php"
         ],
         "files": [
                 "src/functions_include.php",
-                "includes/deprecated.php"
+                "src/Session/wp-session/deprecated.php"
         ],
         "psr-4": {
             "GeotFunctions\\": "src/"

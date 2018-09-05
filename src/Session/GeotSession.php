@@ -1,7 +1,7 @@
 <?php
 namespace GeotFunctions\Session;
-use WP_Session;
-use WP_Session_Utils;
+//use WP_Session;
+//use WP_Session_Utils;
 
 /**
  * GeotSession wrapper Class
@@ -41,28 +41,52 @@ class GeotSession {
 	 */
 	public function __construct() {
 
-        if( ! $this->should_start_session() ) {
-            return;
-        }
-        // Use WP_Session (default)
-        if ( ! defined( 'WP_SESSION_COOKIE' ) ) {
-            define( 'WP_SESSION_COOKIE', '_wp_session' );
-        }
-        if ( ! class_exists( 'Recursive_ArrayAccess' ) ) {
-            require_once dirname(__FILE__) . '/wp-session/class-recursive-arrayaccess.php';
-        }
-        if ( ! class_exists( 'WP_Session' ) ) {
-            require_once dirname(__FILE__) . '/wp-session/class-wp-session.php';
-            require_once dirname(__FILE__) . '/wp-session/class-wp-session-utils.php';
-            require_once dirname(__FILE__) . '/wp-session/wp-session.php';
-        }
+        //if( ! $this->should_start_session() ) {
+        //   return;
+        //}
 
-        // Create the required table.
-        add_action('admin_init', [$this, 'create_sm_sessions_table']);
-        add_action('wp_session_init', [$this, 'create_sm_sessions_table']);
+        //$wp_session_autoload = __DIR__ . '/vendor/autoload.php';
+		
+		//if (file_exists($wp_session_autoload)) {
+		//    require_once $wp_session_autoload;
+		//}
 
-        if ( empty( $this->session ) )
-			add_action( 'plugins_loaded', [ $this, 'init' ], -1 );
+		if (!class_exists('EAMann\Sessionz\Manager')) {
+		    exit('WP Session Manager requires Composer autoloading, which is not configured');
+		}
+
+		// Queue up the session stack
+		$wp_session_handler = EAMann\Sessionz\Manager::initialize();
+		if (defined('WP_SESSION_USE_OPTIONS') && WP_SESSION_USE_OPTIONS) {
+		    $wp_session_handler->addHandler(new \EAMann\WPSession\OptionsHandler());
+		} else {
+		    $wp_session_handler->addHandler(new \EAMann\WPSession\DatabaseHandler());
+		}
+
+		if (defined('WP_SESSION_ENC_KEY') && WP_SESSION_ENC_KEY) {
+		    $wp_session_handler->addHandler(new \EAMann\Sessionz\Handlers\EncryptionHandler(WP_SESSION_ENC_KEY));
+		}
+
+		$wp_session_handler->addHandler(new \EAMann\Sessionz\Handlers\MemoryHandler());
+
+		// Create the required table.
+		add_action('admin_init',      ['EAMann\WPSession\DatabaseHandler', 'create_table']);
+		add_action('wp_session_init', ['EAMann\WPSession\DatabaseHandler', 'create_table']);
+		add_action('wp_install',      ['EAMann\WPSession\DatabaseHandler', 'create_table']);
+
+		// Start up session management, if we're not in the CLI
+		if (!defined('WP_CLI') || false === WP_CLI) {
+		    add_action('plugins_loaded', [$this, 'wp_session_manager_start_session'], 10, 0);
+		}
+	}
+
+	/**
+	 * If a session hasn't already been started by some external system, start one!
+	 */
+	function wp_session_manager_start_session()	{
+	    if (session_status() !== PHP_SESSION_ACTIVE) {
+	        session_start();
+	    }
 	}
 
 	/**
@@ -205,47 +229,4 @@ class GeotSession {
 		}
 		return $blacklist;
 	}
-
-    /**
-     * Create the new table for housing session data if we're not still using
-     * the legacy options mechanism. This code should be invoked before
-     * instantiating the singleton session manager to ensure the table exists
-     * before trying to use it.
-     *
-     * @see https://github.com/ericmann/wp-session-manager/issues/55
-     */
-    function create_sm_sessions_table() {
-        if ( defined( 'WP_SESSION_USE_OPTIONS' ) && WP_SESSION_USE_OPTIONS ) {
-            return;
-        }
-
-        $current_db_version = '0.1';
-        $created_db_version = get_option( 'sm_session_db_version', '0.0' );
-
-        if ( version_compare( $created_db_version, $current_db_version, '<' ) ) {
-            global $wpdb;
-
-            $collate = '';
-            if ( $wpdb->has_cap( 'collation' ) ) {
-                $collate = $wpdb->get_charset_collate();
-            }
-
-            $table = "CREATE TABLE {$wpdb->prefix}sm_sessions (
-		  session_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-		  session_key char(32) NOT NULL,
-		  session_value LONGTEXT NOT NULL,
-		  session_expiry BIGINT(20) UNSIGNED NOT NULL,
-		  PRIMARY KEY  (session_key),
-		  UNIQUE KEY session_id (session_id)
-		) $collate;";
-
-            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-            require_once( dirname(__FILE__) .'/wp-session/class-wp-session-utils.php' );
-            dbDelta( $table );
-
-            add_option( 'sm_session_db_version', '0.1', '', 'no' );
-
-            WP_Session_Utils::delete_all_sessions_from_options();
-        }
-    }
 }

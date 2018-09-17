@@ -21,7 +21,7 @@ class GeotNotifications {
 			return;
 		echo '<div class="geot-alert">
 						GeotargetingWP Error: '.esc_html($error->error).'<br/>
-						<small>This message it\'s only visible to admins</small></div>';
+						<small>(This message it\'s only visible to admins)</small></div>';
 		self::add_style();
 	}
 	public static function add_style(){

@@ -30,5 +30,15 @@ class GeotEmails {
 		}
 	}
 
+	public static function InvalidSubscriptionException( $getMessage ) {
+		if( false === get_transient('geot_InvalidSubscriptionException') ) {
+			set_transient( 'geot_InvalidSubscriptionException', true, 2 * 3600);
+			$message = sprintf( __( 'Your <a href="%s">GeotargetingWP</a> subscription is not active. Api returned following error: %s.', 'geot' ), 'https://geotargetingwp.com/dashboard/',$getMessage );
+			$subject = __( 'Geotargeting plugin Error!', 'geot');
+			$headers = array('Content-Type: text/html; charset=UTF-8');
+			wp_mail( get_bloginfo('admin_email'), $subject, $message, $headers);
+		}
+	}
+
 
 }

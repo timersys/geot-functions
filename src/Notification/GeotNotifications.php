@@ -20,7 +20,7 @@ class GeotNotifications {
 		if( ! current_user_can('administrator') || ! isset( $error->error ) )
 			return;
 		echo '<div class="geot-alert">
-						GeotargetingWP Error: '.esc_html($error->error).'<br/>
+						GeotargetingWP Error: '.esc_attr($error->error).'<br/>
 						<small>(This message it\'s only visible to admins)</small></div>';
 		self::add_style();
 	}

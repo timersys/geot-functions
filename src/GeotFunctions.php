@@ -210,6 +210,7 @@ class GeotFunctions {
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		} catch ( InvalidSubscriptionException $e ) {
+			GeotEmails::InvalidSubscriptionException($e->getMessage());
 			GeotNotifications::notify($e->getMessage());
 			return $this->getFallbackCountry();
 		} catch ( InvalidLicenseException $e ) {
@@ -501,7 +502,7 @@ class GeotFunctions {
 			$active_user = GeotargetingWP::checkSubscription($this->opts['license']);
 			$result = json_decode( $active_user );
 			if( ! isset( $result->success ) )
-				throw new InvalidSubscriptionException( json_encode( [ 'error' => 'Subscription not active' ] ) );
+				throw new InvalidSubscriptionException( json_encode( [ 'error' => $result->error ] ) );
 
 			set_transient( 'geot_active_user', true, DAY_IN_SECONDS );
 			return true;

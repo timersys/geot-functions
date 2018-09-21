@@ -31,8 +31,7 @@
             "src/Session/wp-session/OptionsHandler.php"
         ],
         "files": [
-                "src/functions_include.php",
-                "src/Session/wp-session/deprecated.php"
+                "src/functions_include.php"
         ],
         "psr-4": {
             "GeotFunctions\\": "src/"

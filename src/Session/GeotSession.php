@@ -1,5 +1,10 @@
 <?php
 namespace GeotFunctions\Session;
+use EAMann\Sessionz\Handlers\EncryptionHandler;
+use EAMann\Sessionz\Handlers\MemoryHandler;
+use EAMann\Sessionz\Manager;
+use EAMann\WPSession\DatabaseHandler;
+use EAMann\WPSession\OptionsHandler;
 
 /**
  * GeotSession wrapper Class
@@ -35,37 +40,27 @@ class GeotSession {
 	 * Defines our WP_Session constants, includes the necessary libraries and
 	 * retrieves the WP Session instance
 	 *
-	 * @since 1.5 TODO: UPDATE wp Sessions
+	 * @since 1.5
 	 */
 	public function __construct() {
 
-        //if( ! $this->should_start_session() ) {
-        //   return;
-        //}
-
-        //$wp_session_autoload = __DIR__ . '/vendor/autoload.php';
-		
-		//if (file_exists($wp_session_autoload)) {
-		//    require_once $wp_session_autoload;
-		//}
-
-		if (!class_exists('EAMann\Sessionz\Manager')) {
-		    exit('WP Session Manager requires Composer autoloading, which is not configured');
-		}
+        if( ! $this->should_start_session() ) {
+           return;
+        }
 
 		// Queue up the session stack
-		$wp_session_handler = EAMann\Sessionz\Manager::initialize();
+		$wp_session_handler = Manager::initialize();
 		if (defined('WP_SESSION_USE_OPTIONS') && WP_SESSION_USE_OPTIONS) {
-		    $wp_session_handler->addHandler(new \EAMann\WPSession\OptionsHandler());
+		    $wp_session_handler->addHandler(new OptionsHandler());
 		} else {
-		    $wp_session_handler->addHandler(new \EAMann\WPSession\DatabaseHandler());
+		    $wp_session_handler->addHandler(new DatabaseHandler());
 		}
 
 		if (defined('WP_SESSION_ENC_KEY') && WP_SESSION_ENC_KEY) {
-		    $wp_session_handler->addHandler(new \EAMann\Sessionz\Handlers\EncryptionHandler(WP_SESSION_ENC_KEY));
+		    $wp_session_handler->addHandler(new EncryptionHandler(WP_SESSION_ENC_KEY));
 		}
 
-		$wp_session_handler->addHandler(new \EAMann\Sessionz\Handlers\MemoryHandler());
+		$wp_session_handler->addHandler(new MemoryHandler());
 
 		// Create the required table.
 		add_action('admin_init',      ['EAMann\WPSession\DatabaseHandler', 'create_table']);
@@ -121,31 +116,6 @@ class GeotSession {
 	}
 
 	/**
-	 * Setup the WP_Session instance
-	 *
-	 * @access public
-	 * @since 1.5
-	 * @return void
-	 */
-	public function init() {
-
-		$this->session = WP_Session::get_instance();
-
-		return $this->session;
-	}
-
-	/**
-	 * Retrieve session ID
-	 *
-	 * @access public
-	 * @since 1.6
-	 * @return string Session ID
-	 */
-	public function get_id() {
-		return $this->session->session_id;
-	}
-
-	/**
 	 * Retrieve a session variable
 	 *
 	 * @access public
@@ -156,7 +126,7 @@ class GeotSession {
 	public function get( $key ) {
 		$key    = sanitize_key( $key );
 
-		return json_decode($this->session[ $key ] ) ?: false;
+		return json_decode($_SESSION[ $key ] ) ?: false;
 	}
 
 	/**
@@ -171,9 +141,9 @@ class GeotSession {
 	public function set( $key, $value ) {
 		$key = sanitize_key( $key );
 
-		$this->session[ $key ] = wp_json_encode( $value );
+		$_SESSION[ $key ] = wp_json_encode( $value );
 
-		return $this->session[ $key ];
+		return $_SESSION[ $key ];
 	}
 
 	/**

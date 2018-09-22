@@ -1,4 +1,5 @@
 <?php
+
 namespace GeotFunctions;
 
 function add_countries_to_db() {
@@ -24,9 +25,10 @@ function add_countries_to_db() {
 	}
 
 }
-function populate_db(){
+
+function populate_db() {
 	global $wpdb;
-$query = " INSERT INTO `{$wpdb->base_prefix}geot_countries` ( `iso_code`, `country`)
+	$query = " INSERT INTO `{$wpdb->base_prefix}geot_countries` ( `iso_code`, `country`)
 VALUES
 ('AD', 'Andorra' ),
 ('AF', 'Afghanistan' ),

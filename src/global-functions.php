@@ -1,23 +1,27 @@
 <?php
+
 use GeotFunctions\GeotFunctions;
 use GeotWP\GeotargetingWP;
+
 /**
  * Function to get instance of the class
  * @return \GeotFunctions\Geot
  */
-function geot(){
+function geot() {
 	return GeotFunctions::instance();
 }
 
 /**
  * Grab user data
+ *
  * @param $key [continent, country, state, city, geolocation]
  *
  * @return mixed
  */
 function geot_get( $key ) {
 	$g = geot();
-	return $g->get($key);
+
+	return $g->get( $key );
 }
 
 /**
@@ -27,12 +31,15 @@ function geot_get( $key ) {
  *
  * @return object Current user country Record. Methods are $country->iso_code $country->name $country->names
  */
-function geot_user_country( $locale = 'en' ){
+function geot_user_country( $locale = 'en' ) {
 	$c = geot_get( 'country' );
-	if( $locale != 'en' && method_exists($c,'setDefaultLocale'))
-	    $c->setDefaultLocale($locale);
+	if ( $locale != 'en' && method_exists( $c, 'setDefaultLocale' ) ) {
+		$c->setDefaultLocale( $locale );
+	}
+
 	return $c;
 }
+
 /**
  * Gets User country by ip. Is not ip given current user country will show
  *
@@ -40,7 +47,7 @@ function geot_user_country( $locale = 'en' ){
  *
  * @return object Current user country record. Methods are $country->iso_code $country->name $country->names
  */
-function geot_country_by_ip( $ip = '', $force = false) {
+function geot_country_by_ip( $ip = '', $force = false ) {
 	$g = geot();
 
 	return $g->getUserData( $ip, $force )->country;
@@ -53,7 +60,7 @@ function geot_country_by_ip( $ip = '', $force = false) {
  *
  * @return object
  */
-function geot_data( $ip = '') {
+function geot_data( $ip = '' ) {
 	$g = geot();
 
 	return $g->getUserData( $ip );
@@ -64,7 +71,7 @@ function geot_data( $ip = '') {
  * [geot_country_code]
  * @return  string country CODE
  **/
-function geot_country_code( ) {
+function geot_country_code() {
 	return geot_get( 'country' )->iso_code;
 }
 
@@ -76,10 +83,12 @@ function geot_country_code( ) {
  *
  * @return string country name
  */
-function geot_country_name($locale = 'en') {
-    $c = geot_get( 'country' );
-    if( $locale != 'en' && method_exists($c,'setDefaultLocale'))
-        $c->setDefaultLocale($locale);
+function geot_country_name( $locale = 'en' ) {
+	$c = geot_get( 'country' );
+	if ( $locale != 'en' && method_exists( $c, 'setDefaultLocale' ) ) {
+		$c->setDefaultLocale( $locale );
+	}
+
 	return $c->name;
 }
 
@@ -92,11 +101,13 @@ function geot_country_name($locale = 'en') {
  *
  * @return string
  */
-function geot_city_name($locale = 'en') {
-    $c = geot_get( 'city' );
-    if( $locale != 'en' && method_exists($c,'setDefaultLocale'))
-        $c->setDefaultLocale($locale);
-    return $c->name;
+function geot_city_name( $locale = 'en' ) {
+	$c = geot_get( 'city' );
+	if ( $locale != 'en' && method_exists( $c, 'setDefaultLocale' ) ) {
+		$c->setDefaultLocale( $locale );
+	}
+
+	return $c->name;
 }
 
 
@@ -108,11 +119,13 @@ function geot_city_name($locale = 'en') {
  *
  * @return string
  */
-function geot_state_name($locale = 'en') {
-    $s = geot_get( 'state' );
-    if( $locale != 'en' && method_exists($s,'setDefaultLocale'))
-        $s->setDefaultLocale($locale);
-    return $s->name;
+function geot_state_name( $locale = 'en' ) {
+	$s = geot_get( 'state' );
+	if ( $locale != 'en' && method_exists( $s, 'setDefaultLocale' ) ) {
+		$s->setDefaultLocale( $locale );
+	}
+
+	return $s->name;
 }
 
 /**
@@ -133,11 +146,13 @@ function geot_state_code() {
  *
  * @return string
  */
-function geot_continent($locale = 'en') {
-    $c = geot_get( 'continent' );
-    if( $locale != 'en' && method_exists($c,'setDefaultLocale'))
-        $c->setDefaultLocale($locale);
-    return $c->name;
+function geot_continent( $locale = 'en' ) {
+	$c = geot_get( 'continent' );
+	if ( $locale != 'en' && method_exists( $c, 'setDefaultLocale' ) ) {
+		$c->setDefaultLocale( $locale );
+	}
+
+	return $c->name;
 }
 
 /**
@@ -162,31 +177,35 @@ function geot_location() {
  * [geot_time_zone]
  * @return string time_zone
  */
-function geot_time_zone( ) {
+function geot_time_zone() {
 	return geot_get( 'geolocation' )->time_zone;
 }
+
 /**
  * Accuracy radius, where higher means less accurate
  * [geot_radius]
  * @return string radius
  */
-function geot_radius( ) {
+function geot_radius() {
 	return geot_get( 'geolocation' )->accuracy_radius;
 }
+
 /**
  * [geot_lat]
  * @return string latitude
  */
-function geot_lat( ) {
+function geot_lat() {
 	return geot_get( 'geolocation' )->latitude;
 }
+
 /**
  * [geot_lng]
  * @return string longitude
  */
-function geot_lng( ) {
+function geot_lng() {
 	return geot_get( 'geolocation' )->longitude;
 }
+
 /**
  * Gets User state by ip. Is not ip given current user country will show
  *
@@ -194,7 +213,7 @@ function geot_lng( ) {
  *
  * @return object Current user state. Values are $state->isoCode $state->name
  */
-function geot_state_by_ip( $ip = '') {
+function geot_state_by_ip( $ip = '' ) {
 	$data = geot_data( $ip );
 
 	return $data->state;
@@ -207,13 +226,13 @@ function geot_state_by_ip( $ip = '') {
  *
  * @return object cities names with country codes
  */
-function geot_get_cities( $country = 'US')	{
+function geot_get_cities( $country = 'US' ) {
 
-	$cities = get_option( 'geot_cities'.$country);
+	$cities = get_option( 'geot_cities' . $country );
 
-	if( false === $cities ) {
-		$cities = GeotargetingWP::getCities($country);
-		update_option( 'geot_cities'.$country, $cities);
+	if ( false === $cities ) {
+		$cities = GeotargetingWP::getCities( $country );
+		update_option( 'geot_cities' . $country, $cities );
 	}
 
 	return $cities;
@@ -228,14 +247,18 @@ function geot_get_cities( $country = 'US')	{
  * @return string
  */
 function geot_get_cities_choices( $country ) {
-	$cities = geot_get_cities($country);
-	$choices = json_encode(array_map(function($a){ return ['name' => $a->city, 'id' => $a->city]; },json_decode($cities)));
+	$cities  = geot_get_cities( $country );
+	$choices = json_encode( array_map( function ( $a ) {
+		return [ 'name' => $a->city, 'id' => $a->city ];
+	}, json_decode( $cities ) ) );
+
 	return $choices;
 }
 
 /**
  * Check for current user if belong to any regions and return the name of them
  * or return default
+ *
  * @param string $default
  *
  * @return Array/String
@@ -243,15 +266,17 @@ function geot_get_cities_choices( $country ) {
 function geot_user_country_region( $default = '' ) {
 
 	$country_code = geot_country_code();
-	$regions = geot_country_regions();
+	$regions      = geot_country_regions();
 
-	if( empty( $regions ) || ! is_array( $regions ) || empty( $country_code ) )
+	if ( empty( $regions ) || ! is_array( $regions ) || empty( $country_code ) ) {
 		return $default;
+	}
 
 	$user_regions = array();
-	foreach( $regions as $region )  {
-		if( isset($region['countries']) && in_array( $country_code, $region['countries'] ) )
+	foreach ( $regions as $region ) {
+		if ( isset( $region['countries'] ) && in_array( $country_code, $region['countries'] ) ) {
 			$user_regions[] = $region['name'];
+		}
 	}
 
 	return empty( $user_regions ) ? $default : $user_regions;
@@ -261,6 +286,7 @@ function geot_user_country_region( $default = '' ) {
 /**
  * Check for current user if belong to any city regions and return the name of them
  * or return default
+ *
  * @param string $default
  *
  * @return Array/String
@@ -268,15 +294,17 @@ function geot_user_country_region( $default = '' ) {
 function geot_user_city_region( $default = '' ) {
 
 	$city_name = geot_city_name();
-	$regions = geot_city_regions();
+	$regions   = geot_city_regions();
 
-	if( empty( $regions ) || ! is_array( $regions ) || empty( $city_name ) )
+	if ( empty( $regions ) || ! is_array( $regions ) || empty( $city_name ) ) {
 		return $default;
+	}
 
 	$user_regions = array();
-	foreach( $regions as $region )  {
-		if( in_array( $city_name, $region['cities'] ) )
+	foreach ( $regions as $region ) {
+		if ( in_array( $city_name, $region['cities'] ) ) {
 			$user_regions[] = $region['name'];
+		}
 	}
 
 	return empty( $user_regions ) ? $default : $user_regions;
@@ -296,15 +324,16 @@ function geot_user_city_region( $default = '' ) {
  *
  * @return bool
  */
-function geot_target( $include = '', $place_region = '', $exclude = '', $exclude_region  = '', $key = 'country' ) {
-	$g = geot();
+function geot_target( $include = '', $place_region = '', $exclude = '', $exclude_region = '', $key = 'country' ) {
+	$g    = geot();
 	$args = [
-		'include' => $include,
-		'exclude' => $exclude,
-		'region'  => $place_region,
-		'exclude_region'  => $exclude_region,
+		'include'        => $include,
+		'exclude'        => $exclude,
+		'region'         => $place_region,
+		'exclude_region' => $exclude_region,
 	];
-	return $g->target( $key, $args);
+
+	return $g->target( $key, $args );
 }
 
 /**
@@ -317,8 +346,8 @@ function geot_target( $include = '', $place_region = '', $exclude = '', $exclude
  *
  * @return bool
  */
-function geot_target_city( $city = '', $city_region = '', $exclude = '', $exclude_region  = '') {
-	return geot_target($city,  $city_region, $exclude, $exclude_region, 'city');
+function geot_target_city( $city = '', $city_region = '', $exclude = '', $exclude_region = '' ) {
+	return geot_target( $city, $city_region, $exclude, $exclude_region, 'city' );
 }
 
 /**
@@ -329,8 +358,8 @@ function geot_target_city( $city = '', $city_region = '', $exclude = '', $exclud
  *
  * @return bool
  */
-function geot_target_state( $state = '', $exclude = '') {
-	return geot_target($state, '',  $exclude,'', 'state');
+function geot_target_state( $state = '', $exclude = '' ) {
+	return geot_target( $state, '', $exclude, '', 'state' );
 }
 
 /**
@@ -341,16 +370,16 @@ function geot_target_state( $state = '', $exclude = '') {
  *
  * @return bool
  */
-function geot_target_zip( $zip = '', $exclude = '') {
-	return geot_target($zip, '', $exclude,'', 'zip');
+function geot_target_zip( $zip = '', $exclude = '' ) {
+	return geot_target( $zip, '', $exclude, '', 'zip' );
 }
 
 /**
  * Grab geot settings
  * @return mixed|void
  */
-function geot_settings(){
-	return apply_filters('geot/settings_page/opts', get_option( 'geot_settings' ) );
+function geot_settings() {
+	return apply_filters( 'geot/settings_page/opts', get_option( 'geot_settings' ) );
 }
 
 /**
@@ -358,7 +387,7 @@ function geot_settings(){
  * @return mixed
  */
 function geot_country_regions() {
-	return apply_filters('geot/get_country_regions', []);
+	return apply_filters( 'geot/get_country_regions', [] );
 }
 
 /**
@@ -366,45 +395,46 @@ function geot_country_regions() {
  * @return mixed
  */
 function geot_city_regions() {
-	return apply_filters('geot/get_city_regions', []);
+	return apply_filters( 'geot/get_city_regions', [] );
 }
 
 /**
  * Grab countries from database
  * @return mixed
  */
-function geot_countries(){
-	return apply_filters('geot/get_countries', []);
+function geot_countries() {
+	return apply_filters( 'geot/get_countries', [] );
 }
 
 /**
  * Prints geo debug data
  * @return bool|string
  */
-function geot_debug_data(){
+function geot_debug_data() {
 	$user_data = geot_data();
-	if( empty( $user_data->country ) )
+	if ( empty( $user_data->country ) ) {
 		return false;
+	}
 	ob_start();
 	?>
-		Country: <?php echo $user_data->country->name . PHP_EOL.'<br>';?>
-		Country code: <?php echo $user_data->country->iso_code . PHP_EOL.'<br>';?>
-		State: <?php echo $user_data->state->name . PHP_EOL.'<br>';?>
-		State code: <?php echo $user_data->state->iso_code . PHP_EOL.'<br>';?>
-		City: <?php echo $user_data->city->name . PHP_EOL.'<br>';?>
-		Zip: <?php echo $user_data->city->zip . PHP_EOL.'<br>';?>
-		Continent: <?php echo $user_data->continent->name . PHP_EOL.'<br>';?>
-		Geolocation: { <br>
-				Time zone: <?php echo $user_data->geolocation->time_zone . PHP_EOL.'<br>';?>
-				Accuracy radius: <?php echo $user_data->geolocation->accuracy_radius . PHP_EOL.'<br>';?>
-				Lat: <?php echo $user_data->geolocation->latitude . PHP_EOL.'<br>';?>
-				Lng: <?php echo $user_data->geolocation->longitude . PHP_EOL.'<br>';?>
-		}<br>
-		Real IP: <?php echo GeotWP\getUserIP(). PHP_EOL.'<br>';?>
-		IP geot/user_ip: <?php echo apply_filters('geot/user_ip', GeotWP\getUserIP()). PHP_EOL.'<br>';?>
-		Geot Version: <?php echo defined('GEOT_VERSION') ?  GEOT_VERSION . PHP_EOL.'<br>' : '';?>
-		PHP Version: <?php echo phpversion() . PHP_EOL;?>
-		Host:   <?= $_SERVER['HTTP_HOST'] ?: 'no set'. PHP_EOL.'<br>'?>
+	Country: <?php echo $user_data->country->name . PHP_EOL . '<br>'; ?>
+	Country code: <?php echo $user_data->country->iso_code . PHP_EOL . '<br>'; ?>
+	State: <?php echo $user_data->state->name . PHP_EOL . '<br>'; ?>
+	State code: <?php echo $user_data->state->iso_code . PHP_EOL . '<br>'; ?>
+	City: <?php echo $user_data->city->name . PHP_EOL . '<br>'; ?>
+	Zip: <?php echo $user_data->city->zip . PHP_EOL . '<br>'; ?>
+	Continent: <?php echo $user_data->continent->name . PHP_EOL . '<br>'; ?>
+	Geolocation: { <br>
+	Time zone: <?php echo $user_data->geolocation->time_zone . PHP_EOL . '<br>'; ?>
+	Accuracy radius: <?php echo $user_data->geolocation->accuracy_radius . PHP_EOL . '<br>'; ?>
+	Lat: <?php echo $user_data->geolocation->latitude . PHP_EOL . '<br>'; ?>
+	Lng: <?php echo $user_data->geolocation->longitude . PHP_EOL . '<br>'; ?>
+	}<br>
+	Real IP: <?php echo GeotWP\getUserIP() . PHP_EOL . '<br>'; ?>
+	IP geot/user_ip: <?php echo apply_filters( 'geot/user_ip', GeotWP\getUserIP() ) . PHP_EOL . '<br>'; ?>
+	Geot Version: <?php echo defined( 'GEOT_VERSION' ) ? GEOT_VERSION . PHP_EOL . '<br>' : ''; ?>
+	PHP Version: <?php echo phpversion() . PHP_EOL; ?>
+	Host:   <?= $_SERVER['HTTP_HOST'] ?: 'no set' . PHP_EOL . '<br>' ?>
 	<?php
 	$html = ob_get_contents();
 	ob_end_clean();

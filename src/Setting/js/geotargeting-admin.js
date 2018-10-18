@@ -94,6 +94,7 @@
             var chosen = new_region.find(".country_ajax");
 
             var new_id = parseInt(region.data('id')) + 1;
+            new_region.attr('data-id',new_id);
             new_region.find('input[type="text"]').attr('name', 'geot_settings[city_region][' + new_id + '][name]').val('');
             chosen.attr('name', 'geot_settings[city_region][' + new_id + '][countries][]').find("option:selected").removeAttr("selected");
             cities.attr('name', 'geot_settings[city_region][' + new_id + '][cities][]').find("option:selected").removeAttr("selected");

@@ -284,7 +284,7 @@ $countries = geot_countries();
                                                 dataType: 'json',
                                                 data: {
                                                     action: 'geot_cities_by_country',
-                                                    country: '<?= reset( $city_region['countries'] );?>'
+                                                    country: '<?= !empty($city_region['countries']) ? reset( $city_region['countries'] ) : '';?>'
                                                 },
                                                 error: function () {
 

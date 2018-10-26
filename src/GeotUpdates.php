@@ -223,6 +223,9 @@ class GeotUpdates {
 	 * @return object
 	 */
 	private function parseRequest( $request ) {
+		// if request fail or plugin don't exit
+		if( ! isset($request->data) )
+			return;
 		$info = $request->data;
 		$res  = (object) array(
 			'name'          => isset( $info->name ) ? $info->name : '',

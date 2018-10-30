@@ -109,3 +109,14 @@ function ip2location_db() {
 function get_version() {
 	return apply_filters( 'geot/plugin_version', '0' );
 }
+
+/**
+ * Checks if a caching plugin is active
+ *
+ * @since 1.4.1
+ * @return bool $caching True if caching plugin is enabled, false otherwise
+ */
+function is_caching_plugin_active() {
+	$caching = ( function_exists( 'wpsupercache_site_admin' ) || defined( 'W3TC' ) || function_exists( 'rocket_init' ) );
+	return apply_filters( 'geot/is_caching_plugin_active', $caching );
+}

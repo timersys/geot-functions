@@ -30,7 +30,6 @@ $countries = geot_countries();
 	}, (array) $countries ) );?>;
 </script>
 <div class="wrap geot-settings">
-	<h2>GeoTargetingWP</h2>
 	<form name="geot-settings" method="post" enctype="multipart/form-data">
 		<table class="form-table">
 			<?php do_action( 'geot/settings_page/before' ); ?>

@@ -14,6 +14,12 @@ class GeotSettings {
 	protected static $_instance = null;
 
 	/**
+	 * Current view inside settings
+	 * @var string
+	 */
+	private $view;
+
+	/**
 	 * Main plugin_name Instance
 	 *
 	 * Ensures only one instance of WSI is loaded or can be loaded.
@@ -64,13 +70,32 @@ class GeotSettings {
 	public function __construct() {
 
 		add_action( 'admin_menu', [ $this, 'add_settings_menu' ], 8 );
-		add_action( 'admin_init', [ $this, 'save_settings' ] );
 		add_action( 'admin_init', [ $this, 'check_license' ], 15 );
 		add_action( 'wp_ajax_geot_check_license', [ $this, 'ajax_check_license' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_geot_cities_by_country', [ $this, 'geot_cities_by_country' ] );
+
 		$this->plugin_url = plugin_dir_url( GEOTROOT_PLUGIN_FILE ) . 'vendor/timersys/geot-functions/src/Setting/';
+
+		// Check what page we are on.
+		$page = isset( $_GET['page'] ) ? $_GET['page'] : '';
+
+		// Only load if we are actually on the settings page.
+		if ( 'geot-settings' === $page ) {
+			// trigger settings save
+			add_action( 'admin_init', [ $this, 'save_settings' ] );
+
+			// Determine the current active settings tab.
+			$this->view = isset( $_GET['view'] ) ? esc_html( $_GET['view'] ) : 'general';
+
+			// add general settings panel
+			add_action('geot/settings_general_panel', [ $this, 'output'] );
+
+		}
+		if( 'geot-settings' === $page || 'geot-debug-data' === $page ) {
+			// load assets
+			add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+			add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		}
 	}
 
 	/**
@@ -197,11 +222,58 @@ class GeotSettings {
 	}
 
 	/**
+	 * Return registered settings tabs.
+	 *
+	 * @return array
+	 */
+	public function get_tabs() {
+
+		$tabs = [
+			'general' => [
+				'name'   => esc_html__( 'General', 'popups' ),
+			],
+		];
+
+		return apply_filters( 'geot/settings_tabs', $tabs );
+	}
+
+	/**
+	 * Output tab navigation area.
+	 */
+	public function tabs() {
+
+		$tabs = $this->get_tabs();
+
+		echo '<ul class="geot-admin-tabs">';
+		foreach ( $tabs as $id => $tab ) {
+
+			$active = $id === $this->view ? 'active' : '';
+			$name   = $tab['name'];
+			$link   = add_query_arg( 'view', $id, admin_url( 'admin.php?page=geot-settings' ) );
+			echo '<li><a href="' . esc_url_raw( $link ) . '" class="' . esc_attr( $active ) . '">' . esc_html( $name ) . '</a></li>';
+		}
+		echo '</ul>';
+	}
+
+	/**
+	 * Build the output for the plugin settings page.
+	 *
+	 * @since 1.0.0
+	 */
+	public function output() {
+		include dirname( __FILE__ ) . '/partials/settings-page.php';
+	}
+	/**
 	 * Settings page for plugin
 	 * @since 1.0.0
 	 */
 	public function settings_page() {
-		include dirname( __FILE__ ) . '/partials/settings-page.php';
+		?>
+		<h2>GeoTargetingWP</h2>
+		<div id="geot-settings" class="wrap geot-admin-wrap">
+			<?php $this->tabs(); ?>
+			<?php do_action("geot/settings_{$this->view}_panel") ?>
+		</div><?php
 	}
 
 	/**

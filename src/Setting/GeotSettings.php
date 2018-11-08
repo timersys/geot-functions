@@ -91,11 +91,11 @@ class GeotSettings {
 			add_action('geot/settings_general_panel', [ $this, 'output'] );
 
 		}
-		if( 'geot-settings' === $page || 'geot-debug-data' === $page ) {
-			// load assets
-			add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-			add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-		}
+
+		// load assets globally as used by child plugins
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+
 	}
 
 	/**

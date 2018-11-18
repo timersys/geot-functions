@@ -182,7 +182,7 @@ class GeotFunctions {
 
 			// check for crawlers
 			$CD = new CrawlerDetect();
-			if ( $CD->isCrawler() ) {
+			if ( $CD->isCrawler() || $this->treatAsBot() ) {
 				return $this->setData( 'country', 'iso_code', ! empty( $this->opts['bots_country'] ) ? $this->opts['bots_country'] : 'US' );
 			}
 
@@ -432,7 +432,7 @@ class GeotFunctions {
 
 		if ( count( $places ) > 0 ) {
 			foreach ( $places as $p ) {
-				if ( strtolower( $user_place->name ) == strtolower( $p ) || strtolower( $user_place->iso_code ) == strtolower( $p ) ) {
+				if ( (isset($user_place->name) && strtolower( $user_place->name ) == strtolower( $p )) || ( isset( $user_place->iso_code ) && strtolower( $user_place->iso_code ) == strtolower( $p ) ) ) {
 					$target = true;
 				}
 			}
@@ -443,7 +443,7 @@ class GeotFunctions {
 
 		if ( count( $exclude_places ) > 0 ) {
 			foreach ( $exclude_places as $ep ) {
-				if ( strtolower( $user_place->name ) == strtolower( $ep ) || strtolower( $user_place->iso_code ) == strtolower( $ep ) ) {
+				if ( (isset($user_place->name) && strtolower( $user_place->name ) == strtolower( $ep ) ) || ( isset( $user_place->iso_code ) && strtolower( $user_place->iso_code ) == strtolower( $ep ) ) ) {
 					$target = false;
 				}
 			}
@@ -706,5 +706,45 @@ class GeotFunctions {
 
 	public function getSession() {
 		return $this->session;
+	}
+
+	/**
+	 * Check for some urls where geotargeting should be disabled
+	 * @return bool
+	 */
+	private function treatAsBot() {
+		$ret = false;
+		// exclude login page and some others
+		$script = isset( $_SERVER['PHP_SELF'] ) ? basename( $_SERVER['PHP_SELF'] ) : '';
+		if ( in_array( $script, array( 'wp-login.php', 'xmlrpc.php', 'wp-cron.php' ) ) ) {
+			$ret = true;
+		}
+        // Some more checks in case above fails
+
+		// Nothing to do if autosave.
+		if ( defined( 'DOING_AUTOSAVE' ) ) {
+			$ret = true;
+		}
+
+		// Nothing to do if XMLRPC request.
+		if ( defined( 'XMLRPC_REQUEST' ) ) {
+			$ret = true;
+		}
+
+		// No go with CRON
+		if(  defined( 'DOING_CRON' ) && DOING_CRON ) {
+			$ret = true;
+		}
+
+		if( is_feed() ) {
+			$ret = true;
+		}
+
+		// same fo rCLI
+		if ( PHP_SAPI == 'cli' || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			$ret = true;
+		}
+
+		return apply_filters( 'geot/treat_request_as_bot', $ret );
 	}
 }

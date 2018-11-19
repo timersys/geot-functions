@@ -432,7 +432,8 @@ class GeotFunctions {
 
 		if ( count( $places ) > 0 ) {
 			foreach ( $places as $p ) {
-				if ( (isset($user_place->name) && strtolower( $user_place->name ) == strtolower( $p )) || ( isset( $user_place->iso_code ) && strtolower( $user_place->iso_code ) == strtolower( $p ) ) ) {
+				// cant use isset($user_place->name) in here because it will always return false due to object properties
+				if ( strtolower( @$user_place->name ) == strtolower( $p ) || strtolower( $user_place->iso_code ) == strtolower( $p ) ) {
 					$target = true;
 				}
 			}
@@ -443,7 +444,8 @@ class GeotFunctions {
 
 		if ( count( $exclude_places ) > 0 ) {
 			foreach ( $exclude_places as $ep ) {
-				if ( (isset($user_place->name) && strtolower( $user_place->name ) == strtolower( $ep ) ) || ( isset( $user_place->iso_code ) && strtolower( $user_place->iso_code ) == strtolower( $ep ) ) ) {
+				// cant use isset($user_place->name) in here because it will always return false due to object properties
+				if ( strtolower( @$user_place->name ) == strtolower( $ep ) || strtolower( $user_place->iso_code ) == strtolower( $ep ) ) {
 					$target = false;
 				}
 			}

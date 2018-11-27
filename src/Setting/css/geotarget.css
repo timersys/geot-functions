@@ -148,7 +148,14 @@ input.api-keys {
     width: 800px;
     height: 400px;
 }
-
+.geot-settings-title h3{
+    padding-bottom: 5px;
+    border-bottom: 3px solid #848484;
+}
+.geot-settings .selectize-control ,
+.geot-settings textarea {
+    width: 42%;
+}
 .selectize-control {
     max-width: 80%;
     margin: 20px 0;

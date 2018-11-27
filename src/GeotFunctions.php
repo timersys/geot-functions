@@ -179,7 +179,10 @@ class GeotFunctions {
 
 				return $this->user_data[ $this->cache_key ];
 			}
-
+			// check for whitelist Ips
+			if( $this->user_whitelisted()) {
+				return $this->getFallbackCountry();
+			}
 			// check for crawlers
 			$CD = new CrawlerDetect();
 			if ( $CD->isCrawler() || $this->treatAsBot() ) {
@@ -376,7 +379,9 @@ class GeotFunctions {
 
 		$record->country = $this->getCountryByIsoCode( $this->opts['fallback_country'] );
 
-		return new GeotRecord( $record );
+		$this->user_data[ $this->cache_key ] = new GeotRecord( $record );
+
+		return $this->user_data[ $this->cache_key ];
 
 	}
 
@@ -494,6 +499,7 @@ class GeotFunctions {
 		$args = geot_settings();
 
 		$this->opts = wp_parse_args( $args, [
+			'license'            => '',
 			'debug_mode'         => false,
 			// similar to disable sessions but also invalidates cookies
 			'cache_mode'         => false,
@@ -747,6 +753,26 @@ class GeotFunctions {
 			$ret = true;
 		}
 
+		// Ips check
+		$settings = geot_settings();
+		if( in_array( $this->ip, textarea_to_array( $settings['bots_country_ips'] ) ) ) {
+			$ret = true;
+		}
+
 		return apply_filters( 'geot/treat_request_as_bot', $ret );
+	}
+
+	/**
+	 * Check if the user is whitelisted in settings
+	 */
+	private function user_whitelisted() {
+		$ret = false;
+		// Ips check
+		$settings = geot_settings();
+		if( in_array( $this->ip, textarea_to_array( $settings['fallback_country_ips'] ) ) ) {
+			$ret = true;
+		}
+
+		return apply_filters( 'geot/treat_request_as_whitelisted', $ret );
 	}
 }

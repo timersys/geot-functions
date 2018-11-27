@@ -9,16 +9,14 @@ $opts     = geot_settings();
 $defaults = [
 	'license'                    => '',
 	'api_secret'                 => '',
-	'region'                     => [ [ 'name', 'countries' ] ],
-	'city_region'                => [ [ 'name', 'cities' ] ],
 	'cache_mode'                 => '0',
 	'ajax_mode'                  => '0',
 	'debug_mode'                 => '0',
-	'disable_menu_integration'   => '0',
-	'disable_widget_integration' => '0',
 	'maxmind'                    => '0',
 	'ip2location'                => '0',
 	'geot_uninstall'             => '',
+	'fallback_country_ips'       => '',
+	'bots_country_ips'           => '',
 ];
 $opts     = wp_parse_args( $opts, apply_filters( 'geot/default_settings', $defaults ) );
 
@@ -34,8 +32,8 @@ $countries = geot_countries();
 		<table class="form-table">
 			<?php do_action( 'geot/settings_page/before' ); ?>
 
-			<tr valign="top" class="">
-				<th><h3><?php _e( 'Main settings:', 'geot' ); ?></h3></th>
+			<tr valign="top" class="geot-settings-title">
+				<th colspan="2"><h3><?php _e( 'Main settings:', 'geot' ); ?></h3></th>
 			</tr>
 			<tr valign="top" class="">
 				<th><label for="license"><?php _e( 'Enter your API key', 'geot' ); ?></label></th>
@@ -117,7 +115,7 @@ $countries = geot_countries();
 				<td colspan="3">
 					<label><input type="checkbox" id="" name="geot_settings[debug_mode]"
 					              value="1" <?php checked( $opts['debug_mode'], '1' ); ?>/>
-						<p class="help"><?php _e( 'Check this if you want to print in the html code some debug info.', 'geot' ); ?></p>
+						<p class="help"><?php _e( 'Check this if you want to print in the html code some debug info. Turn off in production!!', 'geot' ); ?></p>
 				</td>
 			</tr>
 
@@ -137,9 +135,15 @@ $countries = geot_countries();
 						?>
 					</select>
 
-					<p class="help"><?php _e( 'If the user IP is not detected plugin will fallback to this country', 'geot' ); ?></p>
+					<p class="help"><?php _e( 'If the user IP is not detected, the plugin will fallback to this country', 'geot' ); ?></p>
 				</td>
-
+			</tr>
+			<tr valign="top" class="">
+				<th><label for="region"><?php _e( 'Fallback Country Whitelisted IPs', 'geot' ); ?></label></th>
+				<td colspan="3">
+					<textarea rows="10" name="geot_settings[fallback_country_ips]"><?= esc_attr($opts['fallback_country_ips']);?></textarea>
+					<p class="help"><?php _e( 'Enter Ip addresses one by line and they will be resolved to the fallback country you choose and won\'t spend requests. You current Ip is: ', 'geot' ); echo \GeotWP\getUserIP(); ?></p>
+				</td>
 			</tr>
 			<tr valign="top" class="">
 				<th><label for="bots"><?php _e( 'Bots Country', 'geot' ); ?></label></th>
@@ -156,158 +160,21 @@ $countries = geot_countries();
 						?>
 					</select>
 
-					<p class="help"><?php _e( 'All bots / crawlers will be treated as the are from this country. More info in ', 'geot' ); ?>
-						<a href="https://timersys.com/geotargeting/docs/bots-seo/">Bots in Geotargeting</a></p>
+					<p class="help"><?php _e( 'All bots/crawlers will be treated as they were from this country. ', 'geot' ); ?></p>
 				</td>
 			</tr>
-
 			<tr valign="top" class="">
-				<th><h3><?php _e( 'Countries:', 'geot' ); ?></h3></th>
+				<th><label for="region"><?php _e( 'Bots Country IPs', 'geot' ); ?></label></th>
 				<td colspan="3">
+					<textarea rows="10" name="geot_settings[bots_country_ips]"><?= $opts['bots_country_ips'];?></textarea>
+					<p class="help"><?php echo sprintf(__( 'Enter Ip addresses one by line and they will be resolved to the bots country you choose and won\'t spend requests. Check <a href="%s">most queried ips</a> in order to identify bots.', 'geot' ), 'https://geotargetingwp.com/dashboard/stats'); ?></p>
 				</td>
 			</tr>
-			<tr valign="top" class="">
-				<th><label for="region"><?php _e( 'Create new region', 'geot' ); ?></label></th>
-				<td colspan="3">
-					<?php
 
-					if ( ! empty( $opts['region'] ) ) {
-						$i = 0;
-						foreach ( $opts['region'] as $region ) {
-							$i ++; ?>
-
-							<div class="region-group" data-id="<?php echo $i; ?>">
-
-								<input type="text" class="region-name" placeholder="Enter region name"
-								       name="geot_settings[region][<?php echo $i; ?>][name]"
-								       value="<?php echo ! empty( $region['name'] ) ? esc_attr( $region['name'] ) : ''; ?>"/>
-								<a href="#" class="remove-region" title="<?php _e( 'Remove Region', 'geot' ); ?>">-</a>
-								<select name="geot_settings[region][<?php echo $i; ?>][countries][]" multiple
-								        class="geot-chosen-select-multiple"
-								        data-placeholder="<?php _e( 'Type country name...', 'geot' ); ?>">
-									<?php
-									foreach ( $countries as $c ) {
-										?>
-										<option value="<?php echo $c->iso_code ?>" <?php isset( $region['countries'] ) && is_array( $region['countries'] ) ? selected( true, in_array( $c->iso_code, $region['countries'] ) ) : ''; ?>> <?php echo $c->country; ?></option>
-										<?php
-									}
-									?>
-								</select>
-
-							</div>
-						<?php }
-					} ?>
-					<a href="#" class="add-region button">Add Region</a>
-					<p class="help"><?php _e( 'Add as many countries you need for each region', 'geot' ); ?></p>
-				</td>
-
+			<tr valign="top" class="geot-settings-title">
+				<th colspan="3"><h3><?php _e( 'Misc:', 'geot' ); ?></h3></th>
 			</tr>
-			<tr valign="top" class="">
-				<th><h3><?php _e( 'Cities:', 'geot' ); ?></h3></th>
-				<td colspan="3">
-				</td>
-			</tr>
-			<tr valign="top" class="">
-				<th><label for="region"><?php _e( 'Create new region', 'geot' ); ?></label></th>
-				<td colspan="3">
-					<?php
-
-					if ( ! empty( $opts['city_region'] ) ) {
-						$j = 0;
-						foreach ( $opts['city_region'] as $city_region ) {
-							$j ++; ?>
-
-							<div class="city-region-group" data-id="<?php echo $j; ?>">
-								<input type="text" class="region-name" placeholder="Enter region name"
-								       name="geot_settings[city_region][<?php echo $j; ?>][name]"
-								       value="<?php echo ! empty( $city_region['name'] ) ? esc_attr( $city_region['name'] ) : ''; ?>"/>
-
-								<a href="#" class="remove-city-region"
-								   title="<?php _e( 'Remove Region', 'geot' ); ?>">-</a>
-								<select name="geot_settings[city_region][<?php echo $j; ?>][countries][]"
-								        class="country_ajax" data-counter="<?php echo $j; ?>"
-								        data-placeholder="<?php _e( 'Type country name...', 'geot' ); ?>">
-									<option value=""><?php _e( 'Choose a Country', 'geot' ); ?></option>
-									<?php
-									foreach ( $countries as $c ) {
-										?>
-										<option value="<?php echo $c->iso_code ?>" <?php isset( $city_region['countries'] ) && is_array( $city_region['countries'] ) ? selected( true, in_array( $c->iso_code, $city_region['countries'] ) ) : ''; ?>> <?php echo $c->country; ?></option>
-										<?php
-									}
-									?>
-								</select>
-
-								<select name="geot_settings[city_region][<?php echo $j; ?>][cities][]" multiple
-								        class="cities_container" id="<?php echo 'cities' . $j; ?>"
-								        data-placeholder="<?php _e( 'First choose a country', 'geot' ); ?>">
-									<?php
-									/*
-
-									$country_cities = false;
-									if( isset( $city_region['countries'] ) && is_array( $city_region['countries'] ) ) {
-										$country_cities = reset($city_region['countries']);
-									}
-									$cities = json_decode(geot_get_cities($country_cities));
-									if( $cities ) {
-										foreach ($cities as $option_city) {
-											echo '<option value="'.$option_city->city.'" ';
-											echo isset($city_region['cities']) && is_array($city_region['cities']) ? selected(true, in_array($option_city->city, $city_region['cities'])) : '';
-											echo '>'.$option_city->city.'</option>';
-										}
-									}*/
-									?>
-								</select>
-								<script>
-                                    var select_<?= $j;?> = jQuery('#<?php echo 'cities' . $j;?>').selectize({
-                                        plugins: ['remove_button'],
-                                        valueField: 'name',
-                                        labelField: 'name',
-                                        searchField: 'name',
-                                        options: <?php echo isset( $city_region['cities'] ) && is_array( $city_region['cities'] ) ? json_encode( array_map( function ( $a ) {
-											return [ 'name' => $a ];
-										}, $city_region['cities'] ) ) : '""'; ?>,
-                                        items: ['<?php echo isset( $city_region['cities'] ) && is_array( $city_region['cities'] ) ? implode( "','", $city_region['cities'] ) : '';?>'],
-                                        render: function (item, escape) {
-                                            return '<div>' + escape(item.name) + '</div>';
-                                        },
-                                        preload: true,
-                                        openOnFocus: true,
-                                        onFocus: function () {
-                                            var inst = select_<?= $j;?>[0].selectize;
-                                            if (inst.loaded)
-                                                return;
-                                            inst.disable();
-                                            jQuery.ajax({
-                                                url: geot.ajax_url,
-                                                type: 'POST',
-                                                dataType: 'json',
-                                                data: {
-                                                    action: 'geot_cities_by_country',
-                                                    country: '<?= !empty($city_region['countries']) ? reset( $city_region['countries'] ) : '';?>'
-                                                },
-                                                error: function () {
-
-                                                },
-                                                success: function (res) {
-                                                    inst.loaded = true;
-                                                    inst.enable();
-                                                    inst.addOption(res);
-                                                    inst.refreshOptions(true);
-                                                }
-                                            });
-                                        }
-                                    });
-								</script>
-							</div>
-							<hr>
-						<?php }
-					} ?>
-					<a href="#" class="add-city-region button">Add City Region</a>
-					<p class="help"><?php _e( 'Add as many cities you need for each region', 'geot' ); ?></p>
-				</td>
-
-			</tr>
-			<tr valign="top" class="">
+			<tr valign="top">
 				<th><h3><?php _e( 'Uninstall:', 'geot' ); ?></h3></th>
 				<td colspan="3">
 					<p><?php _e( 'Check this if you want to <strong>delete all plugin data</strong> on uninstall', 'geot' ); ?></p>

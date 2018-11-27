@@ -87,8 +87,10 @@ class GeotSettings {
 			// Determine the current active settings tab.
 			$this->view = isset( $_GET['view'] ) ? esc_html( $_GET['view'] ) : 'general';
 
-			// add general settings panel
-			add_action('geot/settings_general_panel', [ $this, 'output'] );
+			// add settings panels
+			add_action('geot/settings_general_panel', [ $this, 'general_panel'] );
+			add_action( 'geot/settings_regions_panel', [ $this, 'regions_panel' ] );
+			add_action( 'geot/settings_debug_panel', [ $this, 'debug_panel' ] );
 
 		}
 
@@ -215,10 +217,6 @@ class GeotSettings {
 			$this,
 			'settings_page'
 		) );
-		add_submenu_page( 'geot-settings', 'Debug data', 'Debug data', apply_filters( 'geot/settings_page_role', 'manage_options' ), 'geot-debug-data', array(
-			$this,
-			'debug_data_page'
-		) );
 	}
 
 	/**
@@ -232,9 +230,16 @@ class GeotSettings {
 			'general' => [
 				'name'   => esc_html__( 'General', 'popups' ),
 			],
+			'regions' => [
+				'name'   => esc_html__( 'Regions', 'popups' ),
+			],
 		];
 
-		return apply_filters( 'geot/settings_tabs', $tabs );
+		return array_merge( apply_filters( 'geot/settings_tabs', $tabs ),[
+				'debug' => [
+					'name'   => esc_html__( 'Debug Data', 'popups' ),
+				]
+		] ) ;
 	}
 
 	/**
@@ -256,11 +261,11 @@ class GeotSettings {
 	}
 
 	/**
-	 * Build the output for the plugin settings page.
+	 * Build the general_panel for the plugin settings page.
 	 *
 	 * @since 1.0.0
 	 */
-	public function output() {
+	public function general_panel() {
 		include dirname( __FILE__ ) . '/partials/settings-page.php';
 	}
 	/**
@@ -284,7 +289,7 @@ class GeotSettings {
 	public function save_settings() {
 
 		if ( isset( $_POST['geot_nonce'] ) && wp_verify_nonce( $_POST['geot_nonce'], 'geot_save_settings' ) ) {
-			$settings = esc_sql( $_POST['geot_settings'] );
+			$settings =  $_POST['geot_settings'] ;
 			if ( isset( $_FILES['geot_settings_json'] ) && 'application/json' == $_FILES['geot_settings_json']['type'] ) {
 				$file     = file_get_contents( $_FILES['geot_settings_json']['tmp_name'] );
 				$settings = json_decode( $file, true );
@@ -296,7 +301,6 @@ class GeotSettings {
 					if ( is_string( $a ) ) {
 						return trim( $a );
 					}
-
 					return $a;
 				} );
 			}
@@ -305,7 +309,29 @@ class GeotSettings {
 				$license = esc_attr( $settings['license'] );
 				$this->is_valid_license( $license );
 			}
-
+			// old settings
+			$old_settings = geot_settings();
+			// checkboxes dirty hack
+			$inputs = [
+				'maxmind',
+				'ip2location',
+				'wpengine',
+				'kinsta',
+				'cache_mode',
+				'debug_mode',
+				'license',
+				'api_secret',
+				'fallback_country_ips',
+				'bots_country_ips',
+			];
+			if( isset($_GET['view']) && 'general' == $_GET['view']){
+				foreach ($inputs as $input ) {
+					if( ! isset($settings[$input]) || empty($settings[$input]) ) {
+						$settings[$input] = '';
+					}
+				}
+			}
+			$settings = array_merge($old_settings, $settings);
 			update_option( 'geot_settings', $settings );
 		}
 	}
@@ -336,7 +362,14 @@ class GeotSettings {
 	/**
 	 * Debug Data page
 	 */
-	public function debug_data_page() {
+	public function debug_panel() {
 		include dirname( __FILE__ ) . '/partials/debug-data.php';
+	}
+
+	/**
+	 * Regions Page
+	 */
+	public function regions_panel() {
+		include dirname( __FILE__ ) . '/partials/regions-page.php';
 	}
 }

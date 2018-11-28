@@ -120,3 +120,54 @@ function is_caching_plugin_active() {
 	$caching = ( function_exists( 'wpsupercache_site_admin' ) || defined( 'W3TC' ) || function_exists( 'rocket_init' ) );
 	return apply_filters( 'geot/is_caching_plugin_active', $caching );
 }
+
+/**
+ * Delete Geotfunctions data from the db on uninstall
+ */
+function geot_uninstall() {
+	// delete settings
+	delete_option('geot_settings');
+	delete_option('geot_version');
+	// delete sql data
+	global $wpdb;
+	$countries_table = $wpdb->base_prefix . 'geot_countries';
+	$wpdb->query( "DROP TABLE IF EXISTS $countries_table;");
+}
+
+/**
+ * Uninstall given posts/taxonomies
+ * @param array $posts
+ * @param array $taxonomies
+ */
+function uninstall( $posts = [], $taxonomies = [] ) {
+	global $wpdb;
+
+	foreach ( $posts as $post_type ) {
+
+		$taxonomies = array_merge( $taxonomies, get_object_taxonomies( $post_type ) );
+		$items = get_posts( array( 'post_type' => $post_type, 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids' ) );
+		if ( $items ) {
+			foreach ( $items as $item ) {
+				wp_delete_post( $item, true);
+			}
+		}
+	}
+
+	/** Delete All the Terms & Taxonomies */
+	foreach ( array_unique( array_filter( $taxonomies ) ) as $taxonomy ) {
+
+		$terms = $wpdb->get_results( $wpdb->prepare( "SELECT t.*, tt.* FROM $wpdb->terms AS t INNER JOIN $wpdb->term_taxonomy AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy IN ('%s') ORDER BY t.name ASC", $taxonomy ) );
+
+		// Delete Terms.
+		if ( $terms ) {
+			foreach ( $terms as $term ) {
+				$wpdb->delete( $wpdb->term_relationships, array( 'term_taxonomy_id' => $term->term_taxonomy_id ) );
+				$wpdb->delete( $wpdb->term_taxonomy, array( 'term_taxonomy_id' => $term->term_taxonomy_id ) );
+				$wpdb->delete( $wpdb->terms, array( 'term_id' => $term->term_id ) );
+			}
+		}
+
+		// Delete Taxonomies.
+		$wpdb->delete( $wpdb->term_taxonomy, array( 'taxonomy' => $taxonomy ), array( '%s' ) );
+	}
+}

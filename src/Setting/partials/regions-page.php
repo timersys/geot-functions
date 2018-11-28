@@ -23,7 +23,9 @@ $countries = geot_countries();
 	<form name="geot-settings" method="post" enctype="multipart/form-data">
 		<table class="form-table">
 			<?php do_action( 'geot/regions_page/before' ); ?>
-
+			<tr valign="top" class="geot-settings-title">
+				<th colspan="3"><h3><?php _e( 'Regions:', 'geot' ); ?></h3></th>
+			</tr>
 
 			<tr valign="top" class="">
 				<th><h3><?php _e( 'Countries:', 'geot' ); ?></h3></th>

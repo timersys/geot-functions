@@ -331,7 +331,19 @@ class GeotSettings {
 					}
 				}
 			}
-			$settings = array_merge($old_settings, $settings);
+			if( isset($_GET['view']) && 'regions' == $_GET['view']){
+				foreach ([ 'region', 'city_region'] as $input ) {
+					if( ! isset($settings[$input]) || empty($settings[$input]) ) {
+						$settings[$input] = null;
+					}
+				}
+			}
+
+			if( ! is_array( $settings ) ) {
+				$settings = $old_settings;
+			} else if( is_array( $old_settings ) ) {
+				$settings = array_merge( $old_settings, $settings );
+			}
 			update_option( 'geot_settings', $settings );
 		}
 	}

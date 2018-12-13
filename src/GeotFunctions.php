@@ -431,7 +431,8 @@ class GeotFunctions {
 		}
 
 		$user_place = $this->get( $key );
-		if ( ! $user_place ) {
+
+		if ( !isset($user_place) || empty((array)$user_place) ) {
 			return apply_filters( 'geot/target_' . $key . '/return_on_user_null', false );
 		}
 

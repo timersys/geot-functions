@@ -6,11 +6,13 @@
 
 
 $opts     = geot_settings();
-$defaults = [
-	'region'                     => [ [ 'name', 'countries' ] ],
-	'city_region'                => [ [ 'name', 'cities' ] ],
-];
-$opts     = wp_parse_args( $opts, apply_filters( 'geot/default_settings', $defaults ) );
+
+if( empty($opts['region'] ) ) {
+	$opts['region'] = [ [ 'name', 'countries' ] ];
+}
+if( empty($opts['city_region'] ) ) {
+	$opts['city_region'] = [ [ 'name', 'cities' ] ];
+}
 
 $countries = geot_countries();
 ?>

@@ -438,7 +438,7 @@ class GeotFunctions {
 		if ( count( $places ) > 0 ) {
 			foreach ( $places as $p ) {
 				// cant use isset($user_place->name) in here because it will always return false due to object properties
-				if ( strtolower( @$user_place->name ) == strtolower( $p ) || strtolower( $user_place->iso_code ) == strtolower( $p ) ) {
+				if ( strtolower( @$user_place->name ) == strtolower( trim($p) ) || strtolower( $user_place->iso_code ) == strtolower( trim($p) ) ) {
 					$target = true;
 				}
 			}
@@ -450,7 +450,7 @@ class GeotFunctions {
 		if ( count( $exclude_places ) > 0 ) {
 			foreach ( $exclude_places as $ep ) {
 				// cant use isset($user_place->name) in here because it will always return false due to object properties
-				if ( strtolower( @$user_place->name ) == strtolower( $ep ) || strtolower( $user_place->iso_code ) == strtolower( $ep ) ) {
+				if ( strtolower( @$user_place->name ) == strtolower( trim($ep) ) || strtolower( $user_place->iso_code ) == strtolower( trim($ep) ) ) {
 					$target = false;
 				}
 			}
@@ -755,7 +755,7 @@ class GeotFunctions {
 
 		// Ips check
 		$settings = geot_settings();
-		if( in_array( $this->ip, textarea_to_array( $settings['bots_country_ips'] ) ) ) {
+		if( isset( $settings['bots_country_ips'] ) && in_array( $this->ip, textarea_to_array( $settings['bots_country_ips'] ) ) ) {
 			$ret = true;
 		}
 
@@ -769,7 +769,7 @@ class GeotFunctions {
 		$ret = false;
 		// Ips check
 		$settings = geot_settings();
-		if( in_array( $this->ip, textarea_to_array( $settings['fallback_country_ips'] ) ) ) {
+		if( isset( $settings['fallback_country_ips'] )  && in_array( $this->ip, textarea_to_array( $settings['fallback_country_ips'] ) ) ) {
 			$ret = true;
 		}
 

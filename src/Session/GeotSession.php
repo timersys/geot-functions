@@ -54,7 +54,7 @@ class GeotSession {
 		}
 
 		// Queue up the session stack
-		$wp_session_handler = EAMann\Sessionz\Manager::initialize();
+		$wp_session_handler = \EAMann\Sessionz\Manager::initialize();
 		if (defined('WP_SESSION_USE_OPTIONS') && WP_SESSION_USE_OPTIONS) {
 		    $wp_session_handler->addHandler(new \EAMann\WPSession\OptionsHandler());
 		} else {

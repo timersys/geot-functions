@@ -179,13 +179,13 @@ $countries 	= geot_countries();
 					<p class="help"><?php _e( 'Add as many countries you need for each region', 'geot' ); ?></p>
 					<p class="help"><?php _e( 'We have created continent regions in case you need them. Simply paste any of the following region names:', 'geot' ); ?></p>
 					<ul class="help">
-						<li>- <?php _e('<b>NA</b> (North America)','geot'); ?></li>
-						<li>- <?php _e('<b>SA</b> (South America)','geot'); ?></li>
-						<li>- <?php _e('<b>EU</b> (Europe)','geot'); ?></li>
-						<li>- <?php _e('<b>AS</b> (Asia)','geot'); ?></li>
-						<li>- <?php _e('<b>AF</b> (Africa)','geot'); ?></li>
-						<li>- <?php _e('<b>OC</b> (Oceania)','geot'); ?></li>
-						<li>- <?php _e('<b>AN</b> (Antarctica)','geot'); ?></li>
+						<li>- <?php _e('<b>north-america</b> (North America)','geot'); ?></li>
+						<li>- <?php _e('<b>south-america</b> (South America)','geot'); ?></li>
+						<li>- <?php _e('<b>europe</b> (Europe)','geot'); ?></li>
+						<li>- <?php _e('<b>asia</b> (Asia)','geot'); ?></li>
+						<li>- <?php _e('<b>africa</b> (Africa)','geot'); ?></li>
+						<li>- <?php _e('<b>oceania</b> (Oceania)','geot'); ?></li>
+						<li>- <?php _e('<b>antarctica</b> (Antarctica)','geot'); ?></li>
 					</ul>
 				</td>
 

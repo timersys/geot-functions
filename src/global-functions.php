@@ -411,3 +411,30 @@ function geot_debug_data(){
 
 	return $html;
 }
+
+/**
+ * Return Predefined Country Regions
+ * @return mixed
+ */
+function geot_predefined_regions() {
+
+	$regions =
+		array(
+			array( 'name' => 'AF', 'countries' => array('AO','BF','BI','BJ','BW','CD','CF','CG','CI','CM','CV','DJ','DZ','EG','EH','ER','ET','GA','GH','GM','GN','GQ','GW','KE','KM','LR','LS','LY','MA','MG','ML','MR','MU','MW','MZ','NA','NE','NG','RE','RW','SC','SD','SH','SL','SN','SO','ST','SZ','TD','TG','TN','TZ','UG','YT','ZA','ZM','ZW') ),
+
+			array( 'name' => 'AN', 'countries' => array('AQ','BV','GS','HM','TF') ),
+
+			array( 'name' => 'AS', 'countries' => array('AE','AF','AM','AP','AZ','BD','BH','BN','BT','CC','CN','CX','CY','GE','HK','ID','IL','IN','IO','IQ','IR','JO','JP','KG','KH','KP','KR','KW','KZ','LA','LB','LK','MM','MN','MO','MV','MY','NP','OM','PH','PK','PS','QA','SA','SG','SY','TH','TJ','TL','TM','TW','UZ','VN','YE') ),
+
+			array( 'name' => 'EU', 'countries' => array('AD','AL','AT','AX','BA','BE','BG','BY','CH','CZ','DE','DK','EE','ES','EU','FI','FO','FR','FX','GB','GG','GI','GR','HR','HU','IE','IM','IS','IT','JE','LI','LT','LU','LV','MC','MD','ME','MK','MT','NL','NO','PL','PT','RO','RS','RU','SE','SI','SJ','SK','SM','TR','UA','VA') ),
+
+			array( 'name' => 'NA', 'countries' => array('AG','AI','AN','AW','BB','BL','BM','BS','BZ','CA','CR','CU','DM','DO','GD','GL','GP','GT','HN','HT','JM','KN','KY','LC','MF','MQ','MS','MX','NI','PA','PM','PR','SV','TC','TT','US','VC','VG','VI') ),
+
+			array( 'name' => 'OC', 'countries' => array('AS','AU','CK','FJ','FM','GU','KI','MH','MP','NC','NF','NR','NU','NZ','PF','PG','PN','PW','SB','TK','TO','TV','UM','VU','WF','WS') ),
+
+			array( 'name' => 'SA', 'countries' => array('AR','BO','BR','CL','CO','EC','FK','GF','GY','PE','PY','SR','UY','VE') ),
+
+		);
+
+	return apply_filters('geot/get_predefined_regions', $regions);
+}

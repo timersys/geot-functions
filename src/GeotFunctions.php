@@ -86,6 +86,7 @@ class GeotFunctions {
 		     && ! empty( $this->opts['cache_mode'] )
 		     && ! apply_filters( 'geot/disable_setUserData', false )
 		     && ! defined( 'DOING_AJAX' )
+		     && ! isset( $_GET['wc_ajax'] )
 		) {
 			add_action( 'init', array( $this, 'getUserData' ) );
 			add_action( 'init', array( $this, 'createRocketCookies' ), 15 );
@@ -487,9 +488,9 @@ class GeotFunctions {
 			return;
 		}
 
-		setcookie( 'geot_rocket_country', $this->user_data[ $this->cache_key ]->country->iso_code, 0, '/' );
-		setcookie( 'geot_rocket_state', $this->user_data[ $this->cache_key ]->state->iso_code, 0, '/' );
-		setcookie( 'geot_rocket_city', $this->user_data[ $this->cache_key ]->city->name, 0, '/' );
+		setcookie( 'geot_rocket_country', apply_filters( 'geot_rocket_country', $this->user_data[ $this->cache_key ]->country->iso_code ), 0, '/' );
+		setcookie( 'geot_rocket_state', apply_filters( 'geot_rocket_state', $this->user_data[ $this->cache_key ]->state->iso_code ), 0, '/' );
+		setcookie( 'geot_rocket_city', apply_filters( 'geot_rocket_city', $this->user_data[ $this->cache_key ]->city->name ), 0, '/' );
 	}
 
 	/**

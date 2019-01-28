@@ -324,7 +324,7 @@ class GeotSettings {
 				'fallback_country_ips',
 				'bots_country_ips',
 			];
-			if( isset($_GET['view']) && 'general' == $_GET['view']){
+			if( ! isset($_GET['view']) || ( isset($_GET['view']) && 'general' == $_GET['view'] ) ){
 				foreach ($inputs as $input ) {
 					if( ! isset($settings[$input]) || empty($settings[$input]) ) {
 						$settings[$input] = '';

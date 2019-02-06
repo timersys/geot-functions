@@ -3,7 +3,6 @@
  * Different helpers filters used around
  */
 
-<<<<<<< HEAD
 add_filter( 'geot/get_country_regions', function (){
 	$settings   = geot_settings();
 	
@@ -11,11 +10,6 @@ add_filter( 'geot/get_country_regions', function (){
 		$regions = array_merge($settings['region'], geot_predefined_regions());
 	else
 		$regions = geot_predefined_regions();
-=======
-add_filter( 'geot/get_country_regions', function () {
-	$settings = geot_settings();
-	$regions  = isset( $settings['region'] ) ? $settings['region'] : array();
->>>>>>> master
 
 	return $regions;
 } );

@@ -3,6 +3,7 @@
  * Different helpers filters used around
  */
 
+<<<<<<< HEAD
 add_filter( 'geot/get_country_regions', function (){
 	$settings   = geot_settings();
 	
@@ -10,25 +11,31 @@ add_filter( 'geot/get_country_regions', function (){
 		$regions = array_merge($settings['region'], geot_predefined_regions());
 	else
 		$regions = geot_predefined_regions();
+=======
+add_filter( 'geot/get_country_regions', function () {
+	$settings = geot_settings();
+	$regions  = isset( $settings['region'] ) ? $settings['region'] : array();
+>>>>>>> master
 
 	return $regions;
-});
+} );
 
-add_filter( 'geot/get_city_regions', function (){
-	$settings   = geot_settings();
-	$regions    = isset( $settings['city_region'] ) ? $settings['city_region'] : array();
+add_filter( 'geot/get_city_regions', function () {
+	$settings = geot_settings();
+	$regions  = isset( $settings['city_region'] ) ? $settings['city_region'] : array();
 
 	return $regions;
-});
+} );
 
-add_filter ( 'geot/get_countries', function ()	{
-	$countries = wp_cache_get( 'geot_countries');
-	if( false === $countries ) {
+add_filter( 'geot/get_countries', function () {
+	$countries = wp_cache_get( 'geot_countries' );
+	if ( false === $countries ) {
 		global $wpdb;
 
-		$countries = $wpdb->get_results( "SELECT iso_code, country FROM {$wpdb->base_prefix}geot_countries ORDER BY country");
+		$countries = $wpdb->get_results( "SELECT iso_code, country FROM {$wpdb->base_prefix}geot_countries ORDER BY country" );
 
-		wp_cache_set( 'geot_countries', $countries);
+		wp_cache_set( 'geot_countries', $countries );
 	}
+
 	return $countries;
-});
+} );

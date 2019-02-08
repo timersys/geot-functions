@@ -24,11 +24,27 @@ $countries = geot_countries();
 <div class="wrap geot-settings">
 	<form name="geot-settings" method="post" enctype="multipart/form-data">
 		<table class="form-table">
+
 			<?php do_action( 'geot/regions_page/before' ); ?>
 			<tr valign="top" class="geot-settings-title">
 				<th colspan="3"><h3><?php _e( 'Regions:', 'geot' ); ?></h3></th>
 			</tr>
 
+			<tr valign="top" class="">
+				<th><h3><?php _e( 'Continents:', 'geot' ); ?></h3></th>
+				<td colspan="3">
+					<p class="help"><?php _e( 'We have created some predefined regions in case you need them:', 'geot' ); ?></p>
+					<ul class="help">
+						<li>- <?php _e('<b>north-america</b> (North America)','geot'); ?></li>
+						<li>- <?php _e('<b>south-america</b> (South America)','geot'); ?></li>
+						<li>- <?php _e('<b>europe</b> (Europe)','geot'); ?></li>
+						<li>- <?php _e('<b>asia</b> (Asia)','geot'); ?></li>
+						<li>- <?php _e('<b>africa</b> (Africa)','geot'); ?></li>
+						<li>- <?php _e('<b>oceania</b> (Oceania)','geot'); ?></li>
+						<li>- <?php _e('<b>antarctica</b> (Antarctica)','geot'); ?></li>
+					</ul>
+				</td>
+			</tr>
 			<tr valign="top" class="">
 				<th><h3><?php _e( 'Countries:', 'geot' ); ?></h3></th>
 				<td colspan="3">

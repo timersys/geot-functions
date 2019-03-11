@@ -400,6 +400,7 @@ class GeotFunctions {
 		$exclude_places = toArray( $args['exclude'] );
 		$saved_regions  = apply_filters( 'geot/get_' . $key . '_regions', array() );
 		$plural_key     = toPlural( $key );
+		$user_state = '';
 
 		//Append any regions
 		if ( ! empty( $args['region'] ) && ! empty( $saved_regions ) ) {
@@ -410,6 +411,10 @@ class GeotFunctions {
 						$places = array_merge( (array) $places, (array) $saved_region[ $plural_key ] );
 					}
 				}
+			}
+			// if the key is cities and the user it's using region, check also against states. The database it's full of states and people it's using them so why not checking
+			if( 'city' == $key ) {
+				$user_state = $this->get('state');
 			}
 		}
 		// append excluded regions to excluded places
@@ -433,6 +438,8 @@ class GeotFunctions {
 
 		$user_place = $this->get( $key );
 
+
+
 		if ( !isset($user_place) || empty((array)$user_place) ) {
 			return apply_filters( 'geot/target_' . $key . '/return_on_user_null', false );
 		}
@@ -440,7 +447,12 @@ class GeotFunctions {
 		if ( count( $places ) > 0 ) {
 			foreach ( $places as $p ) {
 				// cant use isset($user_place->name) in here because it will always return false due to object properties
-				if ( strtolower( @$user_place->name ) == strtolower( trim($p) ) || strtolower( $user_place->iso_code ) == strtolower( trim($p) ) ) {
+				if (
+					strtolower( @$user_place->name ) == strtolower( trim($p) )
+					|| strtolower( $user_place->iso_code ) == strtolower( trim($p) )
+					|| strtolower( @$user_state->name ) == strtolower( trim($p) )
+					|| strtolower( $user_state->iso_code ) == strtolower( trim($p) )
+				) {
 					$target = true;
 				}
 			}
@@ -452,7 +464,12 @@ class GeotFunctions {
 		if ( count( $exclude_places ) > 0 ) {
 			foreach ( $exclude_places as $ep ) {
 				// cant use isset($user_place->name) in here because it will always return false due to object properties
-				if ( strtolower( @$user_place->name ) == strtolower( trim($ep) ) || strtolower( $user_place->iso_code ) == strtolower( trim($ep) ) ) {
+				if (
+					strtolower( @$user_place->name ) == strtolower( trim($ep) )
+					|| strtolower( $user_place->iso_code ) == strtolower( trim($ep) )
+					|| strtolower( @$user_state->name ) == strtolower( trim($ep) )
+					|| strtolower( $user_state->iso_code ) == strtolower( trim($ep) )
+				) {
 					$target = false;
 				}
 			}

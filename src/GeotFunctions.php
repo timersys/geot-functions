@@ -164,7 +164,7 @@ class GeotFunctions {
 			$this->initUserData();
 
 			// Easy debug
-			if ( isset( $_REQUEST['geot_debug'] ) ) {
+			if ( isset( $_REQUEST['geot_debug'] ) && ! empty( $_REQUEST['geot_debug'] ) ) {
 				return $this->debugData();
 			}
 

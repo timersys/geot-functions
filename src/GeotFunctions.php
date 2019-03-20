@@ -400,7 +400,10 @@ class GeotFunctions {
 		$exclude_places = toArray( $args['exclude'] );
 		$saved_regions  = apply_filters( 'geot/get_' . $key . '_regions', array() );
 		$plural_key     = toPlural( $key );
-		$user_state = '';
+		
+		$user_state = new \StdClass();
+		$user_state->iso_code = '';
+		$user_state->name = '';
 
 		//Append any regions
 		if ( ! empty( $args['region'] ) && ! empty( $saved_regions ) ) {

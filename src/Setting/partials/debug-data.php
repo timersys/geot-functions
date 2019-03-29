@@ -16,8 +16,8 @@ $opts           = geot_settings();
 <textarea readonly="readonly" onclick="this.focus(); this.select()" id="geot-debug-info" name="geot-debug-content">
 ##Geolocation data##
 
-<?php echo strip_tags(preg_replace('/\t+/', '',geot_debug_data()));?>
-
+<?php echo strip_tags(preg_replace('/\t+/', '',geot_debug_data()));echo PHP_EOL;?>
+Geot Cookie set: <?php echo isset( $_COOKIE[ $this->opts['cookie_name'] ] ) ? 'true' : 'false'; echo PHP_EOL;?>
 
 ##Ip Resolved##
 

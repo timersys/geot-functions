@@ -404,6 +404,8 @@ class GeotFunctions {
 		$user_state = new \StdClass();
 		$user_state->iso_code = '';
 		$user_state->name = '';
+		// for filtering set english locale
+		$this->checkLocale('en');
 
 		//Append any regions
 		if ( ! empty( $args['region'] ) && ! empty( $saved_regions ) ) {
@@ -436,6 +438,8 @@ class GeotFunctions {
 		$target = false;
 		// zip it's really a city property so it's custom
 		if ( $key == 'zip' ) {
+			// reset locale
+			$this->checkLocale();
 			return $this->targetZip( $places, $exclude_places );
 		}
 
@@ -444,6 +448,8 @@ class GeotFunctions {
 
 
 		if ( !isset($user_place) || empty((array)$user_place) ) {
+			// reset locale
+			$this->checkLocale();
 			return apply_filters( 'geot/target_' . $key . '/return_on_user_null', false );
 		}
 
@@ -478,6 +484,8 @@ class GeotFunctions {
 			}
 		}
 
+		// reset locale
+		$this->checkLocale();
 		return $target;
 	}
 
@@ -710,8 +718,10 @@ class GeotFunctions {
 	/**
 	 * For API results we can let users change locale
 	 * but also we can check against wordpress locale
+	 *
+	 * @param null $force_locale
 	 */
-	private function checkLocale() {
+	private function checkLocale( $force_locale = null ) {
 		if ( ! $this->user_data[ $this->cache_key ] instanceof GeotRecord || apply_filters( 'geot/cancel_locale_check', false ) ) {
 			return;
 		}
@@ -727,6 +737,10 @@ class GeotFunctions {
 			case 'zh':
 				$wp_locale = 'zh-CN';
 				break;
+		}
+		// when filtering we want english locale to compare city names
+		if($force_locale){
+			$wp_locale = $force_locale;
 		}
 		// set locale on all records
 		foreach ( get_object_vars( $this->user_data[ $this->cache_key ] ) as $o ) {

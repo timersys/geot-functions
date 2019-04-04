@@ -430,8 +430,8 @@ function geot_debug_data() {
 	Lat: <?php echo $user_data->geolocation->latitude . PHP_EOL . '<br>'; ?>
 	Lng: <?php echo $user_data->geolocation->longitude . PHP_EOL . '<br>'; ?>
 	}<br>
-	Real IP: <?php echo GeotWP\getUserIP() . PHP_EOL . '<br>'; ?>
-	IP geot/user_ip: <?php echo apply_filters( 'geot/user_ip', GeotWP\getUserIP() ) . PHP_EOL . '<br>'; ?>
+	Default IP: <?php echo GeotWP\getUserIP() . PHP_EOL . '<br>'; ?>
+	Ip being used: <?php echo apply_filters( 'geot/user_ip', GeotWP\getUserIP() ) . PHP_EOL . '<br>'; ?>
 	Geot Version: <?php echo defined( 'GEOT_VERSION' ) ? GEOT_VERSION . PHP_EOL . '<br>' : ''; ?>
 	PHP Version: <?php echo phpversion() . PHP_EOL; ?>
 	Host:   <?= $_SERVER['HTTP_HOST'] ?: 'no set' . PHP_EOL . '<br>' ?>

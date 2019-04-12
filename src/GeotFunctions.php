@@ -564,10 +564,10 @@ class GeotFunctions {
 	private function check_active_user() {
 
 		if (
-			( ! isset( $this->opts['wpengine'] ) || $this->opts['wpengine'] == '0' )
-			&& ( ! isset( $this->opts['maxmind'] ) || $this->opts['maxmind'] == '0' )
-			&& ( ! isset( $this->opts['ip2location'] ) || $this->opts['ip2location'] == '0' )
-			&& ( ! isset( $this->opts['kinsta'] ) || $this->opts['kinsta'] == '0' )
+			( ! isset( $this->opts['wpengine'] ) || $this->opts['wpengine'] == '0' || getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) === false )
+			&& ( ! isset( $this->opts['maxmind'] ) || $this->opts['maxmind'] == '0' || ! file_exists( GeotFunctions\maxmind_db() ) )
+			&& ( ! isset( $this->opts['ip2location'] ) || $this->opts['ip2location'] == '0' || ! file_exists( GeotFunctions\ip2location_db() ) )
+			&& ( ! isset( $this->opts['kinsta'] ) || $this->opts['kinsta'] == '0' || empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) )
 		) {
 			return true;
 		}

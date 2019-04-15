@@ -576,7 +576,7 @@ class GeotFunctions {
 			throw new InvalidLicenseException( json_encode( [ 'error' => 'Missing or invalid license' ] ) );
 		}
 
-		if ( false === ( $active_user = get_transient( 'geot_active_user' ) ) ) {
+		if ( false === ( $active_user = get_site_transient( 'geot_active_user' ) ) ) {
 			// It wasn't there, so regenerate the data and save the transient
 			$active_user = GeotargetingWP::checkSubscription( $this->opts['license'] );
 			$result      = json_decode( $active_user );
@@ -584,7 +584,7 @@ class GeotFunctions {
 				throw new InvalidSubscriptionException( json_encode( [ 'error' => $result->error ] ) );
 			}
 
-			set_transient( 'geot_active_user', true, DAY_IN_SECONDS );
+			set_site_transient( 'geot_active_user', true, DAY_IN_SECONDS );
 
 			return true;
 		}

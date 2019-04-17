@@ -345,14 +345,18 @@ class GeotSettings {
 				$settings = array_merge( $old_settings, $settings );
 			}
 
-			// check if any region was named already like a continent
-			$continents = wp_list_pluck( geot_predefined_regions(), 'name' );
-			if( isset($settings['region']) && count($settings['region']) > 0 ) {
-				foreach($settings['region'] as $id => $regions) {
-					if( in_array( $regions['name'], $continents ) )
-						$settings['region'][$id]['name'] = $regions['name'].'-'.rand(10,99);
+			
+			if( apply_filters('geot/need_predefined_regions', true) ) {
+				// check if any region was named already like a continent
+				$continents = wp_list_pluck( geot_predefined_regions(), 'name' );
+				if( isset($settings['region']) && count($settings['region']) > 0 ) {
+					foreach($settings['region'] as $id => $regions) {
+						if( in_array( $regions['name'], $continents ) )
+							$settings['region'][$id]['name'] = $regions['name'].'-'.rand(10,99);
+					}
 				}
 			}
+			
 			update_option( 'geot_settings', $settings );
 		}
 	}

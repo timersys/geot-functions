@@ -223,26 +223,29 @@ class GeotUpdates {
 	 * @return object
 	 */
 	private function parseRequest( $request ) {
-		$info = $request->data;
-		$res  = (object) array(
-			'name'          => isset( $info->name ) ? $info->name : '',
-			'version'       => $info->version,
-			'slug'          => $request->slug,
-			'download_link' => $info->download_link,
+		// if request fail or plugin don't exit
+		if( ! isset($request->id) )
+			return;
 
-			'tested'       => isset( $info->tested ) ? $info->tested : '',
-			'requires'     => isset( $info->requires ) ? $info->requires : '',
+		$res  = (object) array(
+			'name'          => isset( $request->name ) ? $request->name : '',
+			'version'       => $request->version,
+			'slug'          => $request->slug,
+			'download_link' => $request->download_link,
+
+			'tested'       => isset( $request->tested ) ? $request->tested : '',
+			'requires'     => isset( $request->requires ) ? $request->requires : '',
 			'last_updated' => isset( $request->updated_at ) ? $request->updated_at : '',
-			'homepage'     => isset( $info->plugin_url ) ? $info->plugin_url : '',
+			'homepage'     => isset( $request->plugin_url ) ? $request->plugin_url : '',
 
 			'sections' => array(
-				'description' => $info->description,
-				'changelog'   => $info->changelog,
+				'description' => $request->description,
+				'changelog'   => $request->changelog,
 			),
 
 			'banners' => array(
-				'low'  => isset( $info->banner_low ) ? $info->banner_low : '',
-				'high' => isset( $info->banner_high ) ? $info->banner_high : ''
+				'low'  => isset( $request->banner_low ) ? $request->banner_low : '',
+				'high' => isset( $request->banner_high ) ? $request->banner_high : ''
 			),
 
 			'external' => true

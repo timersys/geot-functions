@@ -1,3 +1,40 @@
+.geot-admin-tabs {
+    background-color: #fff;
+    margin: 0 0 20px 0;
+    padding: 0 20px;
+    list-style: none;
+    overflow: auto;
+    font-size: 14px;
+}
+
+.geot-admin-tabs li {
+    margin: 0 30px 0 0;
+    padding: 0;
+    float: left;
+}
+
+.geot-admin-tabs li:last-of-type {
+    margin: 0;
+}
+
+.geot-admin-tabs li a {
+    color: #666;
+    display: block;
+    padding: 20px 0 18px 0;
+    text-decoration: none;
+    border-bottom: 2px solid #fff;
+    box-shadow: none;
+}
+
+.geot-admin-tabs li a:hover {
+    border-color: #999;
+}
+
+.geot-admin-tabs li a.active {
+    border-color: #e27730;
+}
+
+
 input.geot_license_ {
     background: #fff url(../img/invalid-key.png) no-repeat 99% center;
 }
@@ -111,7 +148,14 @@ input.api-keys {
     width: 800px;
     height: 400px;
 }
-
+.geot-settings-title h3{
+    padding-bottom: 5px;
+    border-bottom: 3px solid #848484;
+}
+.geot-settings .selectize-control ,
+.geot-settings textarea {
+    width: 42%;
+}
 .selectize-control {
     max-width: 80%;
     margin: 20px 0;

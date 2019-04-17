@@ -6,7 +6,7 @@
 add_filter( 'geot/get_country_regions', function (){
 	$settings   = geot_settings();
 	
-	if( apply_filters('geot/need_predefined_regions', true) ) {
+	if( apply_filters('geot/enable_predefined_regions', true) ) {
 		if( isset( $settings['region'] ) )
 			$regions = array_merge($settings['region'], geot_predefined_regions());
 		else

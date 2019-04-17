@@ -30,7 +30,7 @@ $countries = geot_countries();
 				<th colspan="3"><h3><?php _e( 'Regions:', 'geot' ); ?></h3></th>
 			</tr>
 
-			<?php if( apply_filters('geot/need_predefined_regions', true) ) : ?>
+			<?php if( apply_filters('geot/enable_predefined_regions', true) ) : ?>
 
 				<tr valign="top" class="">
 					<th><h3><?php _e( 'Continents:', 'geot' ); ?></h3></th>

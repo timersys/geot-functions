@@ -346,7 +346,7 @@ class GeotSettings {
 			}
 
 			
-			if( apply_filters('geot/need_predefined_regions', true) ) {
+			if( apply_filters('geot/enable_predefined_regions', true) ) {
 				// check if any region was named already like a continent
 				$continents = wp_list_pluck( geot_predefined_regions(), 'name' );
 				if( isset($settings['region']) && count($settings['region']) > 0 ) {

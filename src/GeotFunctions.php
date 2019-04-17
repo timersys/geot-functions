@@ -515,10 +515,13 @@ class GeotFunctions {
 		if ( ! $this->user_data[ $this->cache_key ] instanceof GeotRecord ) {
 			return;
 		}
+		$country = isset($this->user_data[ $this->cache_key ]->country->iso_code) ? $this->user_data[ $this->cache_key ]->country->iso_code : 'not detected';
+		$state = isset($this->user_data[ $this->cache_key ]->state->iso_code) ? $this->user_data[ $this->cache_key ]->state->iso_code : 'not detected';
+		$city = isset($this->user_data[ $this->cache_key ]->city->name) ? $this->user_data[ $this->cache_key ]->city->name : 'not detected';
 
-		setcookie( 'geot_rocket_country', apply_filters( 'geot_rocket_country', $this->user_data[ $this->cache_key ]->country->iso_code ), 0, '/' );
-		setcookie( 'geot_rocket_state', apply_filters( 'geot_rocket_state', $this->user_data[ $this->cache_key ]->state->iso_code ), 0, '/' );
-		setcookie( 'geot_rocket_city', apply_filters( 'geot_rocket_city', $this->user_data[ $this->cache_key ]->city->name ), 0, '/' );
+		setcookie( 'geot_rocket_country', apply_filters( 'geot_rocket_country', $country ), 0, '/' );
+		setcookie( 'geot_rocket_state', apply_filters( 'geot_rocket_state', $state ), 0, '/' );
+		setcookie( 'geot_rocket_city', apply_filters( 'geot_rocket_city', $city ), 0, '/' );
 	}
 
 	/**

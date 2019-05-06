@@ -194,6 +194,10 @@ class GeotFunctions {
 			if ( isset( $this->opts['wpengine'] ) && $this->opts['wpengine'] ) {
 				return $this->wpengine();
 			}
+			// litespeed?
+			if ( isset( $this->opts['litespeed'] ) && $this->opts['litespeed'] ) {
+				return $this->litespeed();
+			}
 			// Kingsta ?
 			if ( isset( $this->opts['kinsta'] ) && $this->opts['kinsta'] ) {
 				return $this->kinsta();
@@ -555,6 +559,7 @@ class GeotFunctions {
 			// wheter we use io disk or memory for lookup
 			'wpengine'           => 0,
 			'kinsta'             => 0,
+			'litespeed'          => 0,
 		] );
 	}
 
@@ -571,6 +576,7 @@ class GeotFunctions {
 			&& ( ! isset( $this->opts['maxmind'] ) || $this->opts['maxmind'] != '1' || ! file_exists( maxmind_db() ) )
 			&& ( ! isset( $this->opts['ip2location'] ) || $this->opts['ip2location'] != '1' || ! file_exists( ip2location_db() ) )
 			&& ( ! isset( $this->opts['kinsta'] ) || $this->opts['kinsta'] != '1' || empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) )
+			&& ( ! isset( $this->opts['litespeed'] ) || $this->opts['litespeed'] != '1' || empty( $_SERVER['GEOIP_COUNTRY_CODE'] ) )
 		) {
 			return true;
 		}
@@ -670,6 +676,19 @@ class GeotFunctions {
 	 * @throws GeotException
 	 */
 	private function kinsta() {
+		try {
+			return $this->cleanResponse( RecordConverter::kinsta() );
+		} catch ( \Exception $e ) {
+			throw new GeotException( $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Use Litespped variables (users must add variables)
+	 * @return GeotRecord
+	 * @throws GeotException
+	 */
+	private function litespeed() {
 		try {
 			return $this->cleanResponse( RecordConverter::kinsta() );
 		} catch ( \Exception $e ) {

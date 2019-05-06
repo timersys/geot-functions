@@ -71,6 +71,21 @@ if( !empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) ) {
 	echo '$_SERVER[ "HTTP_GEOIP_LONGITUDE" ]           :'; echo $_SERVER['HTTP_GEOIP_LONGITUDE'] . PHP_EOL ;
 }
 ?>
+litespeed:                   <?php
+echo !empty($_SERVER['GEOIP_COUNTRY_CODE']) ? 'Yes' : 'No'; ?>
+<?php echo PHP_EOL; ?>
+<?php
+if( !empty( $_SERVER['GEOIP_COUNTRY_CODE'] ) ) {
+	echo '$_SERVER[ "GEOIP_CONTINENT_CODE" ] :'; echo $_SERVER['GEOIP_CONTINENT_CODE'] . PHP_EOL ;
+	echo '$_SERVER[ "GEOIP_CITY" ]                :'; echo $_SERVER['GEOIP_CITY'] . PHP_EOL ;
+	echo '$_SERVER[ "GEOIP_POSTAL_CODE" ]         :'; echo $_SERVER['GEOIP_POSTAL_CODE'] . PHP_EOL ;
+	echo '$_SERVER[ "GEOIP_COUNTRY_CODE" ]   :'; echo $_SERVER['GEOIP_COUNTRY_CODE'] . PHP_EOL ;
+	echo '$_SERVER[ "GEOIP_COUNTRY_NAME" ]   :'; echo $_SERVER['GEOIP_COUNTRY_NAME'] . PHP_EOL ;
+	echo '$_SERVER[ "GEOIP_REGION" ]              :'; echo $_SERVER['GEOIP_REGION'] . PHP_EOL ;
+	echo '$_SERVER[ "GEOIP_LATITUDE" ]            :'; echo $_SERVER['GEOIP_LATITUDE'] . PHP_EOL ;
+	echo '$_SERVER[ "GEOIP_LONGITUDE" ]           :'; echo $_SERVER['GEOIP_LONGITUDE'] . PHP_EOL ;
+}
+?>
 Maxmind Local database:   <?php echo isset($opts['maxmind']) && $opts['maxmind'] ? 'Yes' : 'No'; ?>
 
 Ip2location:              <?php echo isset($opts['ip2location']) && $opts['ip2location'] ? 'Yes' : 'No'; ?>

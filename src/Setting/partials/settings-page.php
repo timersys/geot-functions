@@ -90,6 +90,16 @@ $countries = geot_countries();
 					</td>
 				</tr>
 			<?php endif; ?>
+			<?php if ( getenv( 'GEOIP_COUNTRY_CODE' ) !== false ): ?>
+				<tr valign="top" class="">
+					<th><label for=""><?php _e( 'Enable Litespeed Geolocation', 'geot' ); ?></label></th>
+					<td colspan="3">
+						<label><input type="checkbox" id="" name="geot_settings[litespeed]"
+						              value="1" <?php checked( $opts['litespeed'], '1' ); ?>/>
+							<p class="help"><?php _e( 'Check this if you want to use Litespeed local database', 'geot' ); ?></p>
+					</td>
+				</tr>
+			<?php endif; ?>
 
 			<?php if ( ! empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) ): ?>
 				<tr valign="top" class="">

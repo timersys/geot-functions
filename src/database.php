@@ -151,6 +151,7 @@ VALUES
 ('KR', 'Korea (Republic of)' ),
 ('KW', 'Kuwait' ),
 ('KG', 'Kyrgyzstan' ),
+('XK', 'Kosovo' ),
 ('LA', 'Lao People''s Democratic Republic' ),
 ('LV', 'Latvia' ),
 ('LB', 'Lebanon' ),

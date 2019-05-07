@@ -690,7 +690,7 @@ class GeotFunctions {
 	 */
 	private function litespeed() {
 		try {
-			return $this->cleanResponse( RecordConverter::kinsta() );
+			return $this->cleanResponse( RecordConverter::litespeed() );
 		} catch ( \Exception $e ) {
 			throw new GeotException( $e->getMessage() );
 		}

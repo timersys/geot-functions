@@ -317,6 +317,7 @@ class GeotSettings {
 				'ip2location',
 				'wpengine',
 				'kinsta',
+				'litespeed',
 				'cache_mode',
 				'debug_mode',
 				'license',

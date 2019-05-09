@@ -71,17 +71,17 @@ class GeotWizard {
 	 */
 	public function __construct() {
 
-		add_action( 'init', [ $this, 'init' ] );
+		add_action( 'init', [ $this, 'setup' ] );
 	}
 
 
-	public function init() {
+	public function setup() {
 		if ( apply_filters( 'geot/wizard/enable', true ) && current_user_can( 'manage_options' ) ) {
 			add_action( 'admin_menu', [ $this, 'admin_menus' ] );
 
 			if( isset($_GET['page']) && $_GET['page'] == 'geot-setup' ) {
 
-				add_action( 'admin_init', [ $this, 'setup_wizard' ] );
+				add_action( 'admin_init', [ $this, 'wizard' ] );
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 			}
 		}
@@ -101,7 +101,7 @@ class GeotWizard {
 	/**
 	 * Show the setup wizard.
 	 */
-	public function setup_wizard() {
+	public function wizard() {
 
 		$default_steps = array(
 			'basic' => array(

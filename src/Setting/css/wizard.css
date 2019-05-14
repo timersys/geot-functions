@@ -58,8 +58,8 @@ body {
 }
 
 .geot-setup-steps li.done {
-	border-color: #a16696;
-	color: #a16696;
+	border-color: #20A9E0;
+	color: #20A9E0;
 }
 
 .geot-setup-steps li.done::before {
@@ -78,7 +78,7 @@ body {
 }
 
 .geot-setup-steps li a {
-	color: #a16696;
+	color: #20A9E0;
 	text-decoration: none;
 	padding: 1.5em;
 	margin: -1.5em;
@@ -129,6 +129,11 @@ body {
 	display: inline-block;
 }
 
+.geot-setup-content .location-checkbox {
+	width: 18px;
+	height: 18px;
+}
+
 .geot-setup-content .location-label {
 	color: #666;
 	font-size: 13px;
@@ -163,4 +168,15 @@ body {
 	margin: 1.18em auto;
 	display: inline-block;
 	text-align: center;
+}
+
+
+/*	Extra	*/
+.text-center {
+	text-align: center;
+}
+
+.selectize-control {
+	margin-bottom: 0;
+	max-width: 100%;
 }

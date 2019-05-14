@@ -71,6 +71,7 @@ class GeotSettings {
 
 		add_action( 'admin_menu', [ $this, 'add_settings_menu' ], 8 );
 		add_action( 'admin_init', [ $this, 'check_license' ], 15 );
+		add_action( 'admin_init', [ $this, 'redirect_wizard'], 20);
 		add_action( 'wp_ajax_geot_check_license', [ $this, 'ajax_check_license' ] );
 		add_action( 'wp_ajax_geot_cities_by_country', [ $this, 'geot_cities_by_country' ] );
 
@@ -397,5 +398,32 @@ class GeotSettings {
 	 */
 	public function regions_panel() {
 		include dirname( __FILE__ ) . '/partials/regions-page.php';
+	}
+
+
+	/**
+	 * Redirect to Wizard
+	 */
+	public function redirect_wizard() {
+		if ( ! get_transient( 'geot_activator' ) ) {
+			return;
+		}
+
+		// Delete the redirect transient
+		delete_transient( 'geot_activator' );
+
+		// Bail if activating from network, or bulk
+		if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) {
+			return;
+		}
+
+		// Redirect to panel welcome
+		wp_safe_redirect(
+			add_query_arg(
+				array( 'page' => 'geot-setup' ),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
 	}
 }

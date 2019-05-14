@@ -171,3 +171,16 @@ function uninstall( $posts = [], $taxonomies = [] ) {
 		$wpdb->delete( $wpdb->term_taxonomy, array( 'taxonomy' => $taxonomy ), array( '%s' ) );
 	}
 }
+
+
+/**
+ * Activate Create 
+ * @param array $posts
+ * @param array $taxonomies
+ */
+function geot_activate() {
+	$settings = get_option('geot_settings');
+
+	if( !$settings )
+		set_transient( 'geot_activator', true, 30 );
+}

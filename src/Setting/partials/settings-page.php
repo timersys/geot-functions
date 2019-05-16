@@ -7,16 +7,17 @@
 
 $opts     = geot_settings();
 $defaults = [
-	'license'                    => '',
-	'api_secret'                 => '',
-	'cache_mode'                 => '0',
-	'ajax_mode'                  => '0',
-	'debug_mode'                 => '0',
-	'maxmind'                    => '0',
-	'ip2location'                => '0',
-	'geot_uninstall'             => '',
-	'fallback_country_ips'       => '',
-	'bots_country_ips'           => '',
+	'license'					=> '',
+	'api_secret'				=> '',
+	'cache_mode'				=> '0',
+	'ajax_mode'					=> '0',
+	'debug_mode'				=> '0',
+	'var_ip'					=> 'REMOTE_ADDR',
+	'maxmind'					=> '0',
+	'ip2location'				=> '0',
+	'geot_uninstall'			=> '',
+	'fallback_country_ips'		=> '',
+	'bots_country_ips'			=> '',
 ];
 $opts     = wp_parse_args( $opts, apply_filters( 'geot/default_settings', $defaults ) );
 
@@ -126,6 +127,33 @@ $countries = geot_countries();
 					<label><input type="checkbox" id="" name="geot_settings[debug_mode]"
 					              value="1" <?php checked( $opts['debug_mode'], '1' ); ?>/>
 						<p class="help"><?php _e( 'Check this if you want to print in the html code some debug info. Turn off in production!!', 'geot' ); ?></p>
+				</td>
+			</tr>
+
+			<tr valign="top" class="">
+				<th><label for="region"><?php _e( 'IP', 'geot' ); ?></label></th>
+				<td colspan="3">
+
+					<?php if( count($ips) == 0 ) : ?>
+						<h3><?php _e('We could not detect any IP', 'geot'); ?></h3>
+					<?php elseif( count($ips) == 1 ) : ?>
+						<h3 style="font-weight: unset;"><?php printf(__('We detected the following IP : <b>%s</b>', 'geot'), current($ips)); ?></h3>
+						<input type="hidden" name="geot_settings[var_ip]" value="<?php echo $opts['var_ip']; ?>" />
+					<?php else : ?>
+
+						<select name="geot_settings[var_ip]" class="geot-chosen-select"
+						        data-placeholder="<?php _e( 'Choose your IP...', 'geot' ); ?>">
+
+							<?php foreach( $ips as $key => $label_ip ) : ?>
+								<option value="<?php echo $key; ?>" <?php echo selected( $key, $opts['fallback_country'] ); ?> ><?php echo $label_ip; ?></option>
+							<?php endforeach; ?>
+
+							<?php foreach( $ips as $key => $label_ip ) : ?>
+								<option value="<?php echo $key ?>" <?php echo selected( $key, $opts['var_ip'] ); ?>><?php echo $label_ip; ?></option>
+							<?php endforeach; ?>
+						</select>
+						<p class="help"><?php printf(__('If you dont know what IP must choose, you can check your real ip on <a href="%s">%s</a>','geot'), 'https://geotargetingwp.com/ip', 'https://geotargetingwp.com/ip'); ?></p>
+					<?php endif; ?>
 				</td>
 			</tr>
 

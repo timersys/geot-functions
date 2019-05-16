@@ -180,32 +180,12 @@ class GeotWizard {
 			'api_secret'		=> '',
 			'fallback_country'	=> '',
 			'bots_country'		=> '',
+			'var_ip'			=> 'REMOTE_ADDR',
 		];
 		$opts = wp_parse_args( $opts, apply_filters( 'geot/default_settings', $defaults ) );
 
 		$countries = geot_countries();
-
-		$ips = array();
-
-		if( isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR']) &&
-			!in_array($_SERVER['REMOTE_ADDR'], $ips) ) {
-			$ips[] = $_SERVER[ 'REMOTE_ADDR' ];
-		}
-
-		if( isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']) &&
-			!in_array($_SERVER['HTTP_X_FORWARDED_FOR'], $ips) ) {
-			$ips[] = $_SERVER[ 'HTTP_X_FORWARDED_FOR' ];
-		}
-
-		if( isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP']) &&
-			!in_array($_SERVER['HTTP_CLIENT_IP'], $ips) ) {
-			$ips[] = $_SERVER[ 'HTTP_CLIENT_IP' ];
-		}
-
-		if( isset($_SERVER['HTTP_X_REAL_IP']) && !empty($_SERVER['HTTP_X_REAL_IP']) &&
-			!in_array($_SERVER['HTTP_X_REAL_IP'], $ips) ) {
-			$ips[] = $_SERVER[ 'HTTP_X_REAL_IP' ];
-		}
+		$ips = \GeotFunctions\geot_ips();
 
 		require_once dirname( __FILE__ ) . '/partials/setup-wizard-basic.php';
 	}

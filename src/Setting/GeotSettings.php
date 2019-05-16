@@ -267,6 +267,7 @@ class GeotSettings {
 	 * @since 1.0.0
 	 */
 	public function general_panel() {
+		$ips = \GeotFunctions\geot_ips();
 		include dirname( __FILE__ ) . '/partials/settings-page.php';
 	}
 	/**

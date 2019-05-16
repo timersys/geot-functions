@@ -46,17 +46,18 @@
 
 		<div class="location-row">
 			<?php if( count($ips) == 0 ) : ?>
-				<h2 class="text-center"><?php _e('There isnt IP', 'geot'); ?></h2>
+				<h3><?php _e('We could not detect any IP', 'geot'); ?></h3>
 			<?php elseif( count($ips) == 1 ) : ?>
-				<h2 class="text-center"><?php printf(__('Your IP : %s', 'geot'), current($ips)); ?></h2>
+				<h3 style="font-weight: unset;" class="text-center"><?php printf(__('We detected the following IP : <b>%s</b>', 'geot'), current($ips)); ?></h3>
+				<input type="hidden" name="geot_settings[var_ip]" value="<?php echo $opts['var_ip']; ?>" />
 			<?php else : ?>
-				<label for="ip" class="location-label"><?php _e( 'IP', 'geot' ); ?></label>
-				<select name="geot_settings[ips]" class="geot-chosen-select" data-placeholder="<?php _e( 'Choose your IP...', 'geot' ); ?>">
-					<?php foreach( $ips as $ip ) : ?>
-						<option value="<?php echo $ip; ?>"><?php echo $ip; ?></option>
+				<label for="ip" class="location-label"><?php _e( 'Which is your correct ip?', 'geot' ); ?></label>
+				<select name="geot_settings[var_ip]" class="geot-chosen-select" data-placeholder="<?php _e( 'Choose your IP...', 'geot' ); ?>">
+					<?php foreach( $ips as $key => $label_ip ) : ?>
+						<option value="<?php echo $key; ?>"><?php echo $label_ip; ?></option>
 					<?php endforeach; ?>
 				</select>
-				<div class="location-help"><?php printf(__('If you dont know what IP must choose, you can choose this IP %s','geot'), 'https://geotargetingwp.com/ip') ?></div>
+				<div class="location-help"><?php printf(__('If you dont know what IP must choose, you can check your real ip on <a href="%s">%s</a>','geot'), 'https://geotargetingwp.com/ip', 'https://geotargetingwp.com/ip'); ?></div>
 			<?php endif; ?>
 		</div>
 

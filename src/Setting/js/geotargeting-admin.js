@@ -28,6 +28,8 @@
                                 callback();
                             },
                             success: function (res) {
+                                select_city.settings.placeholder = 'Choose one o or more cities';
+                                select_city.updatePlaceholder();
                                 select_city.enable();
                                 callback(res);
                             }
@@ -134,6 +136,8 @@
                                 callback();
                             },
                             success: function (res) {
+                                select_city.settings.placeholder = 'Choose one o or more cities';
+                                select_city.updatePlaceholder();
                                 select_city.enable();
                                 callback(res);
                             }

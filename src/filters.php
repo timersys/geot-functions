@@ -3,16 +3,21 @@
  * Different helpers filters used around
  */
 
-add_filter( 'geot/get_country_regions', function (){
-	$settings   = geot_settings();
-	
+add_filter( 'geot/settings_page/opts', function($settings) {
+
 	if( apply_filters('geot/enable_predefined_regions', true) ) {
 		if( isset( $settings['region'] ) )
-			$regions = array_merge($settings['region'], geot_predefined_regions());
+			$settings['region'] = array_merge($settings['region'], geot_predefined_regions());
 		else
-			$regions = geot_predefined_regions();
-	} else
-		$regions = $settings['region'];
+			$settings['region'] = geot_predefined_regions();
+	}
+
+	return $settings;
+});
+
+add_filter( 'geot/get_country_regions', function (){
+	$settings   = geot_settings();
+	$regions  = isset( $settings['region'] ) ? $settings['region'] : array();
 
 	return $regions;
 } );

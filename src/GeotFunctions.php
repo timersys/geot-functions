@@ -79,6 +79,8 @@ class GeotFunctions {
 
 		$this->session = GeotSession::instance();
 
+		add_action( 'geot/user_ip', array( $this, 'rewrite_ip' ), 9, 1 );
+
 		// If we have cache mode turned on, we need to calculate user location before
 		// anything gets printed
 		if ( ! is_admin()
@@ -129,6 +131,15 @@ class GeotFunctions {
 	 */
 	public function __wakeup() {
 		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
+	}
+
+	function rewrite_ip($ip) {
+		$settings = geot_settings();
+
+		if( isset($settings['var_ip']) && !emtpy($settings['var_ip']) )
+			return $_SERVER[$settings['var_ip']];
+
+		return $_SERVER['REMOTE_ADDR'];
 	}
 
 	/**

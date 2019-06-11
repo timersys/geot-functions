@@ -171,3 +171,77 @@ function uninstall( $posts = [], $taxonomies = [] ) {
 		$wpdb->delete( $wpdb->term_taxonomy, array( 'taxonomy' => $taxonomy ), array( '%s' ) );
 	}
 }
+
+
+/**
+ * Activate Create 
+ * @param array $posts
+ * @param array $taxonomies
+ */
+function geot_activate() {
+	$settings = get_option('geot_settings');
+
+	if( !$settings )
+		set_transient( 'geot_activator', true, 30 );
+}
+
+
+function geot_ips() {
+	$ips = array();
+
+	// Server
+	if( isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR']) &&
+		!in_array($_SERVER['REMOTE_ADDR'], $ips) ) {
+		$ips['REMOTE_ADDR'] = sprintf(__('Server: %s','geot'), $_SERVER[ 'REMOTE_ADDR' ]);
+	}
+
+	// Server
+	if( isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP']) &&
+		!in_array($_SERVER['HTTP_CLIENT_IP'], $ips) ) {
+		$ips['HTTP_CLIENT_IP'] = sprintf(__('Server: %s','geot'), $_SERVER[ 'HTTP_CLIENT_IP' ]);
+	}
+
+	// Server
+	if( isset($_SERVER['HTTP_X_REAL_IP']) && !empty($_SERVER['HTTP_X_REAL_IP']) &&
+		!in_array($_SERVER['HTTP_X_REAL_IP'], $ips) ) {
+		$ips['HTTP_X_REAL_IP'] = sprintf(__('Server: %s','geot'), $_SERVER[ 'HTTP_X_REAL_IP' ]);
+	}
+
+	// Cloudflare
+	if( isset($_SERVER['HTTP_CF_CONNECTING_IP']) && !empty($_SERVER['HTTP_CF_CONNECTING_IP']) &&
+		!in_array($_SERVER['HTTP_CF_CONNECTING_IP'], $ips) ) {
+		$ips['HTTP_CF_CONNECTING_IP'] = sprintf(__('Cloudflare: %s','geot'), $_SERVER[ 'HTTP_CF_CONNECTING_IP' ]);
+	}
+
+	// Reblase
+	if( isset($_SERVER['X-Real-IP']) && !empty($_SERVER['X-Real-IP']) &&
+		!in_array($_SERVER['X-Real-IP'], $ips) ) {
+		$ips['X-Real-IP'] = sprintf(__('Reblase: %s','geot'), $_SERVER[ 'X-Real-IP' ]);
+	}
+
+	// Sucuri
+	if( isset($_SERVER['HTTP_X_SUCURI_CLIENTIP']) && !empty($_SERVER['HTTP_X_SUCURI_CLIENTIP']) &&
+		!in_array($_SERVER['HTTP_X_SUCURI_CLIENTIP'], $ips) ) {
+		$ips['HTTP_X_SUCURI_CLIENTIP'] = sprintf(__('Sucuri: %s','geot'), $_SERVER[ 'HTTP_X_SUCURI_CLIENTIPP' ]);
+	}
+
+	//Ezoic
+	if( isset($_SERVER['X-FORWARDED-FOR']) && !empty($_SERVER['X-FORWARDED-FOR']) &&
+		!in_array($_SERVER['X-FORWARDED-FOR'], $ips) ) {
+		$ips['X-FORWARDED-FOR'] = sprintf(__('Ezoic: %s','geot'), $_SERVER[ 'X-FORWARDED-FOR' ]);
+	}
+
+	//Akamai
+	if( isset($_SERVER['True-Client-IP']) && !empty($_SERVER['True-Client-IP']) &&
+		!in_array($_SERVER['True-Client-IP'], $ips) ) {
+		$ips['True-Client-IP'] = sprintf(__('Ezoic: %s','geot'), $_SERVER[ 'True-Client-IP' ]);
+	}
+
+	//Clouways
+	if( isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']) &&
+		!in_array($_SERVER['HTTP_X_FORWARDED_FOR'], $ips) ) {
+		$ips['HTTP_X_FORWARDED_FOR'] = sprintf(__('Clouways: %s','geot'), $_SERVER[ 'HTTP_X_FORWARDED_FOR' ]);
+	}
+
+	return $ips;
+}

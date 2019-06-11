@@ -319,7 +319,7 @@ class GeotSettings {
 				'kinsta',
 				'litespeed',
 				'cache_mode',
-				'debug_mode',
+				'ajax_mode',
 				'license',
 				'api_secret',
 				'fallback_country_ips',

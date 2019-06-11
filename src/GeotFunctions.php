@@ -169,7 +169,7 @@ class GeotFunctions {
 			}
 
 			// If user set cookie and not in debug mode. If we pass ip we are forcing to use ip instead of cookies. Eg in dropdown widget
-			if ( ! $this->opts['debug_mode'] && ! empty( $_COOKIE[ $this->opts['cookie_name'] ] ) && ! $force ) {
+			if ( ! empty( $_COOKIE[ $this->opts['cookie_name'] ] ) && ! $force ) {
 				return $this->setData( 'country', 'iso_code', $_COOKIE[ $this->opts['cookie_name'] ] );
 			}
 
@@ -537,7 +537,6 @@ class GeotFunctions {
 
 		$this->opts = wp_parse_args( $args, [
 			'license'            => '',
-			'debug_mode'         => false,
 			// similar to disable sessions but also invalidates cookies
 			'cache_mode'         => false,
 			// php sessions

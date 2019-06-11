@@ -93,7 +93,6 @@ Ip2location:              <?php echo isset($opts['ip2location']) && $opts['ip2lo
 
 ##Settings page##
 
-Debug mode:               <?php echo isset($opts['debug_mode']) && $opts['debug_mode'] ? 'On' : 'Off'; ?><?php echo PHP_EOL; ?>
 Cache mode:               <?php echo isset($opts['cache_mode']) && $opts['cache_mode'] ? 'On' : 'Off'; ?><?php echo PHP_EOL; ?>
 WpEngine mode:            <?php echo getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) ? 'On' : 'Off'; ?><?php echo PHP_EOL; ?>
 Kinsta mode:              <?php echo !empty($_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME']) ? 'On' : 'Off'; ?><?php echo PHP_EOL; ?>

@@ -11,7 +11,6 @@ $defaults = [
 	'api_secret'                 => '',
 	'cache_mode'                 => '0',
 	'ajax_mode'                  => '0',
-	'debug_mode'                 => '0',
 	'maxmind'                    => '0',
 	'ip2location'                => '0',
 	'geot_uninstall'             => '',
@@ -118,14 +117,6 @@ $countries = geot_countries();
 					<label><input type="checkbox" id="" name="geot_settings[cache_mode]"
 					              value="1" <?php checked( $opts['cache_mode'], '1' ); ?>/>
 						<p class="help"><?php echo sprintf( __( 'Check this if you want to save the user location into PHP Sessions. More info <a href="%s">here</a>', 'geot' ), 'https://geotargetingwp.com/docs/geotargeting-pro/configuration#cache' ); ?></p>
-				</td>
-			</tr>
-			<tr valign="top" class="">
-				<th><label for=""><?php _e( 'Debug Mode', 'geot' ); ?></label></th>
-				<td colspan="3">
-					<label><input type="checkbox" id="" name="geot_settings[debug_mode]"
-					              value="1" <?php checked( $opts['debug_mode'], '1' ); ?>/>
-						<p class="help"><?php _e( 'Check this if you want to print in the html code some debug info. Turn off in production!!', 'geot' ); ?></p>
 				</td>
 			</tr>
 

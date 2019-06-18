@@ -136,7 +136,7 @@ class GeotFunctions {
 	function rewrite_ip($ip) {
 		$settings = geot_settings();
 
-		if( isset($settings['var_ip']) && !emtpy($settings['var_ip']) )
+		if( isset($settings['var_ip']) && !empty($settings['var_ip']) )
 			return $_SERVER[$settings['var_ip']];
 
 		return $_SERVER['REMOTE_ADDR'];

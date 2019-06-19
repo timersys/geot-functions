@@ -133,19 +133,16 @@ $countries = geot_countries();
 			</tr>
 
 			<tr valign="top" class="">
-				<th><label for="region"><?php _e( 'IP', 'geot' ); ?></label></th>
+				<th><label for="region"><?php _e( 'IP Settings', 'geot' ); ?></label></th>
 				<td colspan="3">
-
 					<?php if ( count( $ips ) == 0 ) : ?>
-						<h3><?php _e( 'We could not detect any IP', 'geot' ); ?></h3>
+						<p><?php _e( 'No IP detected, please contact support.', 'geot' ); ?></p>
 					<?php elseif ( count( $ips ) == 1 ) : ?>
-						<h3 style="font-weight: unset;"><?php printf( __( 'We detected the following IP : <b>%s</b>', 'geot' ), current( $ips ) ); ?></h3>
+						<p><?php printf( __( 'IP detected: <b>%s</b>', 'geot' ), current( $ips ) ); ?></p>
 						<input type="hidden" name="geot_settings[var_ip]" value="<?php echo $opts['var_ip']; ?>"/>
 					<?php else : ?>
-
 						<select name="geot_settings[var_ip]" class="geot-chosen-select"
-						        data-placeholder="<?php _e( 'Choose your IP...', 'geot' ); ?>">
-
+						        data-placeholder="<?php _e( 'Choose your real IP', 'geot' ); ?>">
 							<?php foreach ( $ips as $key => $label_ip ) : ?>
 								<option value="<?php echo $key; ?>" <?php echo selected( $key, $opts['fallback_country'] ); ?> ><?php echo $label_ip; ?></option>
 							<?php endforeach; ?>
@@ -154,8 +151,8 @@ $countries = geot_countries();
 								<option value="<?php echo $key ?>" <?php echo selected( $key, $opts['var_ip'] ); ?>><?php echo $label_ip; ?></option>
 							<?php endforeach; ?>
 						</select>
-						<p class="help"><?php printf( __( 'If you dont know what IP must choose, you can check your real ip on <a href="%s">%s</a>', 'geot' ), 'https://geotargetingwp.com/ip', 'https://geotargetingwp.com/ip' ); ?></p>
 					<?php endif; ?>
+					<p class="help"><?php printf( __( 'You can check your real IP in  <a href="%s">%s</a>. That IP should match with the one you see in here.', 'geot' ), 'https://geotargetingwp.com/ip', 'https://geotargetingwp.com/ip' ); ?></p>
 				</td>
 			</tr>
 

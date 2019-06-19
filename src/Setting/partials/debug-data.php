@@ -19,7 +19,7 @@ $opts           = geot_settings();
 <?php echo strip_tags( preg_replace( '/\t+/', '', geot_debug_data() ) );
 echo PHP_EOL; ?>
 Geot Cookie set: <?php echo isset( $_COOKIE[ $this->opts['cookie_name'] ] ) ? 'true' : 'false';
-	echo PHP_EOL; ?>
+echo PHP_EOL; ?>
 
 ##Ip Resolved##
 
@@ -28,100 +28,92 @@ Server:                   <?php
 	echo isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 'not resolved'; ?><?php echo PHP_EOL; ?>
 Cloudflare:               <?php
 	echo '$_SERVER[HTTP_CF_CONNECTING_IP]  = ';
-	echo isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : 'not resolved';
-	?><?php echo PHP_EOL; ?>
+	echo isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : 'not resolved'; ?><?php echo PHP_EOL; ?>
 Reblaze:                  <?php
 	echo '$_SERVER[X-Real-IP]              = ';
-	echo isset( $_SERVER['X-Real-IP'] ) ? $_SERVER['X-Real-IP'] : 'not resolved';
-	?><?php echo PHP_EOL; ?>
+	echo isset( $_SERVER['X-Real-IP'] ) ? $_SERVER['X-Real-IP'] : 'not resolved'; ?><?php echo PHP_EOL; ?>
 Sucuri:                   <?php
 	echo '$_SERVER[HTTP_X_SUCURI_CLIENTIP] = ';
-	echo isset( $_SERVER['HTTP_X_SUCURI_CLIENTIP'] ) ? $_SERVER['HTTP_X_SUCURI_CLIENTIP'] : 'not resolved';
-	?><?php echo PHP_EOL; ?>
+	echo isset( $_SERVER['HTTP_X_SUCURI_CLIENTIP'] ) ? $_SERVER['HTTP_X_SUCURI_CLIENTIP'] : 'not resolved'; ?><?php echo PHP_EOL; ?>
 Ezoic:                    <?php
 	echo '$_SERVER[X-FORWARDED-FOR]        = ';
-	echo isset( $_SERVER['X-FORWARDED-FOR'] ) ? $_SERVER['X-FORWARDED-FOR'] : 'not resolved';
-	?><?php echo PHP_EOL; ?>
+	echo isset( $_SERVER['X-FORWARDED-FOR'] ) ? $_SERVER['X-FORWARDED-FOR'] : 'not resolved'; ?><?php echo PHP_EOL; ?>
 Akamai:                   <?php
 	echo '$_SERVER[True-Client-IP]         = ';
-	echo isset( $_SERVER['True-Client-IP'] ) ? $_SERVER['True-Client-IP'] : 'not resolved';
-	?><?php echo PHP_EOL; ?>
+	echo isset( $_SERVER['True-Client-IP'] ) ? $_SERVER['True-Client-IP'] : 'not resolved'; ?><?php echo PHP_EOL; ?>
 Clouways:                 <?php
 	echo '$_SERVER[HTTP_X_FORWARDED_FOR]   = ';
 	echo isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : 'not resolved';
-	?><?php echo PHP_EOL; ?>
-Wp Engine:                <?php
-	echo getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) ? 'Yes' : 'No'; ?>
-	<?php echo PHP_EOL; ?>
-	<?php
-	if ( getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) ) {
-		echo "getenv( 'HTTP_GEOIP_CITY' )         :";
-		echo getenv( 'HTTP_GEOIP_CITY' ) . PHP_EOL;
-		echo "getenv( 'HTTP_GEOIP_POSTAL_CODE' )  :";
-		echo getenv( 'HTTP_GEOIP_POSTAL_CODE' ) . PHP_EOL;
-		echo "getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) :";
-		echo getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) . PHP_EOL;
-		echo "getenv( 'HTTP_GEOIP_COUNTRY_NAME' ) :";
-		echo getenv( 'HTTP_GEOIP_COUNTRY_NAME' ) . PHP_EOL;
-		echo "getenv( 'HTTP_GEOIP_AREA_CODE' )    :";
-		echo getenv( 'HTTP_GEOIP_AREA_CODE' ) . PHP_EOL;
-		echo "getenv( 'HTTP_GEOIP_REGION' )       :";
-		echo getenv( 'HTTP_GEOIP_REGION' ) . PHP_EOL;
-		echo "getenv( 'HTTP_GEOIP_LATITUDE' )     :";
-		echo getenv( 'HTTP_GEOIP_LATITUDE' ) . PHP_EOL;
-		echo "getenv( 'HTTP_GEOIP_LONGITUDE' )    :";
-		echo getenv( 'HTTP_GEOIP_LONGITUDE' ) . PHP_EOL;
-	}
 	?>
-kinsta:                   <?php
-	echo ! empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) ? 'Yes' : 'No'; ?>
-	<?php echo PHP_EOL; ?>
-	<?php
-	if ( ! empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) ) {
-		echo '$_SERVER[ "HTTP_GEOIP_CITY_CONTINENT_CODE" ] :';
-		echo $_SERVER['HTTP_GEOIP_CITY_CONTINENT_CODE'] . PHP_EOL;
-		echo '$_SERVER[ "HTTP_GEOIP_CITY" ]                :';
-		echo $_SERVER['HTTP_GEOIP_CITY'] . PHP_EOL;
-		echo '$_SERVER[ "HTTP_GEOIP_POSTAL_CODE" ]         :';
-		echo $_SERVER['HTTP_GEOIP_POSTAL_CODE'] . PHP_EOL;
-		echo '$_SERVER[ "HTTP_GEOIP_CITY_COUNTRY_CODE" ]   :';
-		echo $_SERVER['HTTP_GEOIP_CITY_COUNTRY_CODE'] . PHP_EOL;
-		echo '$_SERVER[ "HTTP_GEOIP_CITY_COUNTRY_NAME" ]   :';
-		echo $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] . PHP_EOL;
-		echo '$_SERVER[ "HTTP_GEOIP_REGION" ]              :';
-		echo $_SERVER['HTTP_GEOIP_REGION'] . PHP_EOL;
-		echo '$_SERVER[ "HTTP_GEOIP_LATITUDE" ]            :';
-		echo $_SERVER['HTTP_GEOIP_LATITUDE'] . PHP_EOL;
-		echo '$_SERVER[ "HTTP_GEOIP_LONGITUDE" ]           :';
-		echo $_SERVER['HTTP_GEOIP_LONGITUDE'] . PHP_EOL;
-	}
-	?>
-litespeed:                   <?php
-	echo ! empty( $_SERVER['GEOIP_COUNTRY_CODE'] ) ? 'Yes' : 'No'; ?>
-	<?php echo PHP_EOL; ?>
-	<?php
-	if ( ! empty( $_SERVER['GEOIP_COUNTRY_CODE'] ) ) {
-		echo '$_SERVER[ "GEOIP_CONTINENT_CODE" ] :';
-		echo $_SERVER['GEOIP_CONTINENT_CODE'] . PHP_EOL;
-		echo '$_SERVER[ "GEOIP_CITY" ]                :';
-		echo $_SERVER['GEOIP_CITY'] . PHP_EOL;
-		echo '$_SERVER[ "GEOIP_POSTAL_CODE" ]         :';
-		echo $_SERVER['GEOIP_POSTAL_CODE'] . PHP_EOL;
-		echo '$_SERVER[ "GEOIP_COUNTRY_CODE" ]   :';
-		echo $_SERVER['GEOIP_COUNTRY_CODE'] . PHP_EOL;
-		echo '$_SERVER[ "GEOIP_COUNTRY_NAME" ]   :';
-		echo $_SERVER['GEOIP_COUNTRY_NAME'] . PHP_EOL;
-		echo '$_SERVER[ "GEOIP_REGION" ]              :';
-		echo $_SERVER['GEOIP_REGION'] . PHP_EOL;
-		echo '$_SERVER[ "GEOIP_LATITUDE" ]            :';
-		echo $_SERVER['GEOIP_LATITUDE'] . PHP_EOL;
-		echo '$_SERVER[ "GEOIP_LONGITUDE" ]           :';
-		echo $_SERVER['GEOIP_LONGITUDE'] . PHP_EOL;
-	}
-	?>
-Maxmind Local database:   <?php echo isset( $opts['maxmind'] ) && $opts['maxmind'] ? 'Yes' : 'No'; ?>
 
-Ip2location:              <?php echo isset( $opts['ip2location'] ) && $opts['ip2location'] ? 'Yes' : 'No'; ?>
+	<?php echo PHP_EOL; ?>
+Wp Engine: <?php
+echo getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) ? 'Yes' : 'No'; ?><?php echo PHP_EOL; ?><?php
+if ( getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) ) {
+	echo "getenv( 'HTTP_GEOIP_CITY' )         :";
+	echo getenv( 'HTTP_GEOIP_CITY' ) . PHP_EOL;
+	echo "getenv( 'HTTP_GEOIP_POSTAL_CODE' )  :";
+	echo getenv( 'HTTP_GEOIP_POSTAL_CODE' ) . PHP_EOL;
+	echo "getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) :";
+	echo getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) . PHP_EOL;
+	echo "getenv( 'HTTP_GEOIP_COUNTRY_NAME' ) :";
+	echo getenv( 'HTTP_GEOIP_COUNTRY_NAME' ) . PHP_EOL;
+	echo "getenv( 'HTTP_GEOIP_AREA_CODE' )    :";
+	echo getenv( 'HTTP_GEOIP_AREA_CODE' ) . PHP_EOL;
+	echo "getenv( 'HTTP_GEOIP_REGION' )       :";
+	echo getenv( 'HTTP_GEOIP_REGION' ) . PHP_EOL;
+	echo "getenv( 'HTTP_GEOIP_LATITUDE' )     :";
+	echo getenv( 'HTTP_GEOIP_LATITUDE' ) . PHP_EOL;
+	echo "getenv( 'HTTP_GEOIP_LONGITUDE' )    :";
+	echo getenv( 'HTTP_GEOIP_LONGITUDE' ) . PHP_EOL;
+}
+?>
+Kinsta: <?php
+echo ! empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) ? 'Yes' : 'No'; ?><?php echo PHP_EOL; ?>
+<?php
+if ( ! empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) ) {
+	echo '$_SERVER[ "HTTP_GEOIP_CITY_CONTINENT_CODE" ] :';
+	echo $_SERVER['HTTP_GEOIP_CITY_CONTINENT_CODE'] . PHP_EOL;
+	echo '$_SERVER[ "HTTP_GEOIP_CITY" ]                :';
+	echo $_SERVER['HTTP_GEOIP_CITY'] . PHP_EOL;
+	echo '$_SERVER[ "HTTP_GEOIP_POSTAL_CODE" ]         :';
+	echo $_SERVER['HTTP_GEOIP_POSTAL_CODE'] . PHP_EOL;
+	echo '$_SERVER[ "HTTP_GEOIP_CITY_COUNTRY_CODE" ]   :';
+	echo $_SERVER['HTTP_GEOIP_CITY_COUNTRY_CODE'] . PHP_EOL;
+	echo '$_SERVER[ "HTTP_GEOIP_CITY_COUNTRY_NAME" ]   :';
+	echo $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] . PHP_EOL;
+	echo '$_SERVER[ "HTTP_GEOIP_REGION" ]              :';
+	echo $_SERVER['HTTP_GEOIP_REGION'] . PHP_EOL;
+	echo '$_SERVER[ "HTTP_GEOIP_LATITUDE" ]            :';
+	echo $_SERVER['HTTP_GEOIP_LATITUDE'] . PHP_EOL;
+	echo '$_SERVER[ "HTTP_GEOIP_LONGITUDE" ]           :';
+	echo $_SERVER['HTTP_GEOIP_LONGITUDE'] . PHP_EOL;
+}
+?>
+Litespeed: <?php
+echo ! empty( $_SERVER['GEOIP_COUNTRY_CODE'] ) ? 'Yes' : 'No'; ?><?php echo PHP_EOL; ?>
+<?php
+if ( ! empty( $_SERVER['GEOIP_COUNTRY_CODE'] ) ) {
+	echo '$_SERVER[ "GEOIP_CONTINENT_CODE" ] :';
+	echo $_SERVER['GEOIP_CONTINENT_CODE'] . PHP_EOL;
+	echo '$_SERVER[ "GEOIP_CITY" ]                :';
+	echo $_SERVER['GEOIP_CITY'] . PHP_EOL;
+	echo '$_SERVER[ "GEOIP_POSTAL_CODE" ]         :';
+	echo $_SERVER['GEOIP_POSTAL_CODE'] . PHP_EOL;
+	echo '$_SERVER[ "GEOIP_COUNTRY_CODE" ]   :';
+	echo $_SERVER['GEOIP_COUNTRY_CODE'] . PHP_EOL;
+	echo '$_SERVER[ "GEOIP_COUNTRY_NAME" ]   :';
+	echo $_SERVER['GEOIP_COUNTRY_NAME'] . PHP_EOL;
+	echo '$_SERVER[ "GEOIP_REGION" ]              :';
+	echo $_SERVER['GEOIP_REGION'] . PHP_EOL;
+	echo '$_SERVER[ "GEOIP_LATITUDE" ]            :';
+	echo $_SERVER['GEOIP_LATITUDE'] . PHP_EOL;
+	echo '$_SERVER[ "GEOIP_LONGITUDE" ]           :';
+	echo $_SERVER['GEOIP_LONGITUDE'] . PHP_EOL;
+}
+?>
+Maxmind Local database: <?php echo isset( $opts['maxmind'] ) && $opts['maxmind'] ? 'Yes' : 'No'; ?>
+Ip2location: <?php echo isset( $opts['ip2location'] ) && $opts['ip2location'] ? 'Yes' : 'No'; ?>
 
 
 ##Settings page##
@@ -162,13 +154,12 @@ wp_uploads_dir() url:     <?php echo $uploads_dir['url'] . PHP_EOL; ?>
 wp_uploads_dir() basedir: <?php echo $uploads_dir['basedir'] . PHP_EOL; ?>
 wp_uploads_dir() baseurl: <?php echo $uploads_dir['baseurl'] . PHP_EOL; ?>
 
-	<?php if ( count( $muplugins ) > 0 && ! empty( $muplugins ) ) : ?>
-		##Must-Use Plugins##
-
-		<?php foreach ( $muplugins as $plugin => $plugin_data ) : ?>
-			<?php echo $plugin_data['Name']; ?> : <?php echo $plugin_data['Version']; ?>
-		<?php endforeach; ?>
-	<?php endif; ?>
+<?php if ( count( $muplugins ) > 0 && ! empty( $muplugins ) ) : ?>
+##Must-Use Plugins##
+	<?php foreach ( $muplugins as $plugin => $plugin_data ) : ?>
+		<?php echo $plugin_data['Name']; ?> : <?php echo $plugin_data['Version']; ?>
+	<?php endforeach; ?>
+<?php endif; ?>
 
 ##WordPress Active Plugins##
 
@@ -194,9 +185,7 @@ foreach ( $plugins as $plugin_path => $plugin ) {
 	$update = ( array_key_exists( $plugin_path, $updates ) ) ? ' (needs update - ' . $updates[ $plugin_path ]->update->new_version . ')' : '';
 	echo $plugin['Name'] . ': ' . $plugin['Version'] . $update . PHP_EOL;
 }
-?>
-
-	<?php
+?><?php
 	if ( is_multisite() ) {
 		// WordPress Multisite active plugins.
 		echo '##Network Active Plugins##' . PHP_EOL;
@@ -216,6 +205,7 @@ foreach ( $plugins as $plugin_path => $plugin ) {
 		}
 	}
 	?>
+
 ##Webserver Configuration##
 
 PHP Version:              <?php echo PHP_VERSION . PHP_EOL; ?>
@@ -243,12 +233,12 @@ Suhosin:                  <?php echo ( extension_loaded( 'suhosin' ) ? 'Installe
 
 Session:                  <?php echo( isset( $_SESSION ) ? 'Enabled' : 'Disabled' ); ?>
 
-	<?php if ( isset( $_SESSION ) ) : ?>
-		Session Name:             <?php echo esc_html( ini_get( 'session.name' ) ) . PHP_EOL; ?>
-		Cookie Path:              <?php echo esc_html( ini_get( 'session.cookie_path' ) ) . PHP_EOL; ?>
-		Save Path:                <?php echo esc_html( ini_get( 'session.save_path' ) ) . PHP_EOL; ?>
-		Use Cookies:              <?php echo ( ini_get( 'session.use_cookies' ) ? 'On' : 'Off' ) . PHP_EOL; ?>
-		Use Only Cookies:         <?php echo ( ini_get( 'session.use_only_cookies' ) ? 'On' : 'Off' ) . PHP_EOL; ?>
+<?php if ( isset( $_SESSION ) ) : ?>
+Session Name:             <?php echo esc_html( ini_get( 'session.name' ) ) . PHP_EOL; ?>
+Cookie Path:              <?php echo esc_html( ini_get( 'session.cookie_path' ) ) . PHP_EOL; ?>
+Save Path:                <?php echo esc_html( ini_get( 'session.save_path' ) ) . PHP_EOL; ?>
+Use Cookies:              <?php echo ( ini_get( 'session.use_cookies' ) ? 'On' : 'Off' ) . PHP_EOL; ?>
+Use Only Cookies:         <?php echo ( ini_get( 'session.use_only_cookies' ) ? 'On' : 'Off' ) . PHP_EOL; ?>
 	<?php endif; ?>
 
 </textarea>

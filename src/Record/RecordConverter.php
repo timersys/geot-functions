@@ -123,10 +123,10 @@ class RecordConverter {
 			throw new \Exception( 'Litespeed failed to return record' );
 		}
 
-		self::$geot_record                                   = [];
-		self::$geot_record['city']['names']                  = isset( $_SERVER['GEOIP_CITY'] ) ? [ 'en' => $_SERVER['GEOIP_CITY'] ] : '';
-		self::$geot_record['city']['zip']                    = isset( $_SERVER['GEOIP_POSTAL_CODE'] ) ? $_SERVER['GEOIP_POSTAL_CODE'] : '';
-		self::$geot_record['continent']['names']             = isset( $_SERVER['GEOIP_CONTINENT_NAME'] ) ? $_SERVER['GEOIP_CONTINENT_NAME'] : '';;
+		self::$geot_record                       = [];
+		self::$geot_record['city']['names']      = isset( $_SERVER['GEOIP_CITY'] ) ? [ 'en' => $_SERVER['GEOIP_CITY'] ] : '';
+		self::$geot_record['city']['zip']        = isset( $_SERVER['GEOIP_POSTAL_CODE'] ) ? $_SERVER['GEOIP_POSTAL_CODE'] : '';
+		self::$geot_record['continent']['names'] = isset( $_SERVER['GEOIP_CONTINENT_NAME'] ) ? $_SERVER['GEOIP_CONTINENT_NAME'] : '';;
 		self::$geot_record['continent']['iso_code']          = isset( $_SERVER['GEOIP_CONTINENT_CODE'] ) ? $_SERVER['GEOIP_CONTINENT_CODE'] : '';
 		self::$geot_record['country']['iso_code']            = isset( $_SERVER['GEOIP_COUNTRY_CODE'] ) ? $_SERVER['GEOIP_COUNTRY_CODE'] : '';
 		self::$geot_record['country']['names']               = isset( $_SERVER['GEOIP_COUNTRY_NAME'] ) ? [ 'en' => $_SERVER['GEOIP_COUNTRY_NAME'] ] : '';

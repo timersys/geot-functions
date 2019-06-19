@@ -19,15 +19,49 @@ class GeotSettings {
 	 */
 	private $view;
 
+	public function __construct() {
+
+		add_action( 'admin_menu', [ $this, 'add_settings_menu' ], 8 );
+		add_action( 'admin_init', [ $this, 'check_license' ], 15 );
+		add_action( 'admin_init', [ $this, 'redirect_wizard' ], 20 );
+		add_action( 'wp_ajax_geot_check_license', [ $this, 'ajax_check_license' ] );
+		add_action( 'wp_ajax_geot_cities_by_country', [ $this, 'geot_cities_by_country' ] );
+
+		$this->plugin_url = plugin_dir_url( GEOTROOT_PLUGIN_FILE ) . 'vendor/timersys/geot-functions/src/Setting/';
+
+		// Check what page we are on.
+		$page = isset( $_GET['page'] ) ? $_GET['page'] : '';
+
+		// Only load if we are actually on the settings page.
+		if ( 'geot-settings' === $page ) {
+			// trigger settings save
+			add_action( 'admin_init', [ $this, 'save_settings' ] );
+
+			// Determine the current active settings tab.
+			$this->view = isset( $_GET['view'] ) ? esc_html( $_GET['view'] ) : 'general';
+
+			// add settings panels
+			add_action( 'geot/settings_general_panel', [ $this, 'general_panel' ] );
+			add_action( 'geot/settings_regions_panel', [ $this, 'regions_panel' ] );
+			add_action( 'geot/settings_debug_panel', [ $this, 'debug_panel' ] );
+
+		}
+
+		// load assets globally as used by child plugins
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+
+	}
+
 	/**
 	 * Main plugin_name Instance
 	 *
 	 * Ensures only one instance of WSI is loaded or can be loaded.
 	 *
+	 * @return plugin_name - Main instance
+	 * @see Geotr()
 	 * @since 1.0.0
 	 * @static
-	 * @see Geotr()
-	 * @return plugin_name - Main instance
 	 */
 	public static function init() {
 		if ( is_null( self::$_instance ) ) {
@@ -58,47 +92,13 @@ class GeotSettings {
 	 *
 	 * @param mixed $key
 	 *
-	 * @since 1.0.0
 	 * @return mixed
+	 * @since 1.0.0
 	 */
 	public function __get( $key ) {
-		if ( in_array( $key, array( 'payment_gateways', 'shipping', 'mailer', 'checkout' ) ) ) {
+		if ( in_array( $key, [ 'payment_gateways', 'shipping', 'mailer', 'checkout' ] ) ) {
 			return $this->$key();
 		}
-	}
-
-	public function __construct() {
-
-		add_action( 'admin_menu', [ $this, 'add_settings_menu' ], 8 );
-		add_action( 'admin_init', [ $this, 'check_license' ], 15 );
-		add_action( 'admin_init', [ $this, 'redirect_wizard'], 20);
-		add_action( 'wp_ajax_geot_check_license', [ $this, 'ajax_check_license' ] );
-		add_action( 'wp_ajax_geot_cities_by_country', [ $this, 'geot_cities_by_country' ] );
-
-		$this->plugin_url = plugin_dir_url( GEOTROOT_PLUGIN_FILE ) . 'vendor/timersys/geot-functions/src/Setting/';
-
-		// Check what page we are on.
-		$page = isset( $_GET['page'] ) ? $_GET['page'] : '';
-
-		// Only load if we are actually on the settings page.
-		if ( 'geot-settings' === $page ) {
-			// trigger settings save
-			add_action( 'admin_init', [ $this, 'save_settings' ] );
-
-			// Determine the current active settings tab.
-			$this->view = isset( $_GET['view'] ) ? esc_html( $_GET['view'] ) : 'general';
-
-			// add settings panels
-			add_action('geot/settings_general_panel', [ $this, 'general_panel'] );
-			add_action( 'geot/settings_regions_panel', [ $this, 'regions_panel' ] );
-			add_action( 'geot/settings_debug_panel', [ $this, 'debug_panel' ] );
-
-		}
-
-		// load assets globally as used by child plugins
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-
 	}
 
 	/**
@@ -113,7 +113,7 @@ class GeotSettings {
 			wp_enqueue_style( 'wp-jquery-ui-dialog' );
 		}
 		$version = \GeotFunctions\get_version();
-		wp_enqueue_style( 'geot', $this->plugin_url . 'css/geotarget.css', array(), $version, 'all' );
+		wp_enqueue_style( 'geot', $this->plugin_url . 'css/geotarget.css', [], $version, 'all' );
 
 	}
 
@@ -124,17 +124,17 @@ class GeotSettings {
 	 */
 	public function enqueue_scripts() {
 		$version = \GeotFunctions\get_version();
-		wp_enqueue_script( 'geot-selectize', $this->plugin_url . 'js/selectize.min.js', array( 'jquery' ), $version, false );
-		wp_enqueue_script( 'geot-chosen', $this->plugin_url . 'js/chosen.jquery.min.js', array( 'jquery' ), $version, false );
-		wp_enqueue_script( 'geot', $this->plugin_url . 'js/geotargeting-admin.js', array(
+		wp_enqueue_script( 'geot-selectize', $this->plugin_url . 'js/selectize.min.js', [ 'jquery' ], $version, false );
+		wp_enqueue_script( 'geot-chosen', $this->plugin_url . 'js/chosen.jquery.min.js', [ 'jquery' ], $version, false );
+		wp_enqueue_script( 'geot', $this->plugin_url . 'js/geotargeting-admin.js', [
 			'jquery',
 			'geot-chosen',
 			'geot-selectize',
-			'jquery-ui-dialog'
-		), $version, false );
-		wp_localize_script( 'geot', 'geot', array(
-			'ajax_url' => admin_url( 'admin-ajax.php' )
-		) );
+			'jquery-ui-dialog',
+		], $version, false );
+		wp_localize_script( 'geot', 'geot', [
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
+		] );
 	}
 
 	/**
@@ -197,50 +197,50 @@ class GeotSettings {
 	public function license_missing_notice() {
 		?>
 		<div class="notice notice-error">
-		<h3>GeotargetingWP</h3>
-		<p><?php __( printf( 'In order to to use the plugin you need to enter the api keys in the <a href="%1$s">settings page</a>.', admin_url( 'admin.php?page=geot-settings' ), 'geot' ) ); ?></p>
+			<h3>GeotargetingWP</h3>
+			<p><?php __( printf( 'In order to to use the plugin you need to enter the api keys in the <a href="%1$s">settings page</a>.', admin_url( 'admin.php?page=geot-settings' ), 'geot' ) ); ?></p>
 		</div>
 		<?php
 	}
 
 	/**
 	 * Add menu for Settings page of the plugin
-	 * @since  1.0.0
 	 * @return  void
+	 * @since  1.0.0
 	 */
 	public function add_settings_menu() {
 
-		add_menu_page( 'GeoTargetingWP', 'GeoTargetingWP', apply_filters( 'geot/settings_page_role', 'manage_options' ), 'geot-settings', array(
+		add_menu_page( 'GeoTargetingWP', 'GeoTargetingWP', apply_filters( 'geot/settings_page_role', 'manage_options' ), 'geot-settings', [
 			$this,
-			'settings_page'
-		), 'dashicons-admin-site' );
-		add_submenu_page( 'geot-settings', 'Settings', 'Settings', apply_filters( 'geot/settings_page_role', 'manage_options' ), 'geot-settings', array(
+			'settings_page',
+		], 'dashicons-admin-site' );
+		add_submenu_page( 'geot-settings', 'Settings', 'Settings', apply_filters( 'geot/settings_page_role', 'manage_options' ), 'geot-settings', [
 			$this,
-			'settings_page'
-		) );
+			'settings_page',
+		] );
 	}
 
 	/**
-	 * Return registered settings tabs.
+	 * Build the general_panel for the plugin settings page.
 	 *
-	 * @return array
+	 * @since 1.0.0
 	 */
-	public function get_tabs() {
+	public function general_panel() {
+		$ips = \GeotFunctions\geot_ips();
+		include dirname( __FILE__ ) . '/partials/settings-page.php';
+	}
 
-		$tabs = [
-			'general' => [
-				'name'   => esc_html__( 'General', 'popups' ),
-			],
-			'regions' => [
-				'name'   => esc_html__( 'Regions', 'popups' ),
-			],
-		];
-
-		return array_merge( apply_filters( 'geot/settings_tabs', $tabs ),[
-				'debug' => [
-					'name'   => esc_html__( 'Debug Data', 'popups' ),
-				]
-		] ) ;
+	/**
+	 * Settings page for plugin
+	 * @since 1.0.0
+	 */
+	public function settings_page() {
+		?>
+		<h2>GeoTargetingWP</h2>
+		<div id="geot-settings" class="wrap geot-admin-wrap">
+		<?php $this->tabs(); ?>
+		<?php do_action( "geot/settings_{$this->view}_panel" ) ?>
+		</div><?php
 	}
 
 	/**
@@ -262,36 +262,37 @@ class GeotSettings {
 	}
 
 	/**
-	 * Build the general_panel for the plugin settings page.
+	 * Return registered settings tabs.
 	 *
-	 * @since 1.0.0
+	 * @return array
 	 */
-	public function general_panel() {
-		$ips = \GeotFunctions\geot_ips();
-		include dirname( __FILE__ ) . '/partials/settings-page.php';
-	}
-	/**
-	 * Settings page for plugin
-	 * @since 1.0.0
-	 */
-	public function settings_page() {
-		?>
-		<h2>GeoTargetingWP</h2>
-		<div id="geot-settings" class="wrap geot-admin-wrap">
-			<?php $this->tabs(); ?>
-			<?php do_action("geot/settings_{$this->view}_panel") ?>
-		</div><?php
+	public function get_tabs() {
+
+		$tabs = [
+			'general' => [
+				'name' => esc_html__( 'General', 'popups' ),
+			],
+			'regions' => [
+				'name' => esc_html__( 'Regions', 'popups' ),
+			],
+		];
+
+		return array_merge( apply_filters( 'geot/settings_tabs', $tabs ), [
+			'debug' => [
+				'name' => esc_html__( 'Debug Data', 'popups' ),
+			],
+		] );
 	}
 
 	/**
 	 * Save the settings page
-	 * @since 1.0.0
 	 * @return void
+	 * @since 1.0.0
 	 */
 	public function save_settings() {
 
 		if ( isset( $_POST['geot_nonce'] ) && wp_verify_nonce( $_POST['geot_nonce'], 'geot_save_settings' ) ) {
-			$settings =  $_POST['geot_settings'] ;
+			$settings = $_POST['geot_settings'];
 			if ( isset( $_FILES['geot_settings_json'] ) && 'application/json' == $_FILES['geot_settings_json']['type'] ) {
 				$file     = file_get_contents( $_FILES['geot_settings_json']['tmp_name'] );
 				$settings = json_decode( $file, true );
@@ -303,6 +304,7 @@ class GeotSettings {
 					if ( is_string( $a ) ) {
 						return trim( $a );
 					}
+
 					return $a;
 				} );
 			}
@@ -327,39 +329,40 @@ class GeotSettings {
 				'fallback_country_ips',
 				'bots_country_ips',
 			];
-			if( ! isset($_GET['view']) || ( isset($_GET['view']) && 'general' == $_GET['view'] ) ){
-				foreach ($inputs as $input ) {
-					if( ! isset($settings[$input]) || empty($settings[$input]) ) {
-						$settings[$input] = '';
+			if ( ! isset( $_GET['view'] ) || ( isset( $_GET['view'] ) && 'general' == $_GET['view'] ) ) {
+				foreach ( $inputs as $input ) {
+					if ( ! isset( $settings[ $input ] ) || empty( $settings[ $input ] ) ) {
+						$settings[ $input ] = '';
 					}
 				}
 			}
-			if( isset($_GET['view']) && 'regions' == $_GET['view']){
-				foreach ([ 'region', 'city_region'] as $input ) {
-					if( ! isset($settings[$input]) || empty($settings[$input]) ) {
-						$settings[$input] = null;
+			if ( isset( $_GET['view'] ) && 'regions' == $_GET['view'] ) {
+				foreach ( [ 'region', 'city_region' ] as $input ) {
+					if ( ! isset( $settings[ $input ] ) || empty( $settings[ $input ] ) ) {
+						$settings[ $input ] = null;
 					}
 				}
 			}
 
-			if( ! is_array( $settings ) ) {
+			if ( ! is_array( $settings ) ) {
 				$settings = $old_settings;
-			} else if( is_array( $old_settings ) ) {
+			} else if ( is_array( $old_settings ) ) {
 				$settings = array_merge( $old_settings, $settings );
 			}
 
-			
-			if( apply_filters('geot/enable_predefined_regions', true) ) {
+
+			if ( apply_filters( 'geot/enable_predefined_regions', true ) ) {
 				// check if any region was named already like a continent
 				$continents = wp_list_pluck( geot_predefined_regions(), 'name' );
-				if( isset($settings['region']) && count($settings['region']) > 0 ) {
-					foreach($settings['region'] as $id => $regions) {
-						if( in_array( $regions['name'], $continents ) )
-							$settings['region'][$id]['name'] = $regions['name'].'-'.rand(10,99);
+				if ( isset( $settings['region'] ) && count( $settings['region'] ) > 0 ) {
+					foreach ( $settings['region'] as $id => $regions ) {
+						if ( in_array( $regions['name'], $continents ) ) {
+							$settings['region'][ $id ]['name'] = $regions['name'] . '-' . rand( 10, 99 );
+						}
 					}
 				}
 			}
-			
+
 			update_option( 'geot_settings', $settings );
 		}
 	}
@@ -421,7 +424,7 @@ class GeotSettings {
 		// Redirect to panel welcome
 		wp_safe_redirect(
 			add_query_arg(
-				array( 'page' => 'geot-setup' ),
+				[ 'page' => 'geot-setup' ],
 				admin_url( 'admin.php' )
 			)
 		);

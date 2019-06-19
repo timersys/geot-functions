@@ -3,28 +3,29 @@
  * Different helpers filters used around
  */
 
-add_filter( 'geot/settings_page/opts', function($settings) {
+add_filter( 'geot/settings_page/opts', function ( $settings ) {
 
-	if( apply_filters('geot/enable_predefined_regions', true) ) {
-		if( isset( $settings['region'] ) )
-			$settings['region'] = array_merge($settings['region'], geot_predefined_regions());
-		else
+	if ( apply_filters( 'geot/enable_predefined_regions', true ) ) {
+		if ( isset( $settings['region'] ) ) {
+			$settings['region'] = array_merge( $settings['region'], geot_predefined_regions() );
+		} else {
 			$settings['region'] = geot_predefined_regions();
+		}
 	}
 
 	return $settings;
-});
+} );
 
-add_filter( 'geot/get_country_regions', function (){
-	$settings   = geot_settings();
-	$regions  = isset( $settings['region'] ) ? $settings['region'] : array();
+add_filter( 'geot/get_country_regions', function () {
+	$settings = geot_settings();
+	$regions  = isset( $settings['region'] ) ? $settings['region'] : [];
 
 	return $regions;
 } );
 
 add_filter( 'geot/get_city_regions', function () {
 	$settings = geot_settings();
-	$regions  = isset( $settings['city_region'] ) ? $settings['city_region'] : array();
+	$regions  = isset( $settings['city_region'] ) ? $settings['city_region'] : [];
 
 	return $regions;
 } );

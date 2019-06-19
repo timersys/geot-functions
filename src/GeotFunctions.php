@@ -27,7 +27,11 @@ use function GeotWP\getUserIP;
 class GeotFunctions {
 	// Hold the class instance.
 	private static $_instance = null;
-
+	/**
+	 * Api class
+	 * @var GeotargetingWP
+	 */
+	public $geotWP;
 	/**
 	 * Current user country and cityused everywhere
 	 * @var string
@@ -41,12 +45,6 @@ class GeotFunctions {
 	 * @var array
 	 */
 	protected $opts;
-	/**
-	 * Api class
-	 * @var GeotargetingWP
-	 */
-	public $geotWP;
-
 	/**
 	 * Current user IP
 	 * @var string
@@ -79,7 +77,7 @@ class GeotFunctions {
 
 		$this->session = GeotSession::instance();
 
-		add_action( 'geot/user_ip', array( $this, 'rewrite_ip' ), 9, 1 );
+		add_action( 'geot/user_ip', [ $this, 'rewrite_ip' ], 9, 1 );
 
 		// If we have cache mode turned on, we need to calculate user location before
 		// anything gets printed
@@ -90,8 +88,8 @@ class GeotFunctions {
 		     && ! defined( 'DOING_AJAX' )
 		     && ! isset( $_GET['wc_ajax'] )
 		) {
-			add_action( 'init', array( $this, 'getUserData' ) );
-			add_action( 'init', array( $this, 'createRocketCookies' ), 15 );
+			add_action( 'init', [ $this, 'getUserData' ] );
+			add_action( 'init', [ $this, 'createRocketCookies' ], 15 );
 		}
 
 		if ( is_admin() ) {
@@ -100,14 +98,48 @@ class GeotFunctions {
 	}
 
 	/**
+	 * Set some default options for the class
+	 */
+	private function set_defaults() {
+
+		$args = geot_settings();
+
+		$this->opts = wp_parse_args( $args, [
+			'license'            => '',
+			// similar to disable sessions but also invalidates cookies
+			'cache_mode'         => false,
+			// php sessions
+			'bots_country'       => '',
+			// a default country to return if a bot is detected
+			'api_secret'         => '',
+			// a default country to return if a bot is detected
+			'cookie_name'        => 'geot_country',
+			// cookie_name to store country iso code
+			'maxmind'            => 0,
+			// check if maxmind is enabled
+			'maxmind_db'         => maxmind_db(),
+			// path to db
+			'ip2location'        => 0,
+			// check if ip2location is enabled
+			'ip2location_db'     => ip2location_db(),
+			// path to db
+			'ip2location_method' => apply_filters( 'geot/ip2location_method', '100001' ),
+			// wheter we use io disk or memory for lookup
+			'wpengine'           => 0,
+			'kinsta'             => 0,
+			'litespeed'          => 0,
+		] );
+	}
+
+	/**
 	 * Main Geot Instance
 	 *
 	 * Ensures only one instance is loaded or can be loaded.
 	 *
+	 * @return Geot - Main instance
+	 * @see GEOT()
 	 * @since 1.0.0
 	 * @static
-	 * @see GEOT()
-	 * @return Geot - Main instance
 	 */
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
@@ -133,13 +165,181 @@ class GeotFunctions {
 		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
 	}
 
-	function rewrite_ip($ip) {
+	/**
+	 * Use user's setting for showing IP
+	 * @param $ip
+	 *
+	 * @return mixed
+	 */
+	function rewrite_ip( $ip ) {
 		$settings = geot_settings();
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if ( isset( $settings['var_ip'] ) && ! empty( $settings['var_ip'] ) ) {
+			$ip = $_SERVER[ $settings['var_ip'] ];
+		}
+		// if two ips provided, on use the first
+		return strstr( $ip, ',') === false ? $ip : strstr( $ip, ',', true);
+	}
 
-		if( isset($settings['var_ip']) && !empty($settings['var_ip']) )
-			return $_SERVER[$settings['var_ip']];
+	/**
+	 * Main function that return is user targeted for
+	 *
+	 * @param $key city, continent, country, state
+	 * @param array $args include, exclude, region, exclude_region
+	 *
+	 * @return bool
+	 */
+	public function target( $key, $args = [] ) {
+		//Push places list into array
+		$places         = toArray( $args['include'] );
+		$exclude_places = toArray( $args['exclude'] );
+		$saved_regions  = apply_filters( 'geot/get_' . $key . '_regions', [] );
+		$plural_key     = toPlural( $key );
 
-		return $_SERVER['REMOTE_ADDR'];
+		$user_state           = new \StdClass();
+		$user_state->iso_code = '';
+		$user_state->name     = '';
+		// for filtering set english locale
+		$this->checkLocale( 'en' );
+
+		//Append any regions
+		if ( ! empty( $args['region'] ) && ! empty( $saved_regions ) ) {
+			$region = toArray( $args['region'] );
+			foreach ( $region as $region_name ) {
+				foreach ( $saved_regions as $sr_key => $saved_region ) {
+					if ( strtolower( $region_name ) == strtolower( $saved_region['name'] ) ) {
+						$places = array_merge( (array) $places, (array) $saved_region[ $plural_key ] );
+					}
+				}
+			}
+			// if the key is cities and the user it's using region, check also against states. The database it's full of states and people it's using them so why not checking
+			if ( 'city' == $key ) {
+				$user_state = $this->get( 'state' );
+			}
+		}
+		// append excluded regions to excluded places
+		if ( ! empty( $args['exclude_region'] ) && ! empty( $saved_regions ) ) {
+			$exclude_region = toArray( $args['exclude_region'] );
+			foreach ( $exclude_region as $region_name ) {
+				foreach ( $saved_regions as $sr_key => $saved_region ) {
+					if ( strtolower( $region_name ) == strtolower( $saved_region['name'] ) ) {
+						$exclude_places = array_merge( (array) $exclude_places, (array) $saved_region[ $plural_key ] );
+					}
+				}
+			}
+		}
+
+		//set target to false
+		$target = false;
+		// zip it's really a city property so it's custom
+		if ( $key == 'zip' ) {
+			// reset locale
+			$this->checkLocale();
+
+			return $this->targetZip( $places, $exclude_places );
+		}
+
+		$user_place = $this->get( $key );
+
+
+		if ( ! isset( $user_place ) || empty( (array) $user_place ) ) {
+			// reset locale
+			$this->checkLocale();
+
+			return apply_filters( 'geot/target_' . $key . '/return_on_user_null', false );
+		}
+
+		if ( count( $places ) > 0 ) {
+			foreach ( $places as $p ) {
+				// cant use isset($user_place->name) in here because it will always return false due to object properties
+				if (
+					strtolower( @$user_place->name ) == strtolower( trim( $p ) )
+					|| strtolower( $user_place->iso_code ) == strtolower( trim( $p ) )
+					|| strtolower( @$user_state->name ) == strtolower( trim( $p ) )
+					|| strtolower( $user_state->iso_code ) == strtolower( trim( $p ) )
+				) {
+					$target = true;
+				}
+			}
+		} else {
+			// If we don't have places to target return true
+			$target = true;
+		}
+
+		if ( count( $exclude_places ) > 0 ) {
+			foreach ( $exclude_places as $ep ) {
+				// cant use isset($user_place->name) in here because it will always return false due to object properties
+				if (
+					strtolower( @$user_place->name ) == strtolower( trim( $ep ) )
+					|| strtolower( $user_place->iso_code ) == strtolower( trim( $ep ) )
+					|| strtolower( @$user_state->name ) == strtolower( trim( $ep ) )
+					|| strtolower( $user_state->iso_code ) == strtolower( trim( $ep ) )
+				) {
+					$target = false;
+				}
+			}
+		}
+
+		// reset locale
+		$this->checkLocale();
+
+		return $target;
+	}
+
+	/**
+	 * For API results we can let users change locale
+	 * but also we can check against wordpress locale
+	 *
+	 * @param null $force_locale
+	 */
+	private function checkLocale( $force_locale = null ) {
+		if ( ! $this->user_data[ $this->cache_key ] instanceof GeotRecord || apply_filters( 'geot/cancel_locale_check', false ) ) {
+			return;
+		}
+
+		$locale = get_locale();
+		// get language part of locale
+		$wp_locale = strstr( $locale, '_' ) === false ? $locale : strstr( get_locale(), '_', true );
+		// normalize some of them to match our locales
+		switch ( $wp_locale ) {
+			case 'pt':
+				$wp_locale = 'pt-BR';
+				break;
+			case 'zh':
+				$wp_locale = 'zh-CN';
+				break;
+		}
+		// when filtering we want english locale to compare city names
+		if ( $force_locale ) {
+			$wp_locale = $force_locale;
+		}
+		// set locale on all records
+		foreach ( get_object_vars( $this->user_data[ $this->cache_key ] ) as $o ) {
+			$o->setDefaultLocale( $wp_locale );
+		}
+	}
+
+	/**
+	 * Get a specif record
+	 *
+	 * @param $key
+	 *
+	 * @return mixed
+	 */
+	public function get( $key ) {
+		if ( ! in_array( $key, GeotRecord::getValidRecords() ) ) {
+			return 'Invalid GeotRecord classname provided. Valids ones are: ' . implode( ',', GeotRecord::getValidRecords() );
+		}
+
+		if ( $this->user_data[ $this->cache_key ] === null ) {
+			$this->getUserData();
+		}
+
+		if ( isset( $this->user_data[ $this->cache_key ]->$key ) ) {
+			return $this->user_data[ $this->cache_key ]->$key;
+		}
+
+		return false;
 	}
 
 	/**
@@ -192,7 +392,7 @@ class GeotFunctions {
 				return $this->user_data[ $this->cache_key ];
 			}
 			// check for whitelist Ips
-			if( $this->user_whitelisted()) {
+			if ( $this->user_whitelisted() ) {
 				return $this->getFallbackCountry();
 			}
 			// check for crawlers
@@ -262,6 +462,57 @@ class GeotFunctions {
 	}
 
 	/**
+	 * Prints backtrace into footer for debugging
+	 */
+	private function printBacktrace() {
+		$trace = generateCallTrace();
+		add_action( 'wp_footer', function () use ( $trace ) {
+			echo '<!-- Geot Backtrace START ' . PHP_EOL;
+			echo $trace . PHP_EOL;
+			echo '<!-- Geot Backtrace END -->' . PHP_EOL;
+		}, 99 );
+
+	}
+
+	/**
+	 * Check if user has active subscription
+	 * @return bool
+	 * @throws InvalidLicenseException
+	 * @throws InvalidSubscriptionException
+	 */
+	private function check_active_user() {
+
+		if (
+			( ! isset( $this->opts['wpengine'] ) || $this->opts['wpengine'] != '1' || getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) === false )
+			&& ( ! isset( $this->opts['maxmind'] ) || $this->opts['maxmind'] != '1' || ! file_exists( maxmind_db() ) )
+			&& ( ! isset( $this->opts['ip2location'] ) || $this->opts['ip2location'] != '1' || ! file_exists( ip2location_db() ) )
+			&& ( ! isset( $this->opts['kinsta'] ) || $this->opts['kinsta'] != '1' || empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) )
+			&& ( ! isset( $this->opts['litespeed'] ) || $this->opts['litespeed'] != '1' || empty( $_SERVER['GEOIP_COUNTRY_CODE'] ) )
+		) {
+			return true;
+		}
+
+		if ( empty( $this->opts['license'] ) ) {
+			throw new InvalidLicenseException( json_encode( [ 'error' => 'Missing or invalid license' ] ) );
+		}
+
+		if ( false === ( $active_user = get_site_transient( 'geot_active_user' ) ) ) {
+			// It wasn't there, so regenerate the data and save the transient
+			$active_user = GeotargetingWP::checkSubscription( $this->opts['license'] );
+			$result      = json_decode( $active_user );
+			if ( ! isset( $result->success ) ) {
+				throw new InvalidSubscriptionException( json_encode( [ 'error' => $result->error ] ) );
+			}
+
+			set_site_transient( 'geot_active_user', true, DAY_IN_SECONDS );
+
+			return true;
+		}
+
+		return $active_user;
+	}
+
+	/**
 	 * Init empty Object of user data
 	 */
 	private function initUserData() {
@@ -312,7 +563,6 @@ class GeotFunctions {
 		return $this->user_data[ $this->cache_key ];
 	}
 
-
 	/**
 	 * Add new values or update in user data
 	 *
@@ -330,46 +580,17 @@ class GeotFunctions {
 	}
 
 	/**
-	 * Get a specif record
-	 *
-	 * @param $key
-	 *
-	 * @return mixed
+	 * Check if the user is whitelisted in settings
 	 */
-	public function get( $key ) {
-		if ( ! in_array( $key, GeotRecord::getValidRecords() ) ) {
-			return 'Invalid GeotRecord classname provided. Valids ones are: ' . implode( ',', GeotRecord::getValidRecords() );
+	private function user_whitelisted() {
+		$ret = false;
+		// Ips check
+		$settings = geot_settings();
+		if ( isset( $settings['fallback_country_ips'] ) && in_array( $this->ip, textarea_to_array( $settings['fallback_country_ips'] ) ) ) {
+			$ret = true;
 		}
 
-		if ( $this->user_data[ $this->cache_key ] === null ) {
-			$this->getUserData();
-		}
-
-		if ( isset( $this->user_data[ $this->cache_key ]->$key ) ) {
-			return $this->user_data[ $this->cache_key ]->$key;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get country from database and return object like api
-	 *
-	 * @param $iso_code
-	 *
-	 * @return StdClass
-	 */
-	private function getCountryByIsoCode( $iso_code ) {
-		global $wpdb;
-		$query          = "SELECT * FROM {$wpdb->base_prefix}geot_countries WHERE iso_code = %s";
-		$result         = $wpdb->get_row( $wpdb->prepare( $query, array( $iso_code ) ), ARRAY_A );
-		$country        = new \StdClass();
-		$country->names = new \StdClass();
-
-		$country->names->en = $result['country'];
-		$country->iso_code  = $result['iso_code'];
-
-		return $country;
+		return apply_filters( 'geot/treat_request_as_whitelisted', $ret );
 	}
 
 	/**
@@ -402,250 +623,82 @@ class GeotFunctions {
 	}
 
 	/**
-	 * Main function that return is user targeted for
+	 * Get country from database and return object like api
 	 *
-	 * @param $key city, continent, country, state
-	 * @param array $args include, exclude, region, exclude_region
+	 * @param $iso_code
 	 *
+	 * @return StdClass
+	 */
+	private function getCountryByIsoCode( $iso_code ) {
+		global $wpdb;
+		$query          = "SELECT * FROM {$wpdb->base_prefix}geot_countries WHERE iso_code = %s";
+		$result         = $wpdb->get_row( $wpdb->prepare( $query, [ $iso_code ] ), ARRAY_A );
+		$country        = new \StdClass();
+		$country->names = new \StdClass();
+
+		$country->names->en = $result['country'];
+		$country->iso_code  = $result['iso_code'];
+
+		return $country;
+	}
+
+	/**
+	 * Check for some urls where geotargeting should be disabled
 	 * @return bool
 	 */
-	public function target( $key, $args = [] ) {
-		//Push places list into array
-		$places         = toArray( $args['include'] );
-		$exclude_places = toArray( $args['exclude'] );
-		$saved_regions  = apply_filters( 'geot/get_' . $key . '_regions', array() );
-		$plural_key     = toPlural( $key );
-		
-		$user_state = new \StdClass();
-		$user_state->iso_code = '';
-		$user_state->name = '';
-		// for filtering set english locale
-		$this->checkLocale('en');
-
-		//Append any regions
-		if ( ! empty( $args['region'] ) && ! empty( $saved_regions ) ) {
-			$region = toArray( $args['region'] );
-			foreach ( $region as $region_name ) {
-				foreach ( $saved_regions as $sr_key => $saved_region ) {
-					if ( strtolower( $region_name ) == strtolower( $saved_region['name'] ) ) {
-						$places = array_merge( (array) $places, (array) $saved_region[ $plural_key ] );
-					}
-				}
-			}
-			// if the key is cities and the user it's using region, check also against states. The database it's full of states and people it's using them so why not checking
-			if( 'city' == $key ) {
-				$user_state = $this->get('state');
-			}
+	private function treatAsBot() {
+		$ret = false;
+		// exclude login page and some others
+		$script = isset( $_SERVER['PHP_SELF'] ) ? basename( $_SERVER['PHP_SELF'] ) : '';
+		if ( in_array( $script, [ 'wp-login.php', 'xmlrpc.php', 'wp-cron.php' ] ) ) {
+			$ret = true;
 		}
-		// append excluded regions to excluded places
-		if ( ! empty( $args['exclude_region'] ) && ! empty( $saved_regions ) ) {
-			$exclude_region = toArray( $args['exclude_region'] );
-			foreach ( $exclude_region as $region_name ) {
-				foreach ( $saved_regions as $sr_key => $saved_region ) {
-					if ( strtolower( $region_name ) == strtolower( $saved_region['name'] ) ) {
-						$exclude_places = array_merge( (array) $exclude_places, (array) $saved_region[ $plural_key ] );
-					}
-				}
-			}
+		// Some more checks in case above fails
+
+		// Nothing to do if autosave.
+		if ( defined( 'DOING_AUTOSAVE' ) ) {
+			$ret = true;
 		}
 
-		//set target to false
-		$target = false;
-		// zip it's really a city property so it's custom
-		if ( $key == 'zip' ) {
-			// reset locale
-			$this->checkLocale();
-			return $this->targetZip( $places, $exclude_places );
+		// Nothing to do if XMLRPC request.
+		if ( defined( 'XMLRPC_REQUEST' ) ) {
+			$ret = true;
 		}
 
-		$user_place = $this->get( $key );
-
-
-
-		if ( !isset($user_place) || empty((array)$user_place) ) {
-			// reset locale
-			$this->checkLocale();
-			return apply_filters( 'geot/target_' . $key . '/return_on_user_null', false );
+		// No go with CRON
+		if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+			$ret = true;
 		}
 
-		if ( count( $places ) > 0 ) {
-			foreach ( $places as $p ) {
-				// cant use isset($user_place->name) in here because it will always return false due to object properties
-				if (
-					strtolower( @$user_place->name ) == strtolower( trim($p) )
-					|| strtolower( $user_place->iso_code ) == strtolower( trim($p) )
-					|| strtolower( @$user_state->name ) == strtolower( trim($p) )
-					|| strtolower( $user_state->iso_code ) == strtolower( trim($p) )
-				) {
-					$target = true;
-				}
-			}
-		} else {
-			// If we don't have places to target return true
-			$target = true;
+		if ( is_feed() ) {
+			$ret = true;
 		}
 
-		if ( count( $exclude_places ) > 0 ) {
-			foreach ( $exclude_places as $ep ) {
-				// cant use isset($user_place->name) in here because it will always return false due to object properties
-				if (
-					strtolower( @$user_place->name ) == strtolower( trim($ep) )
-					|| strtolower( $user_place->iso_code ) == strtolower( trim($ep) )
-					|| strtolower( @$user_state->name ) == strtolower( trim($ep) )
-					|| strtolower( $user_state->iso_code ) == strtolower( trim($ep) )
-				) {
-					$target = false;
-				}
-			}
+		// same fo rCLI
+		if ( PHP_SAPI == 'cli' || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			$ret = true;
 		}
 
-		// reset locale
-		$this->checkLocale();
-		return $target;
+		// Ips check
+		$settings = geot_settings();
+		if ( isset( $settings['bots_country_ips'] ) && in_array( $this->ip, textarea_to_array( $settings['bots_country_ips'] ) ) ) {
+			$ret = true;
+		}
+
+		return apply_filters( 'geot/treat_request_as_bot', $ret );
 	}
 
 	/**
-	 * Prints backtrace into footer for debugging
+	 * Use WpEngine variables (enterprise plans only)
+	 * @return GeotRecord
+	 * @throws GeotException
 	 */
-	private function printBacktrace() {
-		$trace = generateCallTrace();
-		add_action( 'wp_footer', function () use ( $trace ) {
-			echo '<!-- Geot Backtrace START ' . PHP_EOL;
-			echo $trace . PHP_EOL;
-			echo '<!-- Geot Backtrace END -->' . PHP_EOL;
-		}, 99 );
-
-	}
-
-	/**
-	 * Create cookies so WPRocket plugin
-	 * can generate different page caches
-	 */
-	public function createRocketCookies() {
-
-		if ( apply_filters( 'geot/disable_cookies', false ) ) {
-			return;
+	private function wpengine() {
+		try {
+			return $this->cleanResponse( RecordConverter::wpEngine() );
+		} catch ( \Exception $e ) {
+			throw new GeotException( $e->getMessage() );
 		}
-
-		if ( ! $this->user_data[ $this->cache_key ] instanceof GeotRecord ) {
-			return;
-		}
-		$country = isset($this->user_data[ $this->cache_key ]->country->iso_code) ? $this->user_data[ $this->cache_key ]->country->iso_code : 'not detected';
-		$state = isset($this->user_data[ $this->cache_key ]->state->iso_code) ? $this->user_data[ $this->cache_key ]->state->iso_code : 'not detected';
-		$city = isset($this->user_data[ $this->cache_key ]->city->name) ? $this->user_data[ $this->cache_key ]->city->name : 'not detected';
-
-		setcookie( 'geot_rocket_country', apply_filters( 'geot_rocket_country', $country ), 0, '/' );
-		setcookie( 'geot_rocket_state', apply_filters( 'geot_rocket_state', $state ), 0, '/' );
-		setcookie( 'geot_rocket_city', apply_filters( 'geot_rocket_city', $city ), 0, '/' );
-	}
-
-	/**
-	 * Set some default options for the class
-	 */
-	private function set_defaults() {
-
-		$args = geot_settings();
-
-		$this->opts = wp_parse_args( $args, [
-			'license'            => '',
-			// similar to disable sessions but also invalidates cookies
-			'cache_mode'         => false,
-			// php sessions
-			'bots_country'       => '',
-			// a default country to return if a bot is detected
-			'api_secret'         => '',
-			// a default country to return if a bot is detected
-			'cookie_name'        => 'geot_country',
-			// cookie_name to store country iso code
-			'maxmind'            => 0,
-			// check if maxmind is enabled
-			'maxmind_db'         => maxmind_db(),
-			// path to db
-			'ip2location'        => 0,
-			// check if ip2location is enabled
-			'ip2location_db'     => ip2location_db(),
-			// path to db
-			'ip2location_method' => apply_filters( 'geot/ip2location_method', '100001' ),
-			// wheter we use io disk or memory for lookup
-			'wpengine'           => 0,
-			'kinsta'             => 0,
-			'litespeed'          => 0,
-		] );
-	}
-
-	/**
-	 * Check if user has active subscription
-	 * @return bool
-	 * @throws InvalidLicenseException
-	 * @throws InvalidSubscriptionException
-	 */
-	private function check_active_user() {
-
-		if (
-			( ! isset( $this->opts['wpengine'] ) || $this->opts['wpengine'] != '1' || getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) === false )
-			&& ( ! isset( $this->opts['maxmind'] ) || $this->opts['maxmind'] != '1' || ! file_exists( maxmind_db() ) )
-			&& ( ! isset( $this->opts['ip2location'] ) || $this->opts['ip2location'] != '1' || ! file_exists( ip2location_db() ) )
-			&& ( ! isset( $this->opts['kinsta'] ) || $this->opts['kinsta'] != '1' || empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) )
-			&& ( ! isset( $this->opts['litespeed'] ) || $this->opts['litespeed'] != '1' || empty( $_SERVER['GEOIP_COUNTRY_CODE'] ) )
-		) {
-			return true;
-		}
-
-		if ( empty( $this->opts['license'] ) ) {
-			throw new InvalidLicenseException( json_encode( [ 'error' => 'Missing or invalid license' ] ) );
-		}
-
-		if ( false === ( $active_user = get_site_transient( 'geot_active_user' ) ) ) {
-			// It wasn't there, so regenerate the data and save the transient
-			$active_user = GeotargetingWP::checkSubscription( $this->opts['license'] );
-			$result      = json_decode( $active_user );
-			if ( ! isset( $result->success ) ) {
-				throw new InvalidSubscriptionException( json_encode( [ 'error' => $result->error ] ) );
-			}
-
-			set_site_transient( 'geot_active_user', true, DAY_IN_SECONDS );
-
-			return true;
-		}
-
-		return $active_user;
-	}
-
-	/**
-	 * Target by ZIP
-	 *
-	 * @param $places
-	 * @param $exclude_places
-	 *
-	 * @return bool
-	 */
-	private function targetZip( $places, $exclude_places ) {
-		$target     = false;
-		$user_place = $this->get( 'city' );
-		if ( ! $user_place ) {
-			return apply_filters( 'geot/target_zip/return_on_user_null', false );
-		}
-
-		if ( count( $places ) > 0 ) {
-			foreach ( $places as $zip ) {
-				if ( strtolower( $user_place->zip ) == strtolower( $zip ) ) {
-					$target = true;
-				}
-			}
-		} else {
-			// If we don't have places to target return true
-			$target = true;
-		}
-
-		if ( count( $exclude_places ) > 0 ) {
-			foreach ( $exclude_places as $ezip ) {
-				if ( strtolower( $user_place->zip ) == strtolower( $ezip ) ) {
-					$target = false;
-				}
-			}
-		}
-
-		return $target;
 	}
 
 	/**
@@ -668,13 +721,13 @@ class GeotFunctions {
 	}
 
 	/**
-	 * Use WpEngine variables (enterprise plans only)
+	 * Use Litespped variables (users must add variables)
 	 * @return GeotRecord
 	 * @throws GeotException
 	 */
-	private function wpengine() {
+	private function litespeed() {
 		try {
-			return $this->cleanResponse( RecordConverter::wpEngine() );
+			return $this->cleanResponse( RecordConverter::litespeed() );
 		} catch ( \Exception $e ) {
 			throw new GeotException( $e->getMessage() );
 		}
@@ -688,19 +741,6 @@ class GeotFunctions {
 	private function kinsta() {
 		try {
 			return $this->cleanResponse( RecordConverter::kinsta() );
-		} catch ( \Exception $e ) {
-			throw new GeotException( $e->getMessage() );
-		}
-	}
-
-	/**
-	 * Use Litespped variables (users must add variables)
-	 * @return GeotRecord
-	 * @throws GeotException
-	 */
-	private function litespeed() {
-		try {
-			return $this->cleanResponse( RecordConverter::litespeed() );
 		} catch ( \Exception $e ) {
 			throw new GeotException( $e->getMessage() );
 		}
@@ -748,99 +788,65 @@ class GeotFunctions {
 	}
 
 	/**
-	 * For API results we can let users change locale
-	 * but also we can check against wordpress locale
+	 * Target by ZIP
 	 *
-	 * @param null $force_locale
+	 * @param $places
+	 * @param $exclude_places
+	 *
+	 * @return bool
 	 */
-	private function checkLocale( $force_locale = null ) {
-		if ( ! $this->user_data[ $this->cache_key ] instanceof GeotRecord || apply_filters( 'geot/cancel_locale_check', false ) ) {
+	private function targetZip( $places, $exclude_places ) {
+		$target     = false;
+		$user_place = $this->get( 'city' );
+		if ( ! $user_place ) {
+			return apply_filters( 'geot/target_zip/return_on_user_null', false );
+		}
+
+		if ( count( $places ) > 0 ) {
+			foreach ( $places as $zip ) {
+				if ( strtolower( $user_place->zip ) == strtolower( $zip ) ) {
+					$target = true;
+				}
+			}
+		} else {
+			// If we don't have places to target return true
+			$target = true;
+		}
+
+		if ( count( $exclude_places ) > 0 ) {
+			foreach ( $exclude_places as $ezip ) {
+				if ( strtolower( $user_place->zip ) == strtolower( $ezip ) ) {
+					$target = false;
+				}
+			}
+		}
+
+		return $target;
+	}
+
+	/**
+	 * Create cookies so WPRocket plugin
+	 * can generate different page caches
+	 */
+	public function createRocketCookies() {
+
+		if ( apply_filters( 'geot/disable_cookies', false ) ) {
 			return;
 		}
 
-		$locale = get_locale();
-		// get language part of locale
-		$wp_locale = strstr( $locale, '_' ) === false ? $locale : strstr( get_locale(), '_', true );
-		// normalize some of them to match our locales
-		switch ( $wp_locale ) {
-			case 'pt':
-				$wp_locale = 'pt-BR';
-				break;
-			case 'zh':
-				$wp_locale = 'zh-CN';
-				break;
+		if ( ! $this->user_data[ $this->cache_key ] instanceof GeotRecord ) {
+			return;
 		}
-		// when filtering we want english locale to compare city names
-		if($force_locale){
-			$wp_locale = $force_locale;
-		}
-		// set locale on all records
-		foreach ( get_object_vars( $this->user_data[ $this->cache_key ] ) as $o ) {
-			$o->setDefaultLocale( $wp_locale );
-		}
+		$country = isset( $this->user_data[ $this->cache_key ]->country->iso_code ) ? $this->user_data[ $this->cache_key ]->country->iso_code : 'not detected';
+		$state   = isset( $this->user_data[ $this->cache_key ]->state->iso_code ) ? $this->user_data[ $this->cache_key ]->state->iso_code : 'not detected';
+		$city    = isset( $this->user_data[ $this->cache_key ]->city->name ) ? $this->user_data[ $this->cache_key ]->city->name : 'not detected';
+
+		setcookie( 'geot_rocket_country', apply_filters( 'geot_rocket_country', $country ), 0, '/' );
+		setcookie( 'geot_rocket_state', apply_filters( 'geot_rocket_state', $state ), 0, '/' );
+		setcookie( 'geot_rocket_city', apply_filters( 'geot_rocket_city', $city ), 0, '/' );
 	}
 
 	public function getSession() {
 		return $this->session;
-	}
-
-	/**
-	 * Check for some urls where geotargeting should be disabled
-	 * @return bool
-	 */
-	private function treatAsBot() {
-		$ret = false;
-		// exclude login page and some others
-		$script = isset( $_SERVER['PHP_SELF'] ) ? basename( $_SERVER['PHP_SELF'] ) : '';
-		if ( in_array( $script, array( 'wp-login.php', 'xmlrpc.php', 'wp-cron.php' ) ) ) {
-			$ret = true;
-		}
-        // Some more checks in case above fails
-
-		// Nothing to do if autosave.
-		if ( defined( 'DOING_AUTOSAVE' ) ) {
-			$ret = true;
-		}
-
-		// Nothing to do if XMLRPC request.
-		if ( defined( 'XMLRPC_REQUEST' ) ) {
-			$ret = true;
-		}
-
-		// No go with CRON
-		if(  defined( 'DOING_CRON' ) && DOING_CRON ) {
-			$ret = true;
-		}
-
-		if( is_feed() ) {
-			$ret = true;
-		}
-
-		// same fo rCLI
-		if ( PHP_SAPI == 'cli' || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
-			$ret = true;
-		}
-
-		// Ips check
-		$settings = geot_settings();
-		if( isset( $settings['bots_country_ips'] ) && in_array( $this->ip, textarea_to_array( $settings['bots_country_ips'] ) ) ) {
-			$ret = true;
-		}
-
-		return apply_filters( 'geot/treat_request_as_bot', $ret );
-	}
-
-	/**
-	 * Check if the user is whitelisted in settings
-	 */
-	private function user_whitelisted() {
-		$ret = false;
-		// Ips check
-		$settings = geot_settings();
-		if( isset( $settings['fallback_country_ips'] )  && in_array( $this->ip, textarea_to_array( $settings['fallback_country_ips'] ) ) ) {
-			$ret = true;
-		}
-
-		return apply_filters( 'geot/treat_request_as_whitelisted', $ret );
 	}
 }

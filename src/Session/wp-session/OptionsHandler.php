@@ -22,6 +22,21 @@ use EAMann\WPSession\Objects\Option;
 class OptionsHandler extends SessionHandler {
 
 	/**
+	 * Remove all sessions from the options table, regardless of expiration.
+	 *
+	 * @return int Sessions deleted
+	 * @global \wpdb $wpdb
+	 *
+	 */
+	public static function delete_all() {
+		global $wpdb;
+
+		$count = $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_wp_session_%'" );
+
+		return (int) ( $count / 2 );
+	}
+
+	/**
 	 * Pass things through to the next middleware. This function is a no-op.
 	 *
 	 * @param string $path Path where the storage lives
@@ -104,6 +119,16 @@ class OptionsHandler extends SessionHandler {
 	}
 
 	/**
+	 * Delete a cached session value from the options table.
+	 *
+	 * @param string $id Session identifier
+	 */
+	protected function _delete( $id ) {
+		delete_option( "_wp_session_$id" );
+		delete_option( "_wp_session_expires_$id" );
+	}
+
+	/**
 	 * Purge an item from the database immediately.
 	 *
 	 * @param string $id Session identifier
@@ -120,24 +145,14 @@ class OptionsHandler extends SessionHandler {
 	}
 
 	/**
-	 * Delete a cached session value from the options table.
-	 *
-	 * @param string $id Session identifier
-	 */
-	protected function _delete( $id ) {
-		delete_option( "_wp_session_$id" );
-		delete_option( "_wp_session_expires_$id" );
-	}
-
-	/**
 	 * Update the Options table by removing any items that are no longer valid.
 	 *
 	 * @param int $maxlifetime Maximum number of seconds for which a session can live
 	 * @param callable $next Next clean operation in the stack
 	 *
+	 * @return mixed
 	 * @global \wpdb $wpdb
 	 *
-	 * @return mixed
 	 */
 	public function clean( $maxlifetime, $next ) {
 		global $wpdb;
@@ -155,20 +170,5 @@ class OptionsHandler extends SessionHandler {
 		}
 
 		return $next( $maxlifetime );
-	}
-
-	/**
-	 * Remove all sessions from the options table, regardless of expiration.
-	 *
-	 * @global \wpdb $wpdb
-	 *
-	 * @return int Sessions deleted
-	 */
-	public static function delete_all() {
-		global $wpdb;
-
-		$count = $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_wp_session_%'" );
-
-		return (int) ( $count / 2 );
 	}
 }

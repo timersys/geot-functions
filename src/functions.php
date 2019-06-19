@@ -5,13 +5,13 @@ namespace GeotFunctions;
 /**
  * Helper function to convert to array
  *
- * @param  string $value comma separated countries, etc
+ * @param string $value comma separated countries, etc
  *
  * @return array
  */
 function toArray( $value = "" ) {
 	if ( empty( $value ) ) {
-		return array();
+		return [];
 	}
 
 	if ( is_array( $value ) ) {
@@ -22,7 +22,7 @@ function toArray( $value = "" ) {
 		return array_map( 'trim', explode( ',', $value ) );
 	}
 
-	return array( trim( $value ) );
+	return [ trim( $value ) ];
 }
 
 /**
@@ -34,7 +34,7 @@ function toArray( $value = "" ) {
  */
 function textarea_to_array( $string ) {
 	if ( ! strlen( trim( $string ) ) ) {
-		return array();
+		return [];
 	}
 
 	return toArray( explode( PHP_EOL, $string ) );
@@ -113,11 +113,12 @@ function get_version() {
 /**
  * Checks if a caching plugin is active
  *
- * @since 1.4.1
  * @return bool $caching True if caching plugin is enabled, false otherwise
+ * @since 1.4.1
  */
 function is_caching_plugin_active() {
 	$caching = ( function_exists( 'wpsupercache_site_admin' ) || defined( 'W3TC' ) || function_exists( 'rocket_init' ) );
+
 	return apply_filters( 'geot/is_caching_plugin_active', $caching );
 }
 
@@ -126,16 +127,17 @@ function is_caching_plugin_active() {
  */
 function geot_uninstall() {
 	// delete settings
-	delete_option('geot_settings');
-	delete_option('geot_version');
+	delete_option( 'geot_settings' );
+	delete_option( 'geot_version' );
 	// delete sql data
 	global $wpdb;
 	$countries_table = $wpdb->base_prefix . 'geot_countries';
-	$wpdb->query( "DROP TABLE IF EXISTS $countries_table;");
+	$wpdb->query( "DROP TABLE IF EXISTS $countries_table;" );
 }
 
 /**
  * Uninstall given posts/taxonomies
+ *
  * @param array $posts
  * @param array $taxonomies
  */
@@ -145,10 +147,14 @@ function uninstall( $posts = [], $taxonomies = [] ) {
 	foreach ( $posts as $post_type ) {
 
 		$taxonomies = array_merge( $taxonomies, get_object_taxonomies( $post_type ) );
-		$items = get_posts( array( 'post_type' => $post_type, 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids' ) );
+		$items      = get_posts( [ 'post_type'   => $post_type,
+		                           'post_status' => 'any',
+		                           'numberposts' => - 1,
+		                           'fields'      => 'ids',
+		] );
 		if ( $items ) {
 			foreach ( $items as $item ) {
-				wp_delete_post( $item, true);
+				wp_delete_post( $item, true );
 			}
 		}
 	}
@@ -161,87 +167,89 @@ function uninstall( $posts = [], $taxonomies = [] ) {
 		// Delete Terms.
 		if ( $terms ) {
 			foreach ( $terms as $term ) {
-				$wpdb->delete( $wpdb->term_relationships, array( 'term_taxonomy_id' => $term->term_taxonomy_id ) );
-				$wpdb->delete( $wpdb->term_taxonomy, array( 'term_taxonomy_id' => $term->term_taxonomy_id ) );
-				$wpdb->delete( $wpdb->terms, array( 'term_id' => $term->term_id ) );
+				$wpdb->delete( $wpdb->term_relationships, [ 'term_taxonomy_id' => $term->term_taxonomy_id ] );
+				$wpdb->delete( $wpdb->term_taxonomy, [ 'term_taxonomy_id' => $term->term_taxonomy_id ] );
+				$wpdb->delete( $wpdb->terms, [ 'term_id' => $term->term_id ] );
 			}
 		}
 
 		// Delete Taxonomies.
-		$wpdb->delete( $wpdb->term_taxonomy, array( 'taxonomy' => $taxonomy ), array( '%s' ) );
+		$wpdb->delete( $wpdb->term_taxonomy, [ 'taxonomy' => $taxonomy ], [ '%s' ] );
 	}
 }
 
 
 /**
- * Activate Create 
+ * Activate Create
+ *
  * @param array $posts
  * @param array $taxonomies
  */
 function geot_activate() {
-	$settings = get_option('geot_settings');
+	$settings = get_option( 'geot_settings' );
 
-	if( !$settings )
+	if ( ! $settings ) {
 		set_transient( 'geot_activator', true, 30 );
+	}
 }
 
 
 function geot_ips() {
-	$ips = array();
+	$ips = [];
 
 	// Server
-	if( isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR']) &&
-		!in_array($_SERVER['REMOTE_ADDR'], $ips) ) {
-		$ips['REMOTE_ADDR'] = sprintf(__('REMOTE_ADDR : %s','geot'), $_SERVER[ 'REMOTE_ADDR' ]);
+	if ( isset( $_SERVER['REMOTE_ADDR'] ) && ! empty( $_SERVER['REMOTE_ADDR'] ) &&
+	     ! in_array( $_SERVER['REMOTE_ADDR'], $ips ) ) {
+		$ips['REMOTE_ADDR'] = sprintf( __( 'REMOTE_ADDR : %s', 'geot' ), $_SERVER['REMOTE_ADDR'] );
 	}
 
 	// Server
-	if( isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP']) &&
-		!in_array($_SERVER['HTTP_CLIENT_IP'], $ips) ) {
-		$ips['HTTP_CLIENT_IP'] = sprintf(__('HTTP_CLIENT_IP : %s','geot'), $_SERVER[ 'HTTP_CLIENT_IP' ]);
+	if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) && ! empty( $_SERVER['HTTP_CLIENT_IP'] ) &&
+	     ! in_array( $_SERVER['HTTP_CLIENT_IP'], $ips ) ) {
+		$ips['HTTP_CLIENT_IP'] = sprintf( __( 'HTTP_CLIENT_IP : %s', 'geot' ), $_SERVER['HTTP_CLIENT_IP'] );
 	}
 
 	// Server
-	if( isset($_SERVER['HTTP_X_REAL_IP']) && !empty($_SERVER['HTTP_X_REAL_IP']) &&
-		!in_array($_SERVER['HTTP_X_REAL_IP'], $ips) ) {
-		$ips['HTTP_X_REAL_IP'] = sprintf(__('HTTP_X_REAL_IP : %s','geot'), $_SERVER[ 'HTTP_X_REAL_IP' ]);
+	if ( isset( $_SERVER['HTTP_X_REAL_IP'] ) && ! empty( $_SERVER['HTTP_X_REAL_IP'] ) &&
+	     ! in_array( $_SERVER['HTTP_X_REAL_IP'], $ips ) ) {
+		$ips['HTTP_X_REAL_IP'] = sprintf( __( 'HTTP_X_REAL_IP : %s', 'geot' ), $_SERVER['HTTP_X_REAL_IP'] );
 	}
 
 	// Cloudflare
-	if( isset($_SERVER['HTTP_CF_CONNECTING_IP']) && !empty($_SERVER['HTTP_CF_CONNECTING_IP']) &&
-		!in_array($_SERVER['HTTP_CF_CONNECTING_IP'], $ips) ) {
-		$ips['HTTP_CF_CONNECTING_IP'] = sprintf(__('HTTP_CF_CONNECTING_IP : %s','geot'), $_SERVER[ 'HTTP_CF_CONNECTING_IP' ]);
+	if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) && ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) &&
+	     ! in_array( $_SERVER['HTTP_CF_CONNECTING_IP'], $ips ) ) {
+		$ips['HTTP_CF_CONNECTING_IP'] = sprintf( __( 'HTTP_CF_CONNECTING_IP : %s', 'geot' ), $_SERVER['HTTP_CF_CONNECTING_IP'] );
 	}
 
 	// Reblase
-	if( isset($_SERVER['X-Real-IP']) && !empty($_SERVER['X-Real-IP']) &&
-		!in_array($_SERVER['X-Real-IP'], $ips) ) {
-		$ips['X-Real-IP'] = sprintf(__('X-Real-IP : %s','geot'), $_SERVER[ 'X-Real-IP' ]);
+	if ( isset( $_SERVER['X-Real-IP'] ) && ! empty( $_SERVER['X-Real-IP'] ) &&
+	     ! in_array( $_SERVER['X-Real-IP'], $ips ) ) {
+		$ips['X-Real-IP'] = sprintf( __( 'X-Real-IP : %s', 'geot' ), $_SERVER['X-Real-IP'] );
 	}
 
 
 	// Sucuri
-	if( isset($_SERVER['HTTP_X_SUCURI_CLIENTIP']) && !empty($_SERVER['HTTP_X_SUCURI_CLIENTIP']) &&
-		!in_array($_SERVER['HTTP_X_SUCURI_CLIENTIP'], $ips) ) {
-		$ips['HTTP_X_SUCURI_CLIENTIP'] = sprintf(__('HTTP_X_SUCURI_CLIENTIP : %s','geot'), $_SERVER[ 'HTTP_X_SUCURI_CLIENTIPP' ]);
+	if ( isset( $_SERVER['HTTP_X_SUCURI_CLIENTIP'] ) && ! empty( $_SERVER['HTTP_X_SUCURI_CLIENTIP'] ) &&
+	     ! in_array( $_SERVER['HTTP_X_SUCURI_CLIENTIP'], $ips ) ) {
+		$ips['HTTP_X_SUCURI_CLIENTIP'] = sprintf( __( 'HTTP_X_SUCURI_CLIENTIP : %s', 'geot' ), $_SERVER['HTTP_X_SUCURI_CLIENTIPP'] );
 	}
 
 	//Ezoic
-	if( isset($_SERVER['X-FORWARDED-FOR']) && !empty($_SERVER['X-FORWARDED-FOR']) &&
-		!in_array($_SERVER['X-FORWARDED-FOR'], $ips) ) {
-		$ips['X-FORWARDED-FOR'] = sprintf(__('X-FORWARDED-FOR : %s','geot'), $_SERVER[ 'X-FORWARDED-FOR' ]);
+	if ( isset( $_SERVER['X-FORWARDED-FOR'] ) && ! empty( $_SERVER['X-FORWARDED-FOR'] ) &&
+	     ! in_array( $_SERVER['X-FORWARDED-FOR'], $ips ) ) {
+		$ips['X-FORWARDED-FOR'] = sprintf( __( 'X-FORWARDED-FOR : %s', 'geot' ), $_SERVER['X-FORWARDED-FOR'] );
 	}
 
 	//Akamai
-	if( isset($_SERVER['True-Client-IP']) && !empty($_SERVER['True-Client-IP']) &&
-		!in_array($_SERVER['True-Client-IP'], $ips) ) {
-		$ips['True-Client-IP'] = sprintf(__('True-Client-IP : %s','geot'), $_SERVER[ 'True-Client-IP' ]);
+	if ( isset( $_SERVER['True-Client-IP'] ) && ! empty( $_SERVER['True-Client-IP'] ) &&
+	     ! in_array( $_SERVER['True-Client-IP'], $ips ) ) {
+		$ips['True-Client-IP'] = sprintf( __( 'True-Client-IP : %s', 'geot' ), $_SERVER['True-Client-IP'] );
 	}
 
 	//Clouways
-	if( isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']) &&
-		!in_array($_SERVER['HTTP_X_FORWARDED_FOR'], $ips) ) {
-		$ips['HTTP_X_FORWARDED_FOR'] = sprintf(__('HTTP_X_FORWARDED_FOR : %s','geot'), $_SERVER[ 'HTTP_X_FORWARDED_FOR' ]);
+	if ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) && ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) &&
+	     ! in_array( $_SERVER['HTTP_X_FORWARDED_FOR'], $ips ) ) {
+		$ips['HTTP_X_FORWARDED_FOR'] = sprintf( __( 'HTTP_X_FORWARDED_FOR : %s', 'geot' ), $_SERVER['HTTP_X_FORWARDED_FOR'] );
 	}
 
 	return $ips;

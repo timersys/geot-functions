@@ -17,11 +17,11 @@ class GeotNotices {
 		}
 
 		if ( getenv( 'HTTP_GEOIP_COUNTRY_CODE' ) !== false && ! get_option( 'geot_wpengine_dismiss' ) ) {
-			add_action( 'admin_notices', array( self::class, 'wpengine' ) );
+			add_action( 'admin_notices', [ self::class, 'wpengine' ] );
 		}
 
 		if ( ! empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) && ! get_option( 'geot_kinsta_dismiss' ) ) {
-			add_action( 'admin_notices', array( self::class, 'kinsta' ) );
+			add_action( 'admin_notices', [ self::class, 'kinsta' ] );
 		}
 	}
 

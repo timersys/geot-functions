@@ -7,17 +7,17 @@
 
 $opts     = geot_settings();
 $defaults = [
-	'license'					=> '',
-	'api_secret'				=> '',
-	'cache_mode'				=> '0',
-	'ajax_mode'					=> '0',
-	'debug_mode'				=> '0',
-	'var_ip'					=> 'REMOTE_ADDR',
-	'maxmind'					=> '0',
-	'ip2location'				=> '0',
-	'geot_uninstall'			=> '',
-	'fallback_country_ips'		=> '',
-	'bots_country_ips'			=> '',
+	'license'              => '',
+	'api_secret'           => '',
+	'cache_mode'           => '0',
+	'ajax_mode'            => '0',
+	'debug_mode'           => '0',
+	'var_ip'               => 'REMOTE_ADDR',
+	'maxmind'              => '0',
+	'ip2location'          => '0',
+	'geot_uninstall'       => '',
+	'fallback_country_ips' => '',
+	'bots_country_ips'     => '',
 ];
 $opts     = wp_parse_args( $opts, apply_filters( 'geot/default_settings', $defaults ) );
 
@@ -136,25 +136,25 @@ $countries = geot_countries();
 				<th><label for="region"><?php _e( 'IP', 'geot' ); ?></label></th>
 				<td colspan="3">
 
-					<?php if( count($ips) == 0 ) : ?>
-						<h3><?php _e('We could not detect any IP', 'geot'); ?></h3>
-					<?php elseif( count($ips) == 1 ) : ?>
-						<h3 style="font-weight: unset;"><?php printf(__('We detected the following IP : <b>%s</b>', 'geot'), current($ips)); ?></h3>
-						<input type="hidden" name="geot_settings[var_ip]" value="<?php echo $opts['var_ip']; ?>" />
+					<?php if ( count( $ips ) == 0 ) : ?>
+						<h3><?php _e( 'We could not detect any IP', 'geot' ); ?></h3>
+					<?php elseif ( count( $ips ) == 1 ) : ?>
+						<h3 style="font-weight: unset;"><?php printf( __( 'We detected the following IP : <b>%s</b>', 'geot' ), current( $ips ) ); ?></h3>
+						<input type="hidden" name="geot_settings[var_ip]" value="<?php echo $opts['var_ip']; ?>"/>
 					<?php else : ?>
 
 						<select name="geot_settings[var_ip]" class="geot-chosen-select"
 						        data-placeholder="<?php _e( 'Choose your IP...', 'geot' ); ?>">
 
-							<?php foreach( $ips as $key => $label_ip ) : ?>
+							<?php foreach ( $ips as $key => $label_ip ) : ?>
 								<option value="<?php echo $key; ?>" <?php echo selected( $key, $opts['fallback_country'] ); ?> ><?php echo $label_ip; ?></option>
 							<?php endforeach; ?>
 
-							<?php foreach( $ips as $key => $label_ip ) : ?>
+							<?php foreach ( $ips as $key => $label_ip ) : ?>
 								<option value="<?php echo $key ?>" <?php echo selected( $key, $opts['var_ip'] ); ?>><?php echo $label_ip; ?></option>
 							<?php endforeach; ?>
 						</select>
-						<p class="help"><?php printf(__('If you dont know what IP must choose, you can check your real ip on <a href="%s">%s</a>','geot'), 'https://geotargetingwp.com/ip', 'https://geotargetingwp.com/ip'); ?></p>
+						<p class="help"><?php printf( __( 'If you dont know what IP must choose, you can check your real ip on <a href="%s">%s</a>', 'geot' ), 'https://geotargetingwp.com/ip', 'https://geotargetingwp.com/ip' ); ?></p>
 					<?php endif; ?>
 				</td>
 			</tr>
@@ -181,8 +181,10 @@ $countries = geot_countries();
 			<tr valign="top" class="">
 				<th><label for="region"><?php _e( 'Fallback Country Whitelisted IPs', 'geot' ); ?></label></th>
 				<td colspan="3">
-					<textarea rows="10" name="geot_settings[fallback_country_ips]"><?= esc_attr($opts['fallback_country_ips']);?></textarea>
-					<p class="help"><?php _e( 'Enter Ip addresses one by line and they will be resolved to the fallback country you choose and won\'t spend requests. You current Ip is: ', 'geot' ); echo \GeotWP\getUserIP(); ?></p>
+					<textarea rows="10"
+					          name="geot_settings[fallback_country_ips]"><?= esc_attr( $opts['fallback_country_ips'] ); ?></textarea>
+					<p class="help"><?php _e( 'Enter Ip addresses one by line and they will be resolved to the fallback country you choose and won\'t spend requests. You current Ip is: ', 'geot' );
+						echo \GeotWP\getUserIP(); ?></p>
 				</td>
 			</tr>
 			<tr valign="top" class="">
@@ -206,8 +208,9 @@ $countries = geot_countries();
 			<tr valign="top" class="">
 				<th><label for="region"><?php _e( 'Bots Country IPs', 'geot' ); ?></label></th>
 				<td colspan="3">
-					<textarea rows="10" name="geot_settings[bots_country_ips]"><?= $opts['bots_country_ips'];?></textarea>
-					<p class="help"><?php echo sprintf(__( 'Enter Ip addresses one by line and they will be resolved to the bots country you choose and won\'t spend requests. Check <a href="%s">most queried ips</a> in order to identify bots.', 'geot' ), 'https://geotargetingwp.com/dashboard/stats'); ?></p>
+					<textarea rows="10"
+					          name="geot_settings[bots_country_ips]"><?= $opts['bots_country_ips']; ?></textarea>
+					<p class="help"><?php echo sprintf( __( 'Enter Ip addresses one by line and they will be resolved to the bots country you choose and won\'t spend requests. Check <a href="%s">most queried ips</a> in order to identify bots.', 'geot' ), 'https://geotargetingwp.com/dashboard/stats' ); ?></p>
 				</td>
 			</tr>
 

@@ -5,12 +5,12 @@
  */
 
 
-$opts     = geot_settings();
+$opts = geot_settings();
 
-if( empty($opts['region'] ) ) {
+if ( empty( $opts['region'] ) ) {
 	$opts['region'] = [ [ 'name', 'countries' ] ];
 }
-if( empty($opts['city_region'] ) ) {
+if ( empty( $opts['city_region'] ) ) {
 	$opts['city_region'] = [ [ 'name', 'cities' ] ];
 }
 
@@ -30,20 +30,20 @@ $countries = geot_countries();
 				<th colspan="3"><h3><?php _e( 'Regions:', 'geot' ); ?></h3></th>
 			</tr>
 
-			<?php if( apply_filters('geot/enable_predefined_regions', true) ) : ?>
+			<?php if ( apply_filters( 'geot/enable_predefined_regions', true ) ) : ?>
 
 				<tr valign="top" class="">
 					<th><h3><?php _e( 'Continents:', 'geot' ); ?></h3></th>
 					<td colspan="3">
 						<p class="help"><?php _e( 'We have created some predefined regions in case you need them:', 'geot' ); ?></p>
 						<ul class="help">
-							<li>- <?php _e('<b>north-america</b> (North America)','geot'); ?></li>
-							<li>- <?php _e('<b>south-america</b> (South America)','geot'); ?></li>
-							<li>- <?php _e('<b>europe</b> (Europe)','geot'); ?></li>
-							<li>- <?php _e('<b>asia</b> (Asia)','geot'); ?></li>
-							<li>- <?php _e('<b>africa</b> (Africa)','geot'); ?></li>
-							<li>- <?php _e('<b>oceania</b> (Oceania)','geot'); ?></li>
-							<li>- <?php _e('<b>antarctica</b> (Antarctica)','geot'); ?></li>
+							<li>- <?php _e( '<b>north-america</b> (North America)', 'geot' ); ?></li>
+							<li>- <?php _e( '<b>south-america</b> (South America)', 'geot' ); ?></li>
+							<li>- <?php _e( '<b>europe</b> (Europe)', 'geot' ); ?></li>
+							<li>- <?php _e( '<b>asia</b> (Asia)', 'geot' ); ?></li>
+							<li>- <?php _e( '<b>africa</b> (Africa)', 'geot' ); ?></li>
+							<li>- <?php _e( '<b>oceania</b> (Oceania)', 'geot' ); ?></li>
+							<li>- <?php _e( '<b>antarctica</b> (Antarctica)', 'geot' ); ?></li>
 						</ul>
 					</td>
 				</tr>
@@ -172,7 +172,7 @@ $countries = geot_countries();
                                                 dataType: 'json',
                                                 data: {
                                                     action: 'geot_cities_by_country',
-                                                    country: '<?= !empty($city_region['countries']) ? reset( $city_region['countries'] ) : '';?>'
+                                                    country: '<?= ! empty( $city_region['countries'] ) ? reset( $city_region['countries'] ) : '';?>'
                                                 },
                                                 error: function () {
 

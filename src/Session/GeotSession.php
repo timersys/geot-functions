@@ -76,87 +76,10 @@ class GeotSession {
 	}
 
 	/**
-	 * If a session hasn't already been started by some external system, start one!
-	 */
-	function wp_session_manager_start_session() {
-		if ( session_status() !== PHP_SESSION_ACTIVE ) {
-			session_start();
-		}
-	}
-
-	/**
-	 * Main GeotSession Instance
-	 *
-	 * Ensures only one instance is loaded or can be loaded.
-	 *
-	 * @since 1.0.0
-	 * @static
-	 *
-	 * @return GeotSession - Main instance
-	 */
-	public static function instance() {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
-	 * Cloning is forbidden.
-	 * @since 1.0.0
-	 */
-	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
-	}
-
-	/**
-	 * Unserializing instances of this class is forbidden.
-	 * @since 1.0.0
-	 */
-	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
-	}
-
-	/**
-	 * Retrieve a session variable
-	 *
-	 * @access public
-	 * @since 1.5
-	 *
-	 * @param string $key Session key
-	 *
-	 * @return mixed Session variable
-	 */
-	public function get( $key ) {
-		$key = sanitize_key( $key );
-
-		return isset( $_SESSION[ $key ] ) ? json_decode( $_SESSION[ $key ] ) : false;
-	}
-
-	/**
-	 * Set a session variable
-	 *
-	 * @since 1.5
-	 *
-	 * @param string $key Session key
-	 * @param int|string|array $value Session variable
-	 *
-	 * @return mixed Session variable
-	 */
-	public function set( $key, $value ) {
-		$key = sanitize_key( $key );
-
-		$_SESSION[ $key ] = wp_json_encode( $value );
-
-		return $_SESSION[ $key ];
-	}
-
-	/**
 	 * Determines if we should start sessions
 	 *
-	 * @since  2.5.11
 	 * @return bool
+	 * @since  2.5.11
 	 */
 	public function should_start_session() {
 		$start_session = true;
@@ -183,18 +106,18 @@ class GeotSession {
 	 *
 	 * These are the URIs where we never start sessions
 	 *
-	 * @since  2.5.11
 	 * @return array
+	 * @since  2.5.11
 	 */
 	public function get_blacklist() {
-		$blacklist = apply_filters( 'geot/sessions/session_start_uri_blacklist', array(
+		$blacklist = apply_filters( 'geot/sessions/session_start_uri_blacklist', [
 			'feed',
 			'feed/rss',
 			'feed/rss2',
 			'feed/rdf',
 			'feed/atom',
 			'comments/feed',
-		) );
+		] );
 		// Look to see if WordPress is in a sub folder or this is a network site that uses sub folders
 		$folder = str_replace( network_home_url(), '', get_site_url() );
 		if ( ! empty( $folder ) ) {
@@ -204,5 +127,83 @@ class GeotSession {
 		}
 
 		return $blacklist;
+	}
+
+	/**
+	 * Main GeotSession Instance
+	 *
+	 * Ensures only one instance is loaded or can be loaded.
+	 *
+	 * @return GeotSession - Main instance
+	 * @since 1.0.0
+	 * @static
+	 *
+	 */
+	public static function instance() {
+		if ( is_null( self::$_instance ) ) {
+			self::$_instance = new self();
+		}
+
+		return self::$_instance;
+	}
+
+	/**
+	 * If a session hasn't already been started by some external system, start one!
+	 */
+	function wp_session_manager_start_session() {
+		if ( session_status() !== PHP_SESSION_ACTIVE ) {
+			session_start();
+		}
+	}
+
+	/**
+	 * Cloning is forbidden.
+	 * @since 1.0.0
+	 */
+	public function __clone() {
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
+	}
+
+	/**
+	 * Unserializing instances of this class is forbidden.
+	 * @since 1.0.0
+	 */
+	public function __wakeup() {
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wsi' ), '2.1' );
+	}
+
+	/**
+	 * Retrieve a session variable
+	 *
+	 * @access public
+	 *
+	 * @param string $key Session key
+	 *
+	 * @return mixed Session variable
+	 * @since 1.5
+	 *
+	 */
+	public function get( $key ) {
+		$key = sanitize_key( $key );
+
+		return isset( $_SESSION[ $key ] ) ? json_decode( $_SESSION[ $key ] ) : false;
+	}
+
+	/**
+	 * Set a session variable
+	 *
+	 * @param string $key Session key
+	 * @param int|string|array $value Session variable
+	 *
+	 * @return mixed Session variable
+	 * @since 1.5
+	 *
+	 */
+	public function set( $key, $value ) {
+		$key = sanitize_key( $key );
+
+		$_SESSION[ $key ] = wp_json_encode( $value );
+
+		return $_SESSION[ $key ];
 	}
 }

@@ -95,9 +95,9 @@ class DatabaseHandler extends SessionHandler {
 	 * @param string $data Serialized data to write
 	 * @param int    [$expires] Timestamp (in seconds from now) when the session expires
 	 *
+	 * @return bool|int false if the row could not be inserted or the number of affected rows (which will always be 1).
 	 * @global \wpdb $wpdb
 	 *
-	 * @return bool|int false if the row could not be inserted or the number of affected rows (which will always be 1).
 	 */
 	protected function _write( $id, $data, $expires = null ) {
 		global $wpdb;
@@ -110,7 +110,7 @@ class DatabaseHandler extends SessionHandler {
 		$session = [
 			'session_key'    => $this->sanitize( $id ),
 			'session_value'  => $data,
-			'session_expiry' => $expires
+			'session_expiry' => $expires,
 		];
 
 		if ( empty( $data ) ) {
@@ -118,6 +118,21 @@ class DatabaseHandler extends SessionHandler {
 		}
 
 		return $wpdb->replace( "{$wpdb->prefix}sm_sessions", $session );
+	}
+
+	/**
+	 * Delete a session from the database.
+	 *
+	 * @param string $id Session identifier
+	 *
+	 * @global \wpdb $wpdb
+	 */
+	protected function _delete( $id ) {
+		global $wpdb;
+
+		$session_id = $this->sanitize( $id );
+
+		$wpdb->delete( "{$wpdb->prefix}sm_sessions", [ 'session_key' => $session_id ] );
 	}
 
 	/**
@@ -146,9 +161,9 @@ class DatabaseHandler extends SessionHandler {
 	 *
 	 * @param string $id
 	 *
+	 * @return bool|string
 	 * @global \wpdb $wpdb
 	 *
-	 * @return bool|string
 	 */
 	protected function _read( $id ) {
 		global $wpdb;
@@ -184,29 +199,14 @@ class DatabaseHandler extends SessionHandler {
 	}
 
 	/**
-	 * Delete a session from the database.
-	 *
-	 * @param string $id Session identifier
-	 *
-	 * @global \wpdb $wpdb
-	 */
-	protected function _delete( $id ) {
-		global $wpdb;
-
-		$session_id = $this->sanitize( $id );
-
-		$wpdb->delete( "{$wpdb->prefix}sm_sessions", [ 'session_key' => $session_id ] );
-	}
-
-	/**
 	 * Update the database by removing any sessions that are no longer valid.
 	 *
 	 * @param int $maxlifetime (Unused)
 	 * @param callable $next Next clean operation in the stack
 	 *
+	 * @return mixed
 	 * @global \wpdb $wpdb
 	 *
-	 * @return mixed
 	 */
 	public function clean( $maxlifetime, $next ) {
 		global $wpdb;

@@ -5,6 +5,11 @@ namespace GeotFunctions\Setting;
 use GeotFunctions\Setting\GeotSettings;
 use GeotWP\GeotargetingWP;
 
+/**
+ * Class GeotWizard
+ * Pretty much the same as Woocommerce wizard
+ * @package GeotFunctions\Setting
+ */
 class GeotWizard {
 
 	/**
@@ -19,6 +24,10 @@ class GeotWizard {
 	 * @var string
 	 */
 	private $view;
+	/**
+	 * @var string
+	 */
+	private $plugin_url;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -65,19 +74,8 @@ class GeotWizard {
 	}
 
 	/**
-	 * Auto-load in-accessible properties on demand.
-	 *
-	 * @param mixed $key
-	 *
-	 * @return mixed
-	 * @since 1.0.0
+	 * Wizard setip func
 	 */
-	public function __get( $key ) {
-		if ( in_array( $key, [ 'payment_gateways', 'shipping', 'mailer', 'checkout' ] ) ) {
-			return $this->$key();
-		}
-	}
-
 	public function setup() {
 		if ( apply_filters( 'geot/wizard/enable', true ) && current_user_can( 'manage_options' ) ) {
 

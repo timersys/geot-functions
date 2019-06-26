@@ -4,7 +4,7 @@
 
 		<?php do_action( 'geot/wizard/basic/before' ); ?>
 
-		<p><?php _e( 'The wizard below will help you configure your Geotargeting plugin and start working quickly.', 'letsgo' ); ?></p>
+		<p><?php _e( 'Thanks for installing GeotargetingWP!! The wizard below will help you configure the plugin correctly.', 'letsgo' ); ?></p>
 
 		<div class="location-row">
 			<label for="license" class="location-label"><?php _e( 'Enter your API key', 'geot' ); ?></label>
@@ -31,7 +31,7 @@
 					<option value="<?php echo $c->iso_code ?>" <?php isset( $opts['fallback_country'] ) ? selected( $c->iso_code, $opts['fallback_country'] ) : ''; ?>> <?php echo $c->country; ?></option>
 				<?php endforeach; ?>
 			</select>
-			<div class="location-help"><?php _e( 'If the user IP is not detected, the plugin will fallback to this country', 'geot' ); ?></div>
+			<div class="location-help"><?php _e( 'If the user IP is not detected, the plugin will fallback to this country. Simply choose the country which most of your content belongs to.', 'geot' ); ?></div>
 		</div>
 
 
@@ -45,15 +45,15 @@
 					<option value="<?php echo $c->iso_code ?>" <?php isset( $opts['bots_country'] ) ? selected( $c->iso_code, $opts['bots_country'] ) : ''; ?>> <?php echo $c->country; ?></option>
 				<?php endforeach; ?>
 			</select>
-			<div class="location-help"><?php _e( 'All bots/crawlers will be treated as they were from this country. ', 'geot' ); ?></div>
+			<div class="location-help"><?php _e( 'Bots and crawlers will be treated as they were from this country. Usually the same country as above', 'geot' ); ?></div>
 		</div>
 
 		<div class="location-row">
 			<?php if ( count( $ips ) == 0 ) : ?>
-				<h3><?php _e( 'We could not detect any IP', 'geot' ); ?></h3>
+				<h3><?php _e( 'We could not detect any IP address, please contact support', 'geot' ); ?></h3>
 			<?php elseif ( count( $ips ) == 1 ) : ?>
-				<h3 style="font-weight: unset;"
-				    class="text-center"><?php printf( __( 'We detected the following IP : <b>%s</b>', 'geot' ), current( $ips ) ); ?></h3>
+				<label class="location-label"><?php printf( __( 'We detected the following IP : <b>%s</b>', 'geot' ), current( $ips ) ); ?></label>
+				<div class="location-help"><?php printf( __( 'It should match the IP on <a href="%s">here</a>.', 'geot' ), 'https://geotargetingwp.com/ip', 'https://geotargetingwp.com/ip' ); ?></div>
 				<input type="hidden" name="geot_settings[var_ip]" value="<?php echo $opts['var_ip']; ?>"/>
 			<?php else : ?>
 				<label for="ip" class="location-label"><?php _e( 'Which is your correct ip?', 'geot' ); ?></label>
@@ -63,7 +63,7 @@
 						<option value="<?php echo $key; ?>"><?php echo $label_ip; ?></option>
 					<?php endforeach; ?>
 				</select>
-				<div class="location-help"><?php printf( __( 'If you dont know what IP must choose, you can check your real ip on <a href="%s">%s</a>', 'geot' ), 'https://geotargetingwp.com/ip', 'https://geotargetingwp.com/ip' ); ?></div>
+				<div class="location-help"><?php printf( __( 'You can check your real ip on <a href="%s">%s</a>, then choose the one with the same value.', 'geot' ), 'https://geotargetingwp.com/ip', 'https://geotargetingwp.com/ip' ); ?></div>
 			<?php endif; ?>
 		</div>
 

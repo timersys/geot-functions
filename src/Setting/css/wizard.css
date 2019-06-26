@@ -113,7 +113,10 @@ body {
     font-size: small;
     color: #AAAAAA;
 }
-
+.geot-setup-content .location-help a{
+    text-decoration: underline;
+    color: #666;
+}
 .geot-setup-content .location-input {
     border: 1px solid #aaa;
     border-color: #ddd;

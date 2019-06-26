@@ -71,8 +71,9 @@
 
 		<div class="location-row text-center">
 			<input type="hidden" name="save_step" value="1"/>
-			<button class="button-primary button button-hero button-next location-button"
+			<button class="button-primary button button-hero button-next location-button check-addons-license"
 			        name="geot_settings[button]"><?php _e( 'Next', 'geot' ); ?></button>
+			<div id="response_error"></div>
 		</div>
 	</form>
 </div>

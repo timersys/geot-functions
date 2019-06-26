@@ -234,6 +234,35 @@
                 }
             });
         });
+
+        $('.check-addons-license').on('click', function (e) {
+            e.preventDefault();
+            var button = $(this),
+                license = $('#license').val();
+            button.prop('disabled', true).addClass('btn-spinner');
+            $.ajax({
+                'url': geot.ajax_url,
+                'method': 'POST',
+                'dataType': 'json',
+                'data': {action: 'geot_check_license', license: license},
+                'success': function (response) {
+                    if (response.error) {
+                        $('#response_error').html('<p style="color:red">' + response.error + '</p>').hide().fadeIn();
+                        button.prop('disabled', false).removeClass('btn-spinner');
+                    }
+                    if (response.success) {
+                        button.prop('disabled', false).removeClass('btn-spinner');
+                        $('.check-addons-license').off('click').click();
+                        button.prop('disabled', true);
+                    }
+                },
+                'error': function (response) {
+                    $('#response_error').html('<p style="color:red">' + response.error + '</p>').hide().fadeIn();
+                    $('#license').removeClass('geot_license_valid')
+                    button.prop('disabled', false).removeClass('btn-spinner');
+                }
+            });
+        });
     });
 
 })(jQuery);

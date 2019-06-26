@@ -129,6 +129,9 @@ function geot_uninstall() {
 	// delete settings
 	delete_option( 'geot_settings' );
 	delete_option( 'geot_version' );
+	delete_option( 'geot_pro_settings' );
+	delete_option( 'geot_pro_addons' );
+	delete_option( 'geot_flush' );
 	// delete sql data
 	global $wpdb;
 	$countries_table = $wpdb->base_prefix . 'geot_countries';

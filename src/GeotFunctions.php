@@ -21,7 +21,7 @@ use function GeotWP\getUserIP;
 /**
  * Class GeotFunctions
  * Bring all wordpress needed functions to make GeotargetingWP work
- * @version 1.0.2
+ * @version 1.1
  * @package GeotFunctions
  */
 class GeotFunctions {

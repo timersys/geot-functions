@@ -23,6 +23,7 @@ class GeotNotices {
 		if ( ! empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) && ! get_option( 'geot_kinsta_dismiss' ) ) {
 			add_action( 'admin_notices', [ self::class, 'kinsta' ] );
 		}
+		add_action( 'admin_notices', [ self::class, 'update' ] );
 	}
 
 	public static function wpengine() {
@@ -46,6 +47,17 @@ class GeotNotices {
 			enable it for using it with the GeotargetingWP plugins.</p>
 		<p><a href="<?= admin_url( '?geot_notice=kinsta_dismiss' ); ?>"
 		      class="button-primary"><?php _e( 'Dismiss', 'geot' ); ?></a></p>
+		</div><?php
+	}
+
+
+	public static function updategeowp() {
+		?>
+		<div class="notice-info error">
+		<h3><i class=" dashicons-before dashicons-admin-site"></i> GeotargetingWP</h3>
+		<p>We launched a new version of GeotargetingWP "all in one" that will replace all existing plugins among some other new features.</p>
+		<p>Please go to your <a href="https://geotargetingwp.com/dashboard">account page</a> and
+			download the new version manually. Once installed and activated you can safely delete old plugins.</p>
 		</div><?php
 	}
 }

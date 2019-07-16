@@ -23,7 +23,7 @@ class GeotNotices {
 		if ( ! empty( $_SERVER['HTTP_GEOIP_CITY_COUNTRY_NAME'] ) && ! get_option( 'geot_kinsta_dismiss' ) ) {
 			add_action( 'admin_notices', [ self::class, 'kinsta' ] );
 		}
-		add_action( 'admin_notices', [ self::class, 'update' ] );
+		add_action( 'admin_notices', [ self::class, 'updategeowp' ] );
 	}
 
 	public static function wpengine() {
